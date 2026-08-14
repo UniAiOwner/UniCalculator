@@ -1,32 +1,26 @@
-# Walkthrough: GST Pro Reverse (−GST) Dynamic Calculation & Highlight Fix
+# Walkthrough: Stacked CGST/SGST Receipt Card & Dynamic '=' Engine
 
 ## 🎯 Overview
-Resolved the issue where clicking **`−GST (Extract Base)`** previously appeared static. Engineered dynamic mode-aware target highlighting and synchronized the Indian In-Words transcription to reflect the extracted **Net Base Amount** in reverse mode.
+Restructured the **GST Pro Master Receipt Card** into a clean, hierarchical B2B 2-Column layout and activated the **`=` (Equals) Button** to trigger prominent result enlargement with tactile haptic feedback.
 
 ---
 
 ## 🛠️ Changes Implemented
 
-### 1. Dynamic Mode-Aware Receipt Breakdown (`GSTProScreen.kt`)
-- **In `+GST (Add Tax)` Mode**:
-  - Top Header: `BASE AMOUNT`
-  - Tax Row: `CGST` & `SGST` (or `IGST`)
-  - Bottom Row: `Total Tax Added` (Left) | **`Total Invoice (Payable):`** (Right highlighted in Emerald Green `RupeeEmeraldGreen`).
-- **In `−GST (Extract Base)` Mode**:
-  - Top Header: `GROSS / MRP` (Amber `GstSaffronAmber`)
-  - Tax Row: `CGST` & `SGST` (or `IGST`)
-  - Bottom Row: `Tax Deducted` (Left) | **`Net Base (Excl. Tax):`** (Right highlighted in Saffron Amber `GstSaffronAmber`).
+### 1. Stacked 2-Column Receipt Hierarchy (`GSTProScreen.kt`)
+- **Left Column (Statutory Split)**:
+  - `CGST (rate/2%)` stacked directly above `SGST (rate/2%)` (or `IGST (rate%)` & `Jurisdiction: Inter-State`).
+- **Right Column (Commercial Totals)**:
+  - `Total Tax (rate%)` stacked directly above **`Total Invoice (Payable)`** (in `+GST`) or **`Net Base (Excl. Tax)`** (in `−GST`).
 
-### 2. In-Words Engine Dynamic Target (`GSTProViewModel.kt`)
-- Dynamically targets:
-  - `breakdown.netBaseAmount` in `−GST` mode.
-  - `breakdown.grossFinalAmount` in `+GST` mode.
+### 2. Functional '=' Button & Enlarged Result State (`GSTProViewModel.kt`)
+- Pressing `=` now triggers `onEquals()`, switching `isResultEnlarged = true`.
+- The final payable amount scales up in prominent bold font (`15.5sp` bold) with emerald/amber emphasis.
 
 ---
 
-## 📱 Hardware Verification & Comparison
+## 📱 Hardware Verification & Live Snapshot
 
-| Mode | Key Highlight | Live Snapshot |
+| Screen | Description | Live Hardware Snapshot |
 |---|---|---|
-| **Forward GST (+GST)** | Total Invoice Payable: `₹ 1,45,63,821.96` | ![Forward GST](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_forward_verified.png) |
-| **Reverse GST (−GST)** | Net Base Extracted: `₹ 1,04,59,510.17` | ![Reverse GST](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_reverse_verified.png) |
+| **Stacked GST Receipt with '=' Enlargement** | Base `₹ 50,000` @ 18% with stacked CGST/SGST and bold Total `₹ 59,000.00` | ![Stacked Receipt](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_stacked_50000_verified.png) |

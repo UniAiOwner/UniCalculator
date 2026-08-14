@@ -157,3 +157,25 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-14 — GST Pro Stacked CGST/SGST Receipt Card & Dynamic '=' Engine
+
+### 🚀 Major Achievements:
+- Stacked 2-Column Receipt Layout (`GSTProScreen.kt`): Reorganized the master receipt card into clear statutory vs commercial groupings:
+  - **Left Column**: Stacked `CGST` directly above `SGST` (or `IGST` & jurisdiction status).
+  - **Right Column**: Stacked `Total Tax Added / Deducted` directly above `Total Invoice (Payable)` / `Net Base (Excl. Tax)`.
+- Dynamic '=' Button Engine (`GSTProViewModel.kt`): Activated the numpad `=` button. Pressing `=` promotes the final payable amount to an enlarged bold hero display state with tactile feedback.
+
+### 🧪 Verification:
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Hardware Deployment: Installed APK onto physical device `Realme RMX3998` via ADB.
+- Interactive Verification: Tested entered values (e.g. `₹ 50,000.00` @ 18% -> CGST `₹ 4,500.00`, SGST `₹ 4,500.00`, Total Tax `₹ 9,000.00`, Total Invoice `₹ 59,000.00`), verified `=` button enlargement and captured live screenshot.
+
+### 📌 Current State:
+- Version: v1.0.0-rc7 (Stacked Receipt Card, Functional Equals Button, 100% hardware tested).
+
+### 📝 Next Steps:
+- Commit and push updates to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*

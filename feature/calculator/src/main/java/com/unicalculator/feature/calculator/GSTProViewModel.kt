@@ -20,7 +20,8 @@ data class GSTProUiState(
     val isReverseGst: Boolean = false, // false: +GST (Exclusive), true: -GST (Inclusive)
     val isInterState: Boolean = false, // false: CGST+SGST (Intra), true: IGST (Inter)
     val taxBreakdown: TaxBreakdown? = null,
-    val inWordsText: String = "Zero Rupees Only"
+    val inWordsText: String = "Zero Rupees Only",
+    val isResultEnlarged: Boolean = false
 )
 
 class GSTProViewModel : ViewModel() {
@@ -30,6 +31,7 @@ class GSTProViewModel : ViewModel() {
     private var rawAmount = StringBuilder()
 
     fun onDigit(digit: String) {
+        _uiState.update { it.copy(isResultEnlarged = false) }
         if (rawAmount.isEmpty() && digit == ".") {
             rawAmount.append("0.")
         } else if (digit == "." && rawAmount.contains(".")) {
@@ -41,6 +43,7 @@ class GSTProViewModel : ViewModel() {
     }
 
     fun onDelete() {
+        _uiState.update { it.copy(isResultEnlarged = false) }
         if (rawAmount.isNotEmpty()) {
             rawAmount.deleteCharAt(rawAmount.length - 1)
             recalculateGST()
@@ -54,8 +57,15 @@ class GSTProViewModel : ViewModel() {
                 amountInput = "",
                 displayAmount = "₹ 0.00",
                 taxBreakdown = null,
-                inWordsText = "Zero Rupees Only"
+                inWordsText = "Zero Rupees Only",
+                isResultEnlarged = false
             )
+        }
+    }
+
+    fun onEquals() {
+        if (_uiState.value.taxBreakdown != null) {
+            _uiState.update { it.copy(isResultEnlarged = true) }
         }
     }
 
