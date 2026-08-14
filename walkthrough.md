@@ -60,5 +60,6 @@ UniCalculator/
   - Target Device: `Realme RMX3998` (USB Debugging)
   - Install Status: **Streamed Install Success** (`adb install -r app-debug.apk`)
   - Execution: App launched successfully on device (`com.unicalculator/.MainActivity`).
-  - Live Visual Rendering: Verified 100% pure 3D Neumorphic lighting, soft shadows, recessed LCD viewport, and tactile squircle keypad directly on physical hardware!
+  - Keypad Reorganization: Verified 4-column matrix with enlarged button targets (~25% bigger), function keys (`C`, `⌫`, `%`, `÷`) positioned directly above `7, 8, 9`, and `+` operator key situated directly above `=`.
+  - Cash Tally Upgrades: Verified Neumorphic `C / CE (Clear All)` button in header and direct editable numeric count fields (`KeyboardType.Number`) alongside `+ / −` steppers for rapid counting.
 

@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
@@ -26,10 +28,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -38,6 +43,7 @@ import com.unicalculator.core.designsystem.component.NeumorphicHapticEngine
 import com.unicalculator.core.designsystem.component.NeumorphicPlate
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
+import com.unicalculator.core.designsystem.theme.DeleteRed
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 
@@ -59,7 +65,7 @@ fun CashTallyScreen(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 1. Master Neumorphic Summary Header Plate
+        // 1. Master Neumorphic Summary Header Plate with Clear (C / CE) Button
         NeumorphicPlate(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = 24.dp,
@@ -71,7 +77,7 @@ fun CashTallyScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "TOTAL CASH:",
                             fontSize = 13.sp,
@@ -83,15 +89,46 @@ fun CashTallyScreen(
                             style = TextStyle(
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 28.sp,
+                                fontSize = 26.sp,
                                 color = colors.textPrimary
                             )
                         )
                     }
+
+                    // Clear Entries (C / CE) Action Button
+                    Box(
+                        modifier = Modifier
+                            .size(width = 68.dp, height = 40.dp)
+                            .neumorphic(
+                                shape = NeumorphicShape.CONVEX,
+                                cornerRadius = 10.dp,
+                                elevation = 3.dp,
+                                lightShadowColor = colors.lightHighlight,
+                                darkShadowColor = colors.darkShadow,
+                                backgroundColor = colors.background
+                            )
+                            .clickable {
+                                hapticEngine.playOperatorTick()
+                                viewModel.resetAll()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "C/CE",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = DeleteRed
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = "Total Notes",
-                            fontSize = 13.sp,
+                            fontSize = 12.sp,
                             color = colors.textSecondary
                         )
                         Text(
@@ -99,7 +136,7 @@ fun CashTallyScreen(
                             style = TextStyle(
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp,
+                                fontSize = 18.sp,
                                 color = colors.textPrimary
                             )
                         )
@@ -163,7 +200,7 @@ fun CashTallyScreen(
                     // Currency Face Badge
                     Box(
                         modifier = Modifier
-                            .size(width = 68.dp, height = 36.dp)
+                            .size(width = 64.dp, height = 36.dp)
                             .neumorphic(
                                 shape = NeumorphicShape.CONCAVE,
                                 cornerRadius = 8.dp,
@@ -183,12 +220,12 @@ fun CashTallyScreen(
                         )
                     }
 
-                    // Count Input Box (Recessed Well)
+                    // Direct Numeric Input Quantity Field (Recessed Well with Numpad Keyboard)
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Note Count", fontSize = 10.sp, color = colors.textSecondary)
+                        Text("Count (Type)", fontSize = 9.sp, color = colors.textSecondary)
                         Box(
                             modifier = Modifier
-                                .size(width = 60.dp, height = 32.dp)
+                                .size(width = 72.dp, height = 34.dp)
                                 .neumorphic(
                                     shape = NeumorphicShape.CONCAVE,
                                     cornerRadius = 8.dp,
@@ -199,12 +236,24 @@ fun CashTallyScreen(
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "${item.count}",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace,
-                                color = colors.textPrimary
+                            BasicTextField(
+                                value = if (item.count == 0) "" else "${item.count}",
+                                onValueChange = { input ->
+                                    val sanitized = input.filter { it.isDigit() }
+                                    val count = sanitized.toIntOrNull() ?: 0
+                                    viewModel.updateCount(item.faceValue, count)
+                                },
+                                textStyle = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = colors.textPrimary,
+                                    textAlign = TextAlign.Center
+                                ),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                singleLine = true,
+                                cursorBrush = SolidColor(colors.accentEmerald),
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
                             )
                         }
                     }
@@ -214,19 +263,19 @@ fun CashTallyScreen(
                         Text("Subtotal", fontSize = 10.sp, color = colors.textSecondary)
                         Text(
                             text = IndianVedicFormatter.formatCurrency(item.subtotal),
-                            fontSize = 14.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
                             color = colors.textPrimary
                         )
                     }
 
-                    // Steppers (+ and -)
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // Steppers (+ and -) for quick small adjustments
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         // Plus
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(30.dp)
                                 .neumorphic(
                                     shape = NeumorphicShape.CONVEX,
                                     cornerRadius = 8.dp,
@@ -241,13 +290,13 @@ fun CashTallyScreen(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("+", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+                            Text("+", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                         }
 
                         // Minus
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(30.dp)
                                 .neumorphic(
                                     shape = NeumorphicShape.CONVEX,
                                     cornerRadius = 8.dp,
@@ -262,7 +311,7 @@ fun CashTallyScreen(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("−", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+                            Text("−", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                         }
                     }
                 }

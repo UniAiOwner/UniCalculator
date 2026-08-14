@@ -118,104 +118,102 @@ fun StandardCalculatorScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 4. 4x5 3D Squircle Keypad Matrix
-        val keys = listOf(
-            listOf("MC", "MR", "M-", "M+", "C"),
-            listOf("%", "7", "8", "9", "÷"),
-            listOf("×", "4", "5", "6", "×"),
-            listOf("-", "1", "2", "3", "-"),
-            listOf("+", "00", "0", ".", "=")
-        )
-
+        // 4. 4-Column Ergonomic 3D Squircle Keypad Matrix
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Row 1: Memory & Clear
+            // Memory Mini Strip
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NeumorphicButton("MC", { hapticEngine.playKeyClick() }, Modifier.weight(1f), textColor = MemoryGrey, fontSize = 16)
-                NeumorphicButton("MR", { hapticEngine.playKeyClick() }, Modifier.weight(1f), textColor = MemoryGrey, fontSize = 16)
-                NeumorphicButton("M-", { hapticEngine.playKeyClick() }, Modifier.weight(1f), textColor = MemoryGrey, fontSize = 16)
-                NeumorphicButton("M+", { hapticEngine.playKeyClick() }, Modifier.weight(1f), textColor = MemoryGrey, fontSize = 16)
+                NeumorphicButton("MC", { hapticEngine.playKeyClick() }, Modifier.weight(1f).height(44.dp), textColor = MemoryGrey, fontSize = 15)
+                NeumorphicButton("MR", { hapticEngine.playKeyClick() }, Modifier.weight(1f).height(44.dp), textColor = MemoryGrey, fontSize = 15)
+                NeumorphicButton("M-", { hapticEngine.playKeyClick() }, Modifier.weight(1f).height(44.dp), textColor = MemoryGrey, fontSize = 15)
+                NeumorphicButton("M+", { hapticEngine.playKeyClick() }, Modifier.weight(1f).height(44.dp), textColor = MemoryGrey, fontSize = 15)
+            }
+
+            // Row 1: C, ⌫ (Backspace), %, ÷ (Directly Above 7, 8, 9)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 NeumorphicButton("C", {
                     hapticEngine.playOperatorTick()
                     viewModel.onClear()
-                }, Modifier.weight(1f), textColor = DeleteRed, fontSize = 18)
-            }
+                }, Modifier.weight(1f).height(58.dp), textColor = DeleteRed, fontSize = 22)
 
-            // Row 2: %, 7, 8, 9, ÷
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+                NeumorphicButton("⌫", {
+                    hapticEngine.playKeyClick()
+                    viewModel.onDelete()
+                }, Modifier.weight(1f).height(58.dp), textColor = colors.textPrimary, fontSize = 20)
+
                 NeumorphicButton("%", {
                     hapticEngine.playOperatorTick()
                     viewModel.onOperator("%")
-                }, Modifier.weight(1f), textColor = OperatorOrange, fontSize = 18)
-                NeumorphicButton("7", { hapticEngine.playKeyClick(); viewModel.onDigit("7") }, Modifier.weight(1f))
-                NeumorphicButton("8", { hapticEngine.playKeyClick(); viewModel.onDigit("8") }, Modifier.weight(1f))
-                NeumorphicButton("9", { hapticEngine.playKeyClick(); viewModel.onDigit("9") }, Modifier.weight(1f))
+                }, Modifier.weight(1f).height(58.dp), textColor = OperatorOrange, fontSize = 22)
+
                 NeumorphicButton("÷", {
                     hapticEngine.playOperatorTick()
                     viewModel.onOperator("÷")
-                }, Modifier.weight(1f), textColor = OperatorOrange, fontSize = 22)
+                }, Modifier.weight(1f).height(58.dp), textColor = OperatorOrange, fontSize = 24)
             }
 
-            // Row 3: ×, 4, 5, 6, ×
+            // Row 2: 7, 8, 9, ×
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                NeumorphicButton("7", { hapticEngine.playKeyClick(); viewModel.onDigit("7") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("8", { hapticEngine.playKeyClick(); viewModel.onDigit("8") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("9", { hapticEngine.playKeyClick(); viewModel.onDigit("9") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
                 NeumorphicButton("×", {
                     hapticEngine.playOperatorTick()
                     viewModel.onOperator("×")
-                }, Modifier.weight(1f), textColor = OperatorOrange, fontSize = 22)
-                NeumorphicButton("4", { hapticEngine.playKeyClick(); viewModel.onDigit("4") }, Modifier.weight(1f))
-                NeumorphicButton("5", { hapticEngine.playKeyClick(); viewModel.onDigit("5") }, Modifier.weight(1f))
-                NeumorphicButton("6", { hapticEngine.playKeyClick(); viewModel.onDigit("6") }, Modifier.weight(1f))
-                NeumorphicButton("×", {
-                    hapticEngine.playOperatorTick()
-                    viewModel.onOperator("×")
-                }, Modifier.weight(1f), textColor = OperatorOrange, fontSize = 22)
+                }, Modifier.weight(1f).height(58.dp), textColor = OperatorOrange, fontSize = 24)
             }
 
-            // Row 4: -, 1, 2, 3, -
+            // Row 3: 4, 5, 6, −
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                NeumorphicButton("-", {
+                NeumorphicButton("4", { hapticEngine.playKeyClick(); viewModel.onDigit("4") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("5", { hapticEngine.playKeyClick(); viewModel.onDigit("5") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("6", { hapticEngine.playKeyClick(); viewModel.onDigit("6") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("−", {
                     hapticEngine.playOperatorTick()
                     viewModel.onOperator("-")
-                }, Modifier.weight(1f), textColor = OperatorOrange, fontSize = 22)
-                NeumorphicButton("1", { hapticEngine.playKeyClick(); viewModel.onDigit("1") }, Modifier.weight(1f))
-                NeumorphicButton("2", { hapticEngine.playKeyClick(); viewModel.onDigit("2") }, Modifier.weight(1f))
-                NeumorphicButton("3", { hapticEngine.playKeyClick(); viewModel.onDigit("3") }, Modifier.weight(1f))
-                NeumorphicButton("-", {
-                    hapticEngine.playOperatorTick()
-                    viewModel.onOperator("-")
-                }, Modifier.weight(1f), textColor = OperatorOrange, fontSize = 22)
+                }, Modifier.weight(1f).height(58.dp), textColor = OperatorOrange, fontSize = 24)
             }
 
-            // Row 5: +, 00, 0, ., =
+            // Row 4: 1, 2, 3, + (Directly Above =)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                NeumorphicButton("1", { hapticEngine.playKeyClick(); viewModel.onDigit("1") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("2", { hapticEngine.playKeyClick(); viewModel.onDigit("2") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("3", { hapticEngine.playKeyClick(); viewModel.onDigit("3") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
                 NeumorphicButton("+", {
                     hapticEngine.playOperatorTick()
                     viewModel.onOperator("+")
-                }, Modifier.weight(1f), textColor = OperatorOrange, fontSize = 22)
-                NeumorphicButton("00", { hapticEngine.playKeyClick(); viewModel.onDigit("00") }, Modifier.weight(1f), fontSize = 18)
-                NeumorphicButton("0", { hapticEngine.playKeyClick(); viewModel.onDigit("0") }, Modifier.weight(1f))
-                NeumorphicButton(".", { hapticEngine.playKeyClick(); viewModel.onDigit(".") }, Modifier.weight(1f))
+                }, Modifier.weight(1f).height(58.dp), textColor = OperatorOrange, fontSize = 24)
+            }
+
+            // Row 5: 00, 0, ., = (Directly Below +)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                NeumorphicButton("00", { hapticEngine.playKeyClick(); viewModel.onDigit("00") }, Modifier.weight(1f).height(58.dp), fontSize = 20)
+                NeumorphicButton("0", { hapticEngine.playKeyClick(); viewModel.onDigit("0") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton(".", { hapticEngine.playKeyClick(); viewModel.onDigit(".") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
                 NeumorphicButton("=", {
                     hapticEngine.playOperatorTick()
                     viewModel.onEquals()
-                }, Modifier.weight(1f), textColor = RupeeEmeraldGreen, isAccent = true, fontSize = 24)
+                }, Modifier.weight(1f).height(58.dp), textColor = RupeeEmeraldGreen, isAccent = true, fontSize = 26)
             }
         }
 

@@ -46,3 +46,24 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-14 — Keypad Ergonomic Rearrangement & Cash Tally Direct Numpad Input
+
+### 🚀 Major Achievements:
+- Standard Keypad Restructuring: Transitioned from 5 columns to 4 large columns (~25% larger button hit targets), shifted `C`, `⌫`, `%`, `÷` directly above `7, 8, 9`, and positioned `+` operator directly above `=`.
+- Cash Tally Direct Numpad Input: Replaced static text with editable numeric `BasicTextField` (`KeyboardType.Number`) allowing direct multi-digit quantity typing (e.g., `100`, `250`, `5000`) alongside `+ / −` steppers.
+- Cash Tally C/CE Button: Added prominent Neumorphic `C / CE (Clear All)` action in the summary header to reset all cash entries in a single tap.
+
+### 🧪 Verification:
+- Unit Tests: `./gradlew :core:math-engine:test` -> **100% Passed**.
+- Full Build: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Hardware Test: Installed and verified on physical `Realme RMX3998` via ADB with live screenshot verification of both Standard Keypad and Cash Tally screens.
+
+### 📌 Current State:
+- Version: v1.0.0-rc2 (Ergonomically refined, hardware tested).
+
+### 📝 Next Steps:
+- Commit and push updates to GitHub repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*
