@@ -34,6 +34,7 @@ import com.unicalculator.core.common.format.IndianVedicFormatter
 import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicGstPill
 import com.unicalculator.core.designsystem.component.NeumorphicHapticEngine
+import com.unicalculator.core.designsystem.component.NeumorphicSlideSwitch
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.DeleteRed
@@ -62,163 +63,7 @@ fun GSTProScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // 1. TOP SEGMENTED CONTROLS (Mode & Jurisdiction)
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            // Dual Mode Switcher: +GST (Add Tax) vs -GST (Extract Base)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
-                    .neumorphic(
-                        shape = NeumorphicShape.CONCAVE,
-                        cornerRadius = 12.dp,
-                        elevation = 2.dp,
-                        lightShadowColor = colors.lightHighlight,
-                        darkShadowColor = colors.darkShadow,
-                        backgroundColor = colors.background
-                    )
-                    .padding(3.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-                        .neumorphic(
-                            shape = if (!state.isReverseGst) NeumorphicShape.CONVEX else NeumorphicShape.FLAT,
-                            cornerRadius = 9.dp,
-                            elevation = if (!state.isReverseGst) 3.dp else 0.dp,
-                            lightShadowColor = colors.lightHighlight,
-                            darkShadowColor = colors.darkShadow,
-                            backgroundColor = colors.background
-                        )
-                        .clickable {
-                            hapticEngine.playOperatorTick()
-                            viewModel.onSetReverseMode(false)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "+GST (Add Tax)",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                            color = if (!state.isReverseGst) RupeeEmeraldGreen else colors.textSecondary
-                        )
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-                        .neumorphic(
-                            shape = if (state.isReverseGst) NeumorphicShape.CONVEX else NeumorphicShape.FLAT,
-                            cornerRadius = 9.dp,
-                            elevation = if (state.isReverseGst) 3.dp else 0.dp,
-                            lightShadowColor = colors.lightHighlight,
-                            darkShadowColor = colors.darkShadow,
-                            backgroundColor = colors.background
-                        )
-                        .clickable {
-                            hapticEngine.playOperatorTick()
-                            viewModel.onSetReverseMode(true)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "−GST (Extract Base)",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                            color = if (state.isReverseGst) GstSaffronAmber else colors.textSecondary
-                        )
-                    )
-                }
-            }
-
-            // Jurisdiction Selector: Intra-State vs Inter-State
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(36.dp)
-                    .neumorphic(
-                        shape = NeumorphicShape.CONCAVE,
-                        cornerRadius = 10.dp,
-                        elevation = 2.dp,
-                        lightShadowColor = colors.lightHighlight,
-                        darkShadowColor = colors.darkShadow,
-                        backgroundColor = colors.background
-                    )
-                    .padding(3.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-                        .neumorphic(
-                            shape = if (!state.isInterState) NeumorphicShape.CONVEX else NeumorphicShape.FLAT,
-                            cornerRadius = 8.dp,
-                            elevation = if (!state.isInterState) 3.dp else 0.dp,
-                            lightShadowColor = colors.lightHighlight,
-                            darkShadowColor = colors.darkShadow,
-                            backgroundColor = colors.background
-                        )
-                        .clickable {
-                            hapticEngine.playOperatorTick()
-                            viewModel.onSetJurisdiction(false)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "🏛️ Intra-State (CGST+SGST)",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 11.5.sp,
-                            color = if (!state.isInterState) RupeeEmeraldGreen else colors.textSecondary
-                        ),
-                        maxLines = 1
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-                        .neumorphic(
-                            shape = if (state.isInterState) NeumorphicShape.CONVEX else NeumorphicShape.FLAT,
-                            cornerRadius = 8.dp,
-                            elevation = if (state.isInterState) 3.dp else 0.dp,
-                            lightShadowColor = colors.lightHighlight,
-                            darkShadowColor = colors.darkShadow,
-                            backgroundColor = colors.background
-                        )
-                        .clickable {
-                            hapticEngine.playOperatorTick()
-                            viewModel.onSetJurisdiction(true)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "🌐 Inter-State (IGST)",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 11.5.sp,
-                            color = if (state.isInterState) RupeeEmeraldGreen else colors.textSecondary
-                        ),
-                        maxLines = 1
-                    )
-                }
-            }
-        }
-
-        // 2. UNIFIED MASTER RECEIPT CARD (Merged Display + Live Calculation Plate)
+        // 1. UNIFIED MASTER RECEIPT CARD (DISPLAY AT TOP)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -370,6 +215,34 @@ fun GSTProScreen(
                     overflow = TextOverflow.Ellipsis
                 )
             }
+        }
+
+        // 2. DUAL NEUMORPHIC SLIDABLE SWITCHES (Mode & Jurisdiction)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Left Switch: +GST vs −GST
+            NeumorphicSlideSwitch(
+                leftLabel = "+GST",
+                rightLabel = "−GST",
+                isRightSelected = state.isReverseGst,
+                onToggle = { viewModel.onSetReverseMode(it) },
+                modifier = Modifier.weight(1f),
+                activeColor = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen,
+                height = 38.dp
+            )
+
+            // Right Switch: CGST+SGST vs IGST
+            NeumorphicSlideSwitch(
+                leftLabel = "CGST+SGST",
+                rightLabel = "IGST",
+                isRightSelected = state.isInterState,
+                onToggle = { viewModel.onSetJurisdiction(it) },
+                modifier = Modifier.weight(1f),
+                activeColor = ElectricSapphireBlue,
+                height = 38.dp
+            )
         }
 
         // 3. SHIFTED GST SLABS ROW (3%, 5%, 12%, 18%, 28%)

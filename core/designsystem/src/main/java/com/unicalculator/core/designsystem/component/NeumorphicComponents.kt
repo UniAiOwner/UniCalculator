@@ -12,7 +12,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -150,3 +157,120 @@ class NeumorphicHapticEngine(private val context: Context) {
         } catch (_: Exception) {}
     }
 }
+
+@Composable
+fun NeumorphicSlideSwitch(
+    leftLabel: String,
+    rightLabel: String,
+    isRightSelected: Boolean,
+    onToggle: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    activeColor: Color? = null,
+    height: Dp = 38.dp
+) {
+    val colors = LocalNeumorphicColors.current
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val hapticEngine = remember { NeumorphicHapticEngine(context) }
+    val accent = activeColor ?: colors.accentEmerald
+
+    val slideProgress by animateFloatAsState(
+        targetValue = if (isRightSelected) 1f else 0f,
+        animationSpec = spring(dampingRatio = 0.8f, stiffness = 500f),
+        label = "slide_switch_progress"
+    )
+
+    // Outer Recessed Trench ("Gadda / Concave Well")
+    Box(
+        modifier = modifier
+            .height(height)
+            .neumorphic(
+                shape = NeumorphicShape.CONCAVE,
+                cornerRadius = 12.dp,
+                elevation = 3.dp,
+                lightShadowColor = colors.lightHighlight,
+                darkShadowColor = colors.darkShadow,
+                backgroundColor = colors.background
+            )
+            .padding(3.dp)
+    ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val thumbWidth = maxWidth / 2
+
+            // Floating 3D Convex Thumb (The sliding knob)
+            Box(
+                modifier = Modifier
+                    .offset(x = thumbWidth * slideProgress)
+                    .width(thumbWidth)
+                    .fillMaxHeight()
+                    .neumorphic(
+                        shape = NeumorphicShape.CONVEX,
+                        cornerRadius = 9.dp,
+                        elevation = 3.dp,
+                        lightShadowColor = colors.lightHighlight,
+                        darkShadowColor = colors.darkShadow,
+                        backgroundColor = colors.background
+                    )
+            )
+
+            // Clickable Label Overlay Row
+            Row(modifier = Modifier.fillMaxSize()) {
+                // Left Option
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            if (isRightSelected) {
+                                hapticEngine.playOperatorTick()
+                                onToggle(false)
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = leftLabel,
+                        style = TextStyle(
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = if (!isRightSelected) FontWeight.Bold else FontWeight.Medium,
+                            fontSize = 12.sp,
+                            color = if (!isRightSelected) accent else colors.textSecondary
+                        ),
+                        maxLines = 1
+                    )
+                }
+
+                // Right Option
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            if (!isRightSelected) {
+                                hapticEngine.playOperatorTick()
+                                onToggle(true)
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = rightLabel,
+                        style = TextStyle(
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = if (isRightSelected) FontWeight.Bold else FontWeight.Medium,
+                            fontSize = 12.sp,
+                            color = if (isRightSelected) accent else colors.textSecondary
+                        ),
+                        maxLines = 1
+                    )
+                }
+            }
+        }
+    }
+}
+

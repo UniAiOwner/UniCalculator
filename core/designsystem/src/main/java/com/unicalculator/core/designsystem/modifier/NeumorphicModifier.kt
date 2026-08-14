@@ -76,10 +76,15 @@ fun Modifier.neumorphic(
             }
         }
         NeumorphicShape.CONCAVE -> {
-            // Background surface
+            // Background surface with subtle cavity depression shading
             if (backgroundColor != null) {
                 drawRoundRect(
                     color = backgroundColor,
+                    cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
+                )
+                // Subtle cavity ambient darkening (sunken well depth)
+                drawRoundRect(
+                    color = Color.Black.copy(alpha = 0.04f),
                     cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
                 )
             }
@@ -91,35 +96,35 @@ fun Modifier.neumorphic(
                 }
                 canvas.clipPath(clipPath)
 
-                // Top-Left Dark Inset Shadow
+                // Top-Left Deep Inset Shadow
                 val innerDarkPaint = Paint().apply {
-                    color = darkShadowColor
+                    color = darkShadowColor.copy(alpha = 0.95f)
                     style = PaintingStyle.Stroke
-                    strokeWidth = elevationPx * 2f
-                    asFrameworkPaint().maskFilter = BlurMaskFilter(elevationPx * 1.2f, BlurMaskFilter.Blur.NORMAL)
+                    strokeWidth = elevationPx * 2.5f
+                    asFrameworkPaint().maskFilter = BlurMaskFilter(elevationPx * 1.4f, BlurMaskFilter.Blur.NORMAL)
                 }
                 canvas.drawRoundRect(
-                    left = -elevationPx * 0.5f,
-                    top = -elevationPx * 0.5f,
-                    right = size.width + elevationPx * 0.5f,
-                    bottom = size.height + elevationPx * 0.5f,
+                    left = -elevationPx * 0.8f,
+                    top = -elevationPx * 0.8f,
+                    right = size.width + elevationPx * 0.8f,
+                    bottom = size.height + elevationPx * 0.8f,
                     radiusX = cornerRadiusPx,
                     radiusY = cornerRadiusPx,
                     paint = innerDarkPaint
                 )
 
-                // Bottom-Right Light Inset Glow
+                // Bottom-Right Crisp Inset Light Rim
                 val innerLightPaint = Paint().apply {
-                    color = lightShadowColor.copy(alpha = 0.5f)
+                    color = lightShadowColor.copy(alpha = 0.9f)
                     style = PaintingStyle.Stroke
-                    strokeWidth = elevationPx * 2f
-                    asFrameworkPaint().maskFilter = BlurMaskFilter(elevationPx * 1.2f, BlurMaskFilter.Blur.NORMAL)
+                    strokeWidth = elevationPx * 2.5f
+                    asFrameworkPaint().maskFilter = BlurMaskFilter(elevationPx * 1.4f, BlurMaskFilter.Blur.NORMAL)
                 }
                 canvas.drawRoundRect(
-                    left = elevationPx * 0.5f,
-                    top = elevationPx * 0.5f,
-                    right = size.width + elevationPx * 1.5f,
-                    bottom = size.height + elevationPx * 1.5f,
+                    left = elevationPx * 0.8f,
+                    top = elevationPx * 0.8f,
+                    right = size.width + elevationPx * 1.8f,
+                    bottom = size.height + elevationPx * 1.8f,
                     radiusX = cornerRadiusPx,
                     radiusY = cornerRadiusPx,
                     paint = innerLightPaint

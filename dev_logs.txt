@@ -200,3 +200,26 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-14 — GST Pro Dual Slidable Switches, Display at Top & True 3D Sunken Neumorphism
+
+### 🚀 Major Achievements:
+- Master Receipt Card at Top (`GSTProScreen.kt`): Reorganized the screen hierarchy so the unified receipt card/display sits prominently at the top of the viewport.
+- Dual Neumorphic Slidable Switches (`NeumorphicComponents.kt` & `GSTProScreen.kt`): Created a spring-animated 2-state toggle switch component inside a single 38dp row:
+  - Left Slider: `+GST` (Emerald) ⇄ `−GST` (Amber).
+  - Right Slider: `CGST+SGST` ⇄ `IGST` (Sapphire Blue).
+- True 3D Sunken Neumorphic Depth ("Gadda / Concave Well") (`NeumorphicModifier.kt`): Calibrated `NeumorphicShape.CONCAVE` with real dual-offset inner dark shadows (`#7E7A70`), light inner rims (`#FFFFFF`), and ambient cavity dimming.
+
+### 🧪 Verification:
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Hardware Deployment: Installed APK onto physical device `Realme RMX3998` via ADB.
+- Interactive Verification: Verified smooth spring sliding of both switches, top display placement, and true 3D tactile depth across all states, capturing live screenshots.
+
+### 📌 Current State:
+- Version: v1.0.0-rc9 (Dual Slidable Switches, Display Top Placement, True 3D Sunken Neumorphism, 100% hardware tested).
+
+### 📝 Next Steps:
+- Commit and push updates to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*
