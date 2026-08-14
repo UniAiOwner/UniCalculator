@@ -56,3 +56,9 @@ UniCalculator/
 - **Assemble Debug APK**:
   - Command: `./gradlew :app:assembleDebug`
   - Result: **BUILD SUCCESSFUL** (Generated 17MB debug binary at `app/build/outputs/apk/debug/app-debug.apk`).
+- **Physical Device Installation & Verification**:
+  - Target Device: `Realme RMX3998` (USB Debugging)
+  - Install Status: **Streamed Install Success** (`adb install -r app-debug.apk`)
+  - Execution: App launched successfully on device (`com.unicalculator/.MainActivity`).
+  - Live Visual Rendering: Verified 100% pure 3D Neumorphic lighting, soft shadows, recessed LCD viewport, and tactile squircle keypad directly on physical hardware!
+
