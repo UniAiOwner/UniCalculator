@@ -241,11 +241,11 @@ fun GSTProScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (state.isReverseGst) "GROSS (MRP INCL.)" else "BASE (EXCL. TAX)",
+                        text = if (state.isReverseGst) "GROSS / MRP" else "BASE AMOUNT",
                         style = androidx.compose.ui.text.TextStyle(
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp,
+                            fontSize = 11.5.sp,
                             color = colors.textSecondary,
                             letterSpacing = 0.5.sp
                         )
@@ -256,10 +256,11 @@ fun GSTProScreen(
                         style = androidx.compose.ui.text.TextStyle(
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 22.sp,
+                            fontSize = 20.sp,
                             color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen
                         ),
-                        maxLines = 1
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
@@ -284,39 +285,78 @@ fun GSTProScreen(
                 val totalTaxStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.totalGstAmount) } ?: "₹ 0.00"
                 val grossFinalStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.grossFinalAmount) } ?: "₹ 0.00"
 
-                if (state.isInterState) {
+                if (state.isReverseGst) {
+                    if (state.isInterState) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            ReceiptItem(label = "Gross MRP (Entered):", value = grossFinalStr, modifier = Modifier.weight(1f))
+                            ReceiptItem(label = "IGST (${state.selectedGstRate}%):", value = igstStr, modifier = Modifier.weight(1f), isRightAlign = true)
+                        }
+                    } else {
+                        val halfRate = state.selectedGstRate / 2.0
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            ReceiptItem(label = "CGST (${halfRate}%):", value = cgstStr, modifier = Modifier.weight(1f))
+                            ReceiptItem(label = "SGST (${halfRate}%):", value = sgstStr, modifier = Modifier.weight(1f), isRightAlign = true)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        ReceiptItem(label = "Net Base:", value = netBaseStr, modifier = Modifier.weight(1f))
-                        ReceiptItem(label = "IGST (${state.selectedGstRate}%):", value = igstStr, modifier = Modifier.weight(1f), isRightAlign = true)
+                        ReceiptItem(label = "Tax Deducted (${state.selectedGstRate}%):", value = totalTaxStr, modifier = Modifier.weight(1f))
+                        ReceiptItem(
+                            label = "Net Base (Excl. Tax):",
+                            value = netBaseStr,
+                            modifier = Modifier.weight(1f),
+                            isRightAlign = true,
+                            isHighlight = true,
+                            highlightColor = GstSaffronAmber
+                        )
                     }
                 } else {
-                    val halfRate = state.selectedGstRate / 2.0
+                    if (state.isInterState) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            ReceiptItem(label = "Net Base (Entered):", value = netBaseStr, modifier = Modifier.weight(1f))
+                            ReceiptItem(label = "IGST (${state.selectedGstRate}%):", value = igstStr, modifier = Modifier.weight(1f), isRightAlign = true)
+                        }
+                    } else {
+                        val halfRate = state.selectedGstRate / 2.0
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            ReceiptItem(label = "CGST (${halfRate}%):", value = cgstStr, modifier = Modifier.weight(1f))
+                            ReceiptItem(label = "SGST (${halfRate}%):", value = sgstStr, modifier = Modifier.weight(1f), isRightAlign = true)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        ReceiptItem(label = "CGST (${halfRate}%):", value = cgstStr, modifier = Modifier.weight(1f))
-                        ReceiptItem(label = "SGST (${halfRate}%):", value = sgstStr, modifier = Modifier.weight(1f), isRightAlign = true)
+                        ReceiptItem(label = "Total Tax Added (${state.selectedGstRate}%):", value = totalTaxStr, modifier = Modifier.weight(1f))
+                        ReceiptItem(
+                            label = "Total Invoice (Payable):",
+                            value = grossFinalStr,
+                            modifier = Modifier.weight(1f),
+                            isRightAlign = true,
+                            isHighlight = true,
+                            highlightColor = RupeeEmeraldGreen
+                        )
                     }
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    ReceiptItem(label = "Total Tax (${state.selectedGstRate}%):", value = totalTaxStr, modifier = Modifier.weight(1f))
-                    ReceiptItem(
-                        label = "Total Invoice:",
-                        value = grossFinalStr,
-                        modifier = Modifier.weight(1f),
-                        isRightAlign = true,
-                        isHighlight = true
-                    )
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -476,7 +516,8 @@ private fun ReceiptItem(
     value: String,
     modifier: Modifier = Modifier,
     isRightAlign: Boolean = false,
-    isHighlight: Boolean = false
+    isHighlight: Boolean = false,
+    highlightColor: androidx.compose.ui.graphics.Color = RupeeEmeraldGreen
 ) {
     val colors = LocalNeumorphicColors.current
     Column(
@@ -498,7 +539,7 @@ private fun ReceiptItem(
                 fontFamily = FontFamily.Monospace,
                 fontSize = if (isHighlight) 13.sp else 12.sp,
                 fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.SemiBold,
-                color = if (isHighlight) RupeeEmeraldGreen else colors.textPrimary
+                color = if (isHighlight) highlightColor else colors.textPrimary
             ),
             maxLines = 1
         )

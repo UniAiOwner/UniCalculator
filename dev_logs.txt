@@ -134,3 +134,26 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-14 — GST Pro Reverse (−GST) Dynamic Calculation & Highlight Refactor
+
+### 🚀 Major Achievements:
+- Reverse GST Highlighting Architecture (`GSTProScreen.kt`): Engineered dynamic receipt card highlighting that switches focus based on mode:
+  - `+GST (Add Tax)`: Highlights `Total Invoice (Payable)` in Emerald Green (`RupeeEmeraldGreen`).
+  - `−GST (Extract Base)`: Highlights `Net Base (Excl. Tax)` in Saffron Amber (`GstSaffronAmber`), instantly showcasing the extracted base amount without tax.
+- In-Words Engine Dynamic Mode Synchronization (`GSTProViewModel.kt`): Fixed in-words converter to dynamically translate `netBaseAmount` in `−GST` mode and `grossFinalAmount` in `+GST` mode.
+- Top Header Text Overflow Protection: Refined header row layout to prevent clipping on large multi-digit figures with graceful ellipsis handling.
+
+### 🧪 Verification:
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Hardware Deployment: Installed APK onto physical device `Realme RMX3998` via ADB.
+- Interactive Verification: Tested entered values across `+GST` (e.g. `₹ 1,23,42,222.00` -> Total Invoice: `₹ 1,45,63,821.96`) and `−GST` (Net Base: `₹ 1,04,59,510.17`), capturing live screenshots for both states.
+
+### 📌 Current State:
+- Version: v1.0.0-rc6 (Reverse GST Dynamic Highlighting & Words Sync, 100% hardware tested).
+
+### 📝 Next Steps:
+- Commit and push updates to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*

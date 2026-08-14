@@ -112,7 +112,11 @@ class GSTProViewModel : ViewModel() {
                 )
             }
 
-            val targetForWords = breakdown.grossFinalAmount
+            val targetForWords = if (_uiState.value.isReverseGst) {
+                breakdown.netBaseAmount
+            } else {
+                breakdown.grossFinalAmount
+            }
 
             _uiState.update {
                 it.copy(

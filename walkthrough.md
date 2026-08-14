@@ -1,39 +1,32 @@
-# Walkthrough: GST Pro Unified Master Receipt Card & Zero-Scroll Layout Refactor
+# Walkthrough: GST Pro Reverse (−GST) Dynamic Calculation & Highlight Fix
 
 ## 🎯 Overview
-Successfully merged the Calculator Display and Tax Invoice Plate into a single **Unified Master Receipt Card**, shifted the **GST Rates Row** directly below the card, and established a **100% Zero-Scroll Keypad** layout on physical hardware (`Realme RMX3998`).
+Resolved the issue where clicking **`−GST (Extract Base)`** previously appeared static. Engineered dynamic mode-aware target highlighting and synchronized the Indian In-Words transcription to reflect the extracted **Net Base Amount** in reverse mode.
 
 ---
 
 ## 🛠️ Changes Implemented
 
-### 1. Unified Master Receipt Card (`GSTProScreen.kt`)
-- **Single Consolidated Screen Plate**: Merged raw input display and live tax invoice calculations into a single, elegant Neumorphic card.
-- **2-Column Tax Breakdown**: Live dynamic rendering of:
-  - `Base (Excl. Tax)` or `Gross (MRP Incl.)`
-  - `CGST (50%)` & `SGST (50%)` (or `IGST 100%`)
-  - `Total Tax Amount`
-  - Highlighted emerald `Total Invoice Amount`
-  - Indian Currency "In Words" transcription.
+### 1. Dynamic Mode-Aware Receipt Breakdown (`GSTProScreen.kt`)
+- **In `+GST (Add Tax)` Mode**:
+  - Top Header: `BASE AMOUNT`
+  - Tax Row: `CGST` & `SGST` (or `IGST`)
+  - Bottom Row: `Total Tax Added` (Left) | **`Total Invoice (Payable):`** (Right highlighted in Emerald Green `RupeeEmeraldGreen`).
+- **In `−GST (Extract Base)` Mode**:
+  - Top Header: `GROSS / MRP` (Amber `GstSaffronAmber`)
+  - Tax Row: `CGST` & `SGST` (or `IGST`)
+  - Bottom Row: `Tax Deducted` (Left) | **`Net Base (Excl. Tax):`** (Right highlighted in Saffron Amber `GstSaffronAmber`).
 
-### 2. Shifted GST Rate Pills Row
-- Shifted `+3%`, `+5%`, `+12%`, `+18%`, `+28%` pills directly beneath the Unified Master Card.
-
-### 3. Action Bar
-- Clean 4-button row: `[📤 Share]`, `[💾 Save]`, `[📋 Copy]`, `[C]` (Clear).
-
-### 4. 100% Zero-Scroll Numpad (Full 4-Row Coverage)
-- Row 1: `7`, `8`, `9`, `⌫`
-- Row 2: `4`, `5`, `6`, `±`
-- Row 3: `1`, `2`, `3`, `%`
-- Row 4: `00`, `0`, `.`, `=`
-- All keys are fully on-screen with zero vertical scrolling required.
+### 2. In-Words Engine Dynamic Target (`GSTProViewModel.kt`)
+- Dynamically targets:
+  - `breakdown.netBaseAmount` in `−GST` mode.
+  - `breakdown.grossFinalAmount` in `+GST` mode.
 
 ---
 
-## 📱 Hardware Verification & Screenshots
+## 📱 Hardware Verification & Comparison
 
-| Screen | Description | Live Hardware Snapshot |
+| Mode | Key Highlight | Live Snapshot |
 |---|---|---|
-| **GST Pro Clean Zero State** | Merged card at `₹ 0.00` with full 4-row numpad visible | ![GST Pro Clean](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_unified_live_screen.png) |
-| **GST Pro Live Calculation** | Live dynamic tax breakdown and in-words rendering | ![GST Pro Calculated](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_unified_calculated_10000_live.png) |
+| **Forward GST (+GST)** | Total Invoice Payable: `₹ 1,45,63,821.96` | ![Forward GST](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_forward_verified.png) |
+| **Reverse GST (−GST)** | Net Base Extracted: `₹ 1,04,59,510.17` | ![Reverse GST](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_reverse_verified.png) |
