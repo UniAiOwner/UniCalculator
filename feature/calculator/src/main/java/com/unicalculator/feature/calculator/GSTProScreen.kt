@@ -69,13 +69,13 @@ fun GSTProScreen(
                 .fillMaxWidth()
                 .neumorphic(
                     shape = NeumorphicShape.CONVEX,
-                    cornerRadius = 16.dp,
-                    elevation = 4.dp,
+                    cornerRadius = 18.dp,
+                    elevation = 5.dp,
                     lightShadowColor = colors.lightHighlight,
                     darkShadowColor = colors.darkShadow,
                     backgroundColor = colors.background
                 )
-                .padding(horizontal = 14.dp, vertical = 10.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth()
@@ -91,7 +91,7 @@ fun GSTProScreen(
                         style = androidx.compose.ui.text.TextStyle(
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 11.5.sp,
+                            fontSize = 12.sp,
                             color = colors.textSecondary,
                             letterSpacing = 0.5.sp
                         )
@@ -102,7 +102,7 @@ fun GSTProScreen(
                         style = androidx.compose.ui.text.TextStyle(
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
+                            fontSize = 17.sp,
                             color = colors.textSecondary
                         ),
                         maxLines = 1,
@@ -110,7 +110,7 @@ fun GSTProScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Subtle Inset Divider
                 Box(
@@ -120,7 +120,7 @@ fun GSTProScreen(
                         .background(colors.darkShadow.copy(alpha = 0.4f))
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // 2-Column Tax Breakdown Grid
                 val breakdown = state.taxBreakdown
@@ -138,7 +138,7 @@ fun GSTProScreen(
                     // LEFT COLUMN: Statutory Tax Split (CGST + SGST or IGST)
                     Column(
                         modifier = Modifier.weight(1.1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         if (state.isInterState) {
                             ReceiptItem(
@@ -166,7 +166,7 @@ fun GSTProScreen(
                     Column(
                         modifier = Modifier.weight(1.1f),
                         horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         if (state.isReverseGst) {
                             ReceiptItem(
@@ -200,20 +200,35 @@ fun GSTProScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                // Words Transcription
-                Text(
-                    text = "In Words: ${state.inWordsText}",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 10.5.sp,
-                        color = colors.textSecondary
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                // Words Transcription Plate (Multi-Line Recessed Container)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .neumorphic(
+                            shape = NeumorphicShape.CONCAVE,
+                            cornerRadius = 8.dp,
+                            elevation = 2.dp,
+                            lightShadowColor = colors.lightHighlight,
+                            darkShadowColor = colors.darkShadow,
+                            backgroundColor = colors.background
+                        )
+                        .padding(horizontal = 8.dp, vertical = 5.dp)
+                ) {
+                    Text(
+                        text = "✍️ In Words: ${state.inWordsText}",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 11.sp,
+                            lineHeight = 15.sp,
+                            color = colors.textSecondary
+                        ),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
 
@@ -259,13 +274,13 @@ fun GSTProScreen(
                         hapticEngine.playOperatorTick()
                         viewModel.onSelectSlab(rate)
                     },
-                    modifier = Modifier.weight(1f).height(38.dp),
+                    modifier = Modifier.weight(1f).height(40.dp),
                     accentColor = when (rate) {
                         3, 28 -> GstSaffronAmber
                         else -> RupeeEmeraldGreen
                     },
                     fontSize = 12,
-                    horizontalPadding = 4.dp
+                    horizontalPadding = 3.dp
                 )
             }
         }
@@ -414,15 +429,26 @@ private fun ReceiptItem(
             ),
             maxLines = 1
         )
+        val dynamicFontSize = when {
+            isHighlight && isEnlarged && value.length > 15 -> 15.5.sp
+            isHighlight && isEnlarged && value.length > 12 -> 17.5.sp
+            isHighlight && isEnlarged -> 19.5.sp
+            isHighlight && value.length > 15 -> 13.sp
+            isHighlight -> 15.sp
+            value.length > 15 -> 10.5.sp
+            else -> 12.sp
+        }
         Text(
             text = value,
             style = androidx.compose.ui.text.TextStyle(
                 fontFamily = FontFamily.Monospace,
-                fontSize = if (isHighlight && isEnlarged) 20.sp else if (isHighlight) 15.sp else 12.sp,
+                fontSize = dynamicFontSize,
                 fontWeight = if (isHighlight && isEnlarged) FontWeight.Black else if (isHighlight) FontWeight.Bold else FontWeight.SemiBold,
                 color = if (isHighlight) highlightColor else colors.textPrimary
             ),
-            maxLines = 1
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
+

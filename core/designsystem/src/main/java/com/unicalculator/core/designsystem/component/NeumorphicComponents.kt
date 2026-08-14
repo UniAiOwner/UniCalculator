@@ -71,7 +71,7 @@ fun NeumorphicGstPill(
     modifier: Modifier = Modifier,
     accentColor: Color? = null,
     fontSize: Int = 13,
-    horizontalPadding: Dp = 6.dp
+    horizontalPadding: Dp = 4.dp
 ) {
     val colors = LocalNeumorphicColors.current
     val activeColor = accentColor ?: colors.accentEmerald
@@ -79,7 +79,8 @@ fun NeumorphicGstPill(
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
+        targetValue = if (isPressed) 0.92f else if (isSelected) 0.96f else 1f,
+        animationSpec = spring(dampingRatio = 0.75f, stiffness = 500f),
         label = "pillScale"
     )
 
@@ -93,10 +94,10 @@ fun NeumorphicGstPill(
             }
             .neumorphic(
                 shape = currentShape,
-                cornerRadius = 24.dp,
-                elevation = if (isSelected || isPressed) 3.dp else 5.dp,
-                lightShadowColor = if (isSelected) activeColor.copy(alpha = 0.4f) else colors.lightHighlight,
-                darkShadowColor = if (isSelected) activeColor.copy(alpha = 0.3f) else colors.darkShadow,
+                cornerRadius = 14.dp,
+                elevation = if (isSelected) 4.dp else 5.dp,
+                lightShadowColor = colors.lightHighlight,
+                darkShadowColor = colors.darkShadow,
                 backgroundColor = colors.background
             )
             .clickable(
@@ -104,16 +105,17 @@ fun NeumorphicGstPill(
                 indication = null,
                 onClick = onClick
             )
-            .padding(horizontal = horizontalPadding, vertical = 8.dp),
+            .padding(horizontal = horizontalPadding, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
+        val displayText = if (isSelected) "• $text" else text
         Text(
-            text = text,
+            text = displayText,
             maxLines = 1,
             style = TextStyle(
                 fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold,
-                fontSize = fontSize.sp,
+                fontWeight = if (isSelected) FontWeight.Black else FontWeight.Bold,
+                fontSize = if (isSelected) (fontSize - 0.5).sp else fontSize.sp,
                 color = if (isSelected) activeColor else colors.textPrimary
             )
         )

@@ -1,38 +1,29 @@
-# Walkthrough: Dual Neumorphic Slidable Switches & True 3D Sunken Depth
+# Walkthrough: Expanded Master Receipt Display, Multi-Line In-Words & Deep 3D Slab Pills
 
 ## 🎯 Overview
-Completed the redesign of **GST Pro**:
-1. Relocated the **Master Receipt Card (Display)** directly to the top of the screen.
-2. Engineered a **Dual Neumorphic Slidable Switch bar** (`[ +GST ⇄ −GST ]` & `[ CGST+SGST ⇄ IGST ]`) positioned immediately below the display with spring physics and tactile haptics.
-3. Upgraded the Neumorphic engine (`NeumorphicModifier.kt`) with **True 3D Sunken Depth ("Gadda / Concave Well")**, including inner charcoal cast shadows, ambient cavity dimming, and crisp inner rim highlights.
+Completed the display expansion and 3D depth upgrade for **GST Pro**:
+1. **Enlarged Master Receipt Display**: Expanded padding (`16.dp horizontal, 12.dp vertical`), increased line spacing (`6.dp`), and upgraded typography.
+2. **Recessed Multi-Line In-Words Micro-Plate**: Embedded transcription in a concave trench with `maxLines = 2` to display Indian numbering phrases (e.g. *Five Crore Forty One Lakh...*) without truncation.
+3. **Deep 3D GST Slab Pills (`NeumorphicGstPill`)**: Engineered sunken concave wells (`NeumorphicShape.CONCAVE`, `elevation = 4.dp`) with an active glowing bullet indicator (`• +18%`) and pure 3D shadow contrast.
+4. **Dynamic Font Scaling**: Added automatic typography scaling in `ReceiptItem` to prevent number clipping on large 9-digit multi-crore invoice sums.
 
 ---
 
 ## 🛠️ Changes Implemented
 
-### 1. Master Receipt at Top & Clean Hierarchy (`GSTProScreen.kt`)
-- **Top 1**: Master Receipt Card (Display & Live Statutory Split).
-- **Row 2**: Dual `NeumorphicSlideSwitch` Bar:
-  - Left Slider: `+GST` (Emerald Green) ⇄ `−GST` (Saffron Amber)
-  - Right Slider: `CGST+SGST` ⇄ `IGST` (Electric Sapphire Blue)
-- **Row 3**: GST Slabs (`3%`, `5%`, `12%`, `18%`, `28%`).
-- **Row 4**: Action Bar (`Share`, `Save`, `Copy`, `C`).
-- **Row 5**: 4-Row Numpad with `÷` and `×`.
+### 1. Master Receipt Display & In-Words Container (`GSTProScreen.kt`)
+- Expanded card elevation to `5.dp` and corner radius to `18.dp`.
+- Created an inset plate for `state.inWordsText` with `maxLines = 2`, `lineHeight = 15.sp`, and `fontSize = 11.sp`.
+- Implemented `dynamicFontSize` for high-figure multi-crore calculations up to trillions.
 
-### 2. Dual Slidable Switch (`NeumorphicComponents.kt`)
-- Recessed `NeumorphicShape.CONCAVE` base trench.
-- Floating 3D `NeumorphicShape.CONVEX` sliding thumb with spring interpolation (`dampingRatio = 0.8f`).
-- Single tap or slide toggling with haptic feedback.
-
-### 3. True 3D Sunken Depth Engine (`NeumorphicModifier.kt`)
-- Real dual-offset inner dark shadows (`#7E7A70`) and light inner rims (`#FFFFFF`).
-- `4%` ambient surface cavity darkening inside concave wells to simulate true physical depth.
+### 2. High-Depth 3D Slab Pills (`NeumorphicComponents.kt`)
+- Slabs now toggle between **Raised Convex Cushion** (`5.dp` elevation) when unselected and **Deep Sunken Well** (`4.dp` elevation) with `• +18%` active indicator when selected.
+- Smooth spring scale animation on press (`0.92f`).
 
 ---
 
 ## 📱 Hardware Verification & Live Snapshots
 
-| State | Mode & Sliders | Live Hardware Snapshot |
+| State | Feature | Live Hardware Snapshot |
 |---|---|---|
-| **Forward GST (+GST Intra-State)** | Display at Top with `[+GST]` & `[CGST+SGST]` selected | ![Forward GST](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_slidable_switch_live.png) |
-| **Reverse GST (−GST Inter-State)** | Sliders toggled to `[−GST]` & `[IGST]` with live Net Base `₹ 4,322.03` | ![Reverse GST](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_sliders_toggled_live.png) |
+| **Multi-Crore Calculation (₹ 4,58,92,000.00)** | Expanded Display, Multi-Line In-Words & `• +18%` Deep Slab | ![Large Calculation](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_perfect_large_amount_live.png) |
