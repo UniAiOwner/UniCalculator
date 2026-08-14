@@ -4,12 +4,14 @@ planning/
 
 # Android & Gradle
 *.iml
-.gradle
+.gradle/
+**/.gradle/
 /local.properties
-/.idea
+/.idea/
+**/.idea/
 .DS_Store
-/build
-*/build
+build/
+**/build/
 *.apk
 *.aab
 
