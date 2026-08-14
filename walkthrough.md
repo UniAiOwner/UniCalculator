@@ -1,66 +1,50 @@
-# UniCalculator — Implementation & Verification Walkthrough
+# Walkthrough: Standard Calculator vs GST Pro Screen Separation & Clean Zero Initialization
 
-## 🌟 Executive Summary
-The native Android codebase for **UniCalculator** has been architected and built matching the approved Neumorphic UI mockups. The project adheres to modern Clean Architecture across 10 subprojects, utilizing Jetpack Compose, Kotlin 2.0, and pure custom Canvas-rendered Neumorphic lighting mechanics.
-
----
-
-## 🏛️ Multi-Module Architecture Overview
-
-```
-UniCalculator/
-├── app/                      # Application Shell, Splash Screen, & Bottom Navigation Host
-├── core/
-│   ├── designsystem/         # Custom Neumorphic Engine (Convex, Concave, Flat, Haptic & Colors)
-│   ├── math-engine/          # High-Precision Indian GST Engine, Shunting-Yard Evaluator, Margin/EMI Solvers
-│   ├── model/                # Immutable Domain Models (TaxBreakdown, DenominationItem, CashTallyState)
-│   ├── common/               # Indian Vedic Formatter & Bilingual (EN/HI) Currency Word Converters
-│   └── database/             # Offline-First Calculation & Audit Tape Persistence
-└── feature/
-    ├── calculator/           # Standard Calculator + Direct GST Slab Pills (+5%, +12%, +18%, +28%)
-    ├── cash-tally/           # High-Speed Denomination Cash Counter (₹2000 down to ₹1 + Coins + WhatsApp Slip)
-    ├── business-tools/       # Dual Margin/Markup Solver & Loan EMI Calculator
-    └── history-tape/         # Real-time Mathematical Audit Tape & Slip Exporter
-```
+## 🎯 Overview
+We have completely separated the **Standard Calculator** and **GST Pro Workspace** into two distinct, specialized screens, eliminated the hardcoded `125000` base amount prefill, and verified both screens on the physical Android hardware device (`Realme RMX3998`).
 
 ---
 
-## 🎨 Neumorphic Design System Highlights (`:core:designsystem`)
+## 🛠️ Changes Implemented
 
-1. **Dual-Directional 3D Light Casting**:
-   - `NeumorphicModifier.kt`: Custom Modifier using Compose Canvas, custom path operations, and `BlurMaskFilter` to render tactile convex surface elevations and recessed concave LCD wells without bitmap overhead.
-2. **Interactive Physics-Driven Buttons**:
-   - `NeumorphicButton.kt`: Dynamic surface morphing (convex $\to$ concave) with spring animation (`dampingRatio = 0.75f`) and mechanical vibration click feedback via `NeumorphicHapticEngine`.
-3. **Recessed LCD Well**:
-   - `NeumorphicLCDWell.kt`: Inset deep display well with auto-scaling dynamic typography (24sp to 42sp) and real-time Indian legal word sub-badges.
+### 1. Standard Calculator Screen (`StandardCalculatorScreen.kt` & `StandardCalculatorViewModel.kt`)
+- **Clean Zero State**: Starts fresh at `₹ 0.00` ("Zero Rupees Only") with no dummy 125000 base prefill.
+- **Pure General Utility**: Removed all GST tax breakdown plates and GST slab buttons from the Standard screen.
+- **Complete Ergonomic Keypad**:
+  - Memory operations: `MC`, `MR`, `M-`, `M+`
+  - Functional keys: `C`, `⌫`, `%`, `÷` (shifted above numbers `7, 8, 9`)
+  - Arithmetic keys: `×`, `−`, `+`, `=` with `+` stacked right above `=`
+  - Quick input: `00`, `0`, `.`
+
+### 2. Dedicated GST Pro Workspace (`GSTProScreen.kt` & `GSTProViewModel.kt`)
+- **Forward & Reverse Tax Engine**:
+  - `+GST (Add Tax / Exclusive)`: Adds tax onto base price.
+  - `−GST (Extract Base / Inclusive)`: Extracts net base amount from MRP inclusive total.
+- **Jurisdiction Breakdown**:
+  - `Intra-State`: Splits into CGST (50%) + SGST (50%).
+  - `Inter-State`: Applies 100% IGST.
+- **Instant Tax Matrix**: `3% (Gold/Jewellery)`, `5%`, `12%`, `18%`, `28%`.
+- **Live Dynamic Invoice Summary Plate**:
+  - Net Base Price
+  - CGST / SGST / IGST breakdown
+  - Total Tax Amount & Total Invoice Amount
+  - Real-time Indian currency words ("In Words: Five Rupees Only")
+- **Export Utility**: 1-Tap WhatsApp share formatted invoice slip & 1-Tap Copy to clipboard.
+
+### 3. Application Routing (`UniCalculatorApp.kt`)
+- `Tab 0` (Standard) ➔ `StandardCalculatorScreen()`
+- `Tab 1` (GST Pro) ➔ `GSTProScreen()`
+- `Tab 2` (Cash Tally) ➔ `CashTallyScreen()`
+- `Tab 3` (Tools) ➔ Business Tools
+- `Tab 4` (History) ➔ History Tape
 
 ---
 
-## 🧮 Indian GST & Financial Engines (`:core:math-engine`)
+## 📱 Hardware Verification & Screenshots
 
-1. **Precision & Banker's Rounding**:
-   - Built on `BigDecimal` with `HALF_EVEN` rounding to eliminate fractional paisa leakage.
-   - Forward GST (+5%, +12%, +18%, +28%) with accurate splitting into CGST, SGST, or IGST.
-   - Reverse GST (Tax Included) computing accurate Base Price from MRP.
-2. **Denomination Matrix (`:feature:cash-tally`)**:
-   - Supports ₹2000, ₹500, ₹200, ₹100, ₹50, ₹20, ₹10, ₹5, ₹2, ₹1 banknotes and Coins.
-   - Instant WhatsApp closing summary slip generation.
-
----
-
-## 🧪 Verification & Build Status
-
-- **Unit Test Suite**:
-  - Command: `./gradlew :core:math-engine:test`
-  - Result: **100% Passed** (Verified 18% Forward GST, 18% Reverse GST on ₹1500, and Shunting-Yard expression parsing).
-- **Assemble Debug APK**:
-  - Command: `./gradlew :app:assembleDebug`
-  - Result: **BUILD SUCCESSFUL** (Generated 17MB debug binary at `app/build/outputs/apk/debug/app-debug.apk`).
-- **Physical Device Installation & Verification**:
-  - Target Device: `Realme RMX3998` (USB Debugging)
-  - Install Status: **Streamed Install Success** (`adb install -r app-debug.apk`)
-  - Execution: App launched successfully on device (`com.unicalculator/.MainActivity`).
-  - Keypad Reorganization: Verified 4-column matrix with enlarged button targets (~25% bigger), function keys (`C`, `⌫`, `%`, `÷`) positioned directly above `7, 8, 9`, and `+` operator key situated directly above `=`.
-  - Cash Tally Upgrades: Verified Neumorphic `C / CE (Clear All)` button in header and direct editable numeric count fields (`KeyboardType.Number`) alongside `+ / −` steppers for rapid counting.
-  - Edge-to-Edge System Navigation Inset Fix: Implemented dynamic `Modifier.navigationBarsPadding()` within a seamless background `Surface` container in `UniCalculatorApp.kt`. Verified on hardware that all 5 bottom navigation tabs (*Standard*, *GST Pro*, *Cash Tally*, *Tools*, *History*) float safely above the 3 Android system buttons (`≡ ☐ ◁`) with zero text cut-off and 100% touch accessibility.
-
+| Screen | Description | Live Hardware Snapshot |
+|---|---|---|
+| **Standard Calculator** | Clean `₹ 0.00` state with memory row & large 4-column numpad | ![Standard Clean](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/clean_standard_screen_live.png) |
+| **GST Pro (+GST Mode)** | Interactive forward GST with real-time tax calculation and in-words | ![GST Pro Forward](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/gst_pro_calculated_live.png) |
+| **GST Pro (−GST Mode)** | Reverse GST base extraction with dynamic CGST/SGST split | ![GST Pro Reverse](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/gst_pro_reverse_live.png) |
+| **GST Pro (Clean State)** | 1-Tap Clear resetting workstation to `₹ 0.00` | ![GST Pro Clear](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/gst_pro_cleared_live.png) |

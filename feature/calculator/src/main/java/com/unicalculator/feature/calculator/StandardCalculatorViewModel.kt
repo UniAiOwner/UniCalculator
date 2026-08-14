@@ -3,23 +3,18 @@ package com.unicalculator.feature.calculator
 import androidx.lifecycle.ViewModel
 import com.unicalculator.core.common.format.IndianVedicFormatter
 import com.unicalculator.core.common.words.IndianCurrencyWordConverter
-import com.unicalculator.core.math.IndianGSTCalculationEngine
 import com.unicalculator.core.math.ShuntingYardEvaluator
-import com.unicalculator.core.model.TaxBreakdown
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 data class CalculatorUiState(
     val expression: String = "",
     val displayResult: String = "₹ 0.00",
     val wordsText: String = "Zero Rupees Only",
-    val taxBreakdown: TaxBreakdown? = null,
-    val selectedGstSlab: Int? = null,
-    val isInterState: Boolean = false,
-    val isReverseGst: Boolean = false,
     val memoryValue: BigDecimal = BigDecimal.ZERO
 )
 
@@ -27,12 +22,7 @@ class StandardCalculatorViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(CalculatorUiState())
     val uiState: StateFlow<CalculatorUiState> = _uiState.asStateFlow()
 
-    private var currentRawInput = StringBuilder("125000")
-
-    init {
-        // Initialize with default standard mockup value
-        applyGST(18)
-    }
+    private var currentRawInput = StringBuilder()
 
     fun onDigit(digit: String) {
         if (currentRawInput.toString() == "0" && digit != ".") {
@@ -55,9 +45,7 @@ class StandardCalculatorViewModel : ViewModel() {
             it.copy(
                 expression = "",
                 displayResult = "₹ 0.00",
-                wordsText = "Zero Rupees Only",
-                taxBreakdown = null,
-                selectedGstSlab = null
+                wordsText = "Zero Rupees Only"
             )
         }
     }
@@ -82,42 +70,59 @@ class StandardCalculatorViewModel : ViewModel() {
         } catch (_: Exception) {}
     }
 
-    fun applyGST(rate: Int) {
+    fun onPercentage() {
         try {
-            val rawNum = currentRawInput.toString().replace(" ", "").split("+", "-", "*", "/", "×", "÷").lastOrNull()
-            val amount = rawNum?.toBigDecimalOrNull() ?: BigDecimal("125000")
-            val gstRate = BigDecimal(rate)
-
-            val breakdown = if (_uiState.value.isReverseGst) {
-                IndianGSTCalculationEngine.calculateReverseGST(amount, gstRate, isInterState = _uiState.value.isInterState)
-            } else {
-                IndianGSTCalculationEngine.calculateForwardGST(amount, gstRate, isInterState = _uiState.value.isInterState)
-            }
-
+            val eval = ShuntingYardEvaluator.evaluate(currentRawInput.toString())
+            val percentVal = eval.divide(BigDecimal("100"), 4, RoundingMode.HALF_EVEN)
+            currentRawInput = StringBuilder(percentVal.stripTrailingZeros().toPlainString())
             _uiState.update {
                 it.copy(
-                    expression = "${IndianVedicFormatter.formatCurrency(amount, false)} + $rate% GST (${if (it.isInterState) "Inter-State" else "Intra-State"})",
-                    displayResult = IndianVedicFormatter.formatCurrency(breakdown.grossFinalAmount),
-                    wordsText = IndianCurrencyWordConverter.convertToWords(breakdown.grossFinalAmount),
-                    taxBreakdown = breakdown,
-                    selectedGstSlab = rate
+                    expression = currentRawInput.toString(),
+                    displayResult = IndianVedicFormatter.formatCurrency(percentVal),
+                    wordsText = IndianCurrencyWordConverter.convertToWords(percentVal)
                 )
             }
         } catch (_: Exception) {}
     }
 
-    fun toggleJurisdiction() {
-        _uiState.update { it.copy(isInterState = !it.isInterState) }
-        _uiState.value.selectedGstSlab?.let { applyGST(it) }
+    fun onMemoryClear() {
+        _uiState.update { it.copy(memoryValue = BigDecimal.ZERO) }
     }
 
-    fun toggleReverseGst() {
-        _uiState.update { it.copy(isReverseGst = !it.isReverseGst) }
-        _uiState.value.selectedGstSlab?.let { applyGST(it) }
+    fun onMemoryRecall() {
+        val mem = _uiState.value.memoryValue
+        if (mem != BigDecimal.ZERO) {
+            currentRawInput.append(mem.toPlainString())
+            recalculateMath()
+        }
+    }
+
+    fun onMemoryAdd() {
+        try {
+            val eval = ShuntingYardEvaluator.evaluate(currentRawInput.toString())
+            _uiState.update { it.copy(memoryValue = it.memoryValue.add(eval)) }
+        } catch (_: Exception) {}
+    }
+
+    fun onMemorySubtract() {
+        try {
+            val eval = ShuntingYardEvaluator.evaluate(currentRawInput.toString())
+            _uiState.update { it.copy(memoryValue = it.memoryValue.subtract(eval)) }
+        } catch (_: Exception) {}
     }
 
     private fun recalculateMath() {
         try {
+            if (currentRawInput.isEmpty()) {
+                _uiState.update {
+                    it.copy(
+                        expression = "",
+                        displayResult = "₹ 0.00",
+                        wordsText = "Zero Rupees Only"
+                    )
+                }
+                return
+            }
             val eval = ShuntingYardEvaluator.evaluate(currentRawInput.toString())
             _uiState.update {
                 it.copy(
@@ -126,6 +131,9 @@ class StandardCalculatorViewModel : ViewModel() {
                     wordsText = IndianCurrencyWordConverter.convertToWords(eval)
                 )
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+            _uiState.update { it.copy(expression = currentRawInput.toString()) }
+        }
     }
 }
+

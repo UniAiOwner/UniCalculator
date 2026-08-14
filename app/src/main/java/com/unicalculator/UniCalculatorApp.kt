@@ -38,6 +38,7 @@ import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
+import com.unicalculator.feature.calculator.GSTProScreen
 import com.unicalculator.feature.calculator.StandardCalculatorScreen
 import com.unicalculator.feature.cashtally.CashTallyScreen
 import com.unicalculator.feature.history.HistoryTapeScreen
@@ -143,7 +144,7 @@ fun UniCalculatorApp() {
         ) {
             when (selectedTab) {
                 0 -> StandardCalculatorScreen()
-                1 -> StandardCalculatorScreen() // GST Pro is unified with quick forward/reverse slabs
+                1 -> GSTProScreen()
                 2 -> CashTallyScreen()
                 3 -> BusinessToolsScreen()
                 4 -> HistoryTapeScreen()

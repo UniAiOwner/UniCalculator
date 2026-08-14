@@ -87,3 +87,27 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-14 — Separation of Standard Calculator and GST Pro Workstation & Zero-State Initialization
+
+### 🚀 Major Achievements:
+- Clean Standard Calculator Architecture: Decoupled GST logic from `StandardCalculatorScreen.kt` and `StandardCalculatorViewModel.kt`, removing the static GST plate and slab buttons. The calculator now opens in a clean `₹ 0.00` state with full standard memory operations (`MC`, `MR`, `M-`, `M+`) and percentage calculations.
+- Dedicated GST Pro Workspace (`GSTProScreen.kt` & `GSTProViewModel.kt`): Engineered a comprehensive Indian GST workstation supporting forward tax addition (`+GST`), reverse tax extraction (`−GST`), jurisdiction switching (`Intra-State` CGST+SGST vs `Inter-State` IGST), quick slab selection (`3%, 5%, 12%, 18%, 28%`), live dynamic tax invoice summary plate, real-time Indian words transcription, and 1-tap WhatsApp invoice sharing.
+- App Navigation Routing (`UniCalculatorApp.kt`): Configured `Tab 0` to open `StandardCalculatorScreen()` and `Tab 1` to open `GSTProScreen()`.
+- Typography & Responsive Layout: Optimized slab pill padding and font sizes (`fontSize = 13.sp`, `horizontalPadding = 6.dp`) to ensure single-line text formatting across all screen sizes.
+
+### 🧪 Verification:
+- Build Verification: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment: Installed APK onto physical device `Realme RMX3998` via ADB.
+- Interactive Testing:
+  - Verified Standard tab opens at `₹ 0.00` with clean general keypad.
+  - Verified GST Pro tab opens at `₹ 0.00`, tested real-time forward and reverse GST tax extraction, and verified 1-tap clear.
+
+### 📌 Current State:
+- Version: v1.0.0-rc4 (Standard vs GST Pro fully separated, 100% hardware tested).
+
+### 📝 Next Steps:
+- Commit and push updates to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*

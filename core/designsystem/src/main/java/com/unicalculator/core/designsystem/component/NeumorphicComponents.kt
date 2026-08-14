@@ -62,20 +62,21 @@ fun NeumorphicGstPill(
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    accentColor: Color? = null
+    accentColor: Color? = null,
+    fontSize: Int = 13,
+    horizontalPadding: Dp = 6.dp
 ) {
     val colors = LocalNeumorphicColors.current
+    val activeColor = accentColor ?: colors.accentEmerald
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.94f else 1.0f,
-        animationSpec = spring(dampingRatio = 0.75f, stiffness = 500f),
-        label = "pill_scale"
+        targetValue = if (isPressed) 0.95f else 1f,
+        label = "pillScale"
     )
 
-    val activeColor = accentColor ?: colors.accentEmerald
-    val currentShape = if (isSelected || isPressed) NeumorphicShape.CONCAVE else NeumorphicShape.CONVEX
+    val currentShape = if (isSelected) NeumorphicShape.CONCAVE else NeumorphicShape.CONVEX
 
     Box(
         modifier = modifier
@@ -96,15 +97,16 @@ fun NeumorphicGstPill(
                 indication = null,
                 onClick = onClick
             )
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(horizontal = horizontalPadding, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
+            maxLines = 1,
             style = TextStyle(
                 fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                fontSize = fontSize.sp,
                 color = if (isSelected) activeColor else colors.textPrimary
             )
         )
