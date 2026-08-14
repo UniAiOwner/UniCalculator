@@ -63,9 +63,54 @@ class GSTProViewModel : ViewModel() {
         }
     }
 
+    fun onOperator(op: String) {
+        _uiState.update { it.copy(isResultEnlarged = false) }
+        if (rawAmount.isEmpty()) return
+        val lastChar = rawAmount.last()
+        if (lastChar == '×' || lastChar == '÷' || lastChar == '+' || lastChar == '-') {
+            rawAmount.setCharAt(rawAmount.length - 1, op[0])
+        } else {
+            rawAmount.append(op)
+        }
+        recalculateGST()
+    }
+
     fun onEquals() {
         if (_uiState.value.taxBreakdown != null) {
+            val evaluated = evaluateExpression(rawAmount.toString())
+            rawAmount.clear()
+            rawAmount.append(evaluated.stripTrailingZeros().toPlainString())
+            recalculateGST()
             _uiState.update { it.copy(isResultEnlarged = true) }
+        }
+    }
+
+    private fun evaluateExpression(expr: String): BigDecimal {
+        if (expr.isEmpty()) return BigDecimal.ZERO
+        val sanitized = expr.replace("×", "*").replace("÷", "/")
+        val trimmed = sanitized.trimEnd('*', '/', '+', '-')
+        if (trimmed.isEmpty()) return BigDecimal.ZERO
+
+        return try {
+            val tokens = Regex("(?<=[*/+-])|(?=[*/+-])").split(trimmed).map { it.trim() }.filter { it.isNotEmpty() }
+            if (tokens.isEmpty()) return BigDecimal.ZERO
+            var result = tokens[0].toBigDecimalOrNull() ?: BigDecimal.ZERO
+            var i = 1
+            while (i < tokens.size - 1) {
+                val op = tokens[i]
+                val nextVal = tokens[i + 1].toBigDecimalOrNull() ?: BigDecimal.ZERO
+                result = when (op) {
+                    "*" -> result.multiply(nextVal)
+                    "/" -> if (nextVal.compareTo(BigDecimal.ZERO) != 0) result.divide(nextVal, 4, java.math.RoundingMode.HALF_UP) else result
+                    "+" -> result.add(nextVal)
+                    "-" -> result.subtract(nextVal)
+                    else -> result
+                }
+                i += 2
+            }
+            result
+        } catch (_: Exception) {
+            trimmed.toBigDecimalOrNull() ?: BigDecimal.ZERO
         }
     }
 
@@ -105,18 +150,18 @@ class GSTProViewModel : ViewModel() {
         }
 
         try {
-            val amount = amountStr.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            val evaluatedAmount = evaluateExpression(amountStr)
             val rate = BigDecimal(_uiState.value.selectedGstRate)
 
             val breakdown = if (_uiState.value.isReverseGst) {
                 IndianGSTCalculationEngine.calculateReverseGST(
-                    grossAmount = amount,
+                    grossAmount = evaluatedAmount,
                     gstRate = rate,
                     isInterState = _uiState.value.isInterState
                 )
             } else {
                 IndianGSTCalculationEngine.calculateForwardGST(
-                    baseAmount = amount,
+                    baseAmount = evaluatedAmount,
                     gstRate = rate,
                     isInterState = _uiState.value.isInterState
                 )
@@ -128,10 +173,16 @@ class GSTProViewModel : ViewModel() {
                 breakdown.grossFinalAmount
             }
 
+            val headerDisplay = if (amountStr.contains("×") || amountStr.contains("÷")) {
+                "$amountStr = ${IndianVedicFormatter.formatCurrency(evaluatedAmount)}"
+            } else {
+                IndianVedicFormatter.formatCurrency(evaluatedAmount, true)
+            }
+
             _uiState.update {
                 it.copy(
                     amountInput = amountStr,
-                    displayAmount = IndianVedicFormatter.formatCurrency(amount, true),
+                    displayAmount = headerDisplay,
                     taxBreakdown = breakdown,
                     inWordsText = IndianCurrencyWordConverter.convertToWords(targetForWords)
                 )

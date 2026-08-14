@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -255,9 +256,9 @@ fun GSTProScreen(
                         text = state.displayAmount,
                         style = androidx.compose.ui.text.TextStyle(
                             fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 20.sp,
-                            color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = colors.textSecondary
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -348,7 +349,7 @@ fun GSTProScreen(
                                 isRightAlign = true,
                                 isHighlight = true,
                                 isEnlarged = state.isResultEnlarged,
-                                highlightColor = RupeeEmeraldGreen
+                                highlightColor = ElectricSapphireBlue
                             )
                         }
                     }
@@ -469,7 +470,7 @@ fun GSTProScreen(
                 NeumorphicButton(text = "⌫", onClick = { hapticEngine.playOperatorTick(); viewModel.onDelete() }, modifier = Modifier.weight(1f).height(54.dp), textColor = OperatorOrange, fontSize = 18)
             }
 
-            // Row 2: 4, 5, 6, ±
+            // Row 2: 4, 5, 6, ÷
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -477,10 +478,10 @@ fun GSTProScreen(
                 NeumorphicButton(text = "4", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("4") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
                 NeumorphicButton(text = "5", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("5") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
                 NeumorphicButton(text = "6", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("6") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "±", onClick = { hapticEngine.playOperatorTick() }, modifier = Modifier.weight(1f).height(54.dp), textColor = MemoryGrey, fontSize = 18)
+                NeumorphicButton(text = "÷", onClick = { hapticEngine.playOperatorTick(); viewModel.onOperator("÷") }, modifier = Modifier.weight(1f).height(54.dp), textColor = OperatorOrange, fontSize = 22)
             }
 
-            // Row 3: 1, 2, 3, %
+            // Row 3: 1, 2, 3, ×
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -488,7 +489,7 @@ fun GSTProScreen(
                 NeumorphicButton(text = "1", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("1") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
                 NeumorphicButton(text = "2", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("2") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
                 NeumorphicButton(text = "3", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("3") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "%", onClick = { hapticEngine.playOperatorTick() }, modifier = Modifier.weight(1f).height(54.dp), textColor = OperatorOrange, fontSize = 18)
+                NeumorphicButton(text = "×", onClick = { hapticEngine.playOperatorTick(); viewModel.onOperator("×") }, modifier = Modifier.weight(1f).height(54.dp), textColor = OperatorOrange, fontSize = 22)
             }
 
             // Row 4: 00, 0, ., =
@@ -506,13 +507,15 @@ fun GSTProScreen(
                         viewModel.onEquals()
                     },
                     modifier = Modifier.weight(1f).height(54.dp),
-                    textColor = RupeeEmeraldGreen,
-                    fontSize = 20
+                    textColor = ElectricSapphireBlue,
+                    fontSize = 22
                 )
             }
         }
     }
 }
+
+private val ElectricSapphireBlue = Color(0xFF2563EB)
 
 @Composable
 private fun ReceiptItem(
@@ -542,8 +545,8 @@ private fun ReceiptItem(
             text = value,
             style = androidx.compose.ui.text.TextStyle(
                 fontFamily = FontFamily.Monospace,
-                fontSize = if (isHighlight && isEnlarged) 15.5.sp else if (isHighlight) 13.sp else 12.sp,
-                fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.SemiBold,
+                fontSize = if (isHighlight && isEnlarged) 20.sp else if (isHighlight) 15.sp else 12.sp,
+                fontWeight = if (isHighlight && isEnlarged) FontWeight.Black else if (isHighlight) FontWeight.Bold else FontWeight.SemiBold,
                 color = if (isHighlight) highlightColor else colors.textPrimary
             ),
             maxLines = 1
