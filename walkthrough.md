@@ -1,24 +1,17 @@
-# Walkthrough: Expanded Master Receipt Display, Multi-Line In-Words & Deep 3D Slab Pills
+# Walkthrough: Option 2 — Perimeter Neon Ring Pressed State
 
 ## 🎯 Overview
-Completed the display expansion and 3D depth upgrade for **GST Pro**:
-1. **Enlarged Master Receipt Display**: Expanded padding (`16.dp horizontal, 12.dp vertical`), increased line spacing (`6.dp`), and upgraded typography.
-2. **Recessed Multi-Line In-Words Micro-Plate**: Embedded transcription in a concave trench with `maxLines = 2` to display Indian numbering phrases (e.g. *Five Crore Forty One Lakh...*) without truncation.
-3. **Deep 3D GST Slab Pills (`NeumorphicGstPill`)**: Engineered sunken concave wells (`NeumorphicShape.CONCAVE`, `elevation = 4.dp`) with an active glowing bullet indicator (`• +18%`) and pure 3D shadow contrast.
-4. **Dynamic Font Scaling**: Added automatic typography scaling in `ReceiptItem` to prevent number clipping on large 9-digit multi-crore invoice sums.
-
----
-
-## 🛠️ Changes Implemented
-
-### 1. Master Receipt Display & In-Words Container (`GSTProScreen.kt`)
-- Expanded card elevation to `5.dp` and corner radius to `18.dp`.
-- Created an inset plate for `state.inWordsText` with `maxLines = 2`, `lineHeight = 15.sp`, and `fontSize = 11.sp`.
-- Implemented `dynamicFontSize` for high-figure multi-crore calculations up to trillions.
-
-### 2. High-Depth 3D Slab Pills (`NeumorphicComponents.kt`)
-- Slabs now toggle between **Raised Convex Cushion** (`5.dp` elevation) when unselected and **Deep Sunken Well** (`4.dp` elevation) with `• +18%` active indicator when selected.
-- Smooth spring scale animation on press (`0.92f`).
+Successfully implemented **Option 2: Perimeter Neon Ring (Crisp Glowing Inset Rim)**:
+1. **Dual-Pass Neon Shader (`NeumorphicModifier.kt`)**:
+   - `Pass 1`: Outer soft ambient halo glow (`strokeWidth = 3.5dp`, `alpha = 0.35f`, gaussian blur mask filter).
+   - `Pass 2`: Core crisp laser rim (`strokeWidth = 1.6dp`, `alpha = 0.95f`).
+2. **Deep Concave Inset Well**: Combines top-left charcoal inner drop shadow, ambient cavity darkening, and tactile spring scale depression (`0.92f` - `0.93f`).
+3. **Adaptive Color Mapping**:
+   - `+3%, +5%, +12%, +18%`: Rupee Emerald Green (`#10B981`)
+   - `+28% Luxury & −GST`: Gst Saffron Amber (`#F59E0B`)
+   - `Equals & IGST`: Electric Sapphire Blue (`#2563EB`)
+   - `Operators (×, ÷)`: Operator Orange (`#F97316`)
+   - `Clear C`: Delete Red (`#EF4444`)
 
 ---
 
@@ -26,4 +19,5 @@ Completed the display expansion and 3D depth upgrade for **GST Pro**:
 
 | State | Feature | Live Hardware Snapshot |
 |---|---|---|
-| **Multi-Crore Calculation (₹ 4,58,92,000.00)** | Expanded Display, Multi-Line In-Words & `• +18%` Deep Slab | ![Large Calculation](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_perfect_large_amount_live.png) |
+| **• +18% Selected** | Emerald Green Perimeter Neon Ring + Deep Concave Well | ![Emerald Neon Ring](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_option2_neon_ring_live.png) |
+| **• +28% Selected** | Saffron Amber Perimeter Neon Ring + Deep Concave Well | ![Amber Neon Ring](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_option2_28_neon_live.png) |

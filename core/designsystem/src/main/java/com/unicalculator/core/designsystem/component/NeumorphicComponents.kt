@@ -98,7 +98,8 @@ fun NeumorphicGstPill(
                 elevation = if (isSelected) 4.dp else 5.dp,
                 lightShadowColor = colors.lightHighlight,
                 darkShadowColor = colors.darkShadow,
-                backgroundColor = colors.background
+                backgroundColor = colors.background,
+                neonGlowColor = if (isSelected || isPressed) activeColor else null
             )
             .clickable(
                 interactionSource = interactionSource,

@@ -28,7 +28,8 @@ fun Modifier.neumorphic(
     elevation: Dp = 6.dp,
     lightShadowColor: Color = Color.White.copy(alpha = 0.8f),
     darkShadowColor: Color = Color(0xFFC7C2B6).copy(alpha = 0.9f),
-    backgroundColor: Color? = null
+    backgroundColor: Color? = null,
+    neonGlowColor: Color? = null
 ): Modifier = this.drawBehind {
     val cornerRadiusPx = cornerRadius.toPx()
     val elevationPx = elevation.toPx()
@@ -141,4 +142,43 @@ fun Modifier.neumorphic(
             }
         }
     }
+
+    // Option 2: Glowing Perimeter Neon Ring on Active/Pressed State
+    if (neonGlowColor != null) {
+        drawIntoCanvas { canvas ->
+            // Pass 1: Soft Outer Halo Glow
+            val glowPaint = Paint().apply {
+                color = neonGlowColor.copy(alpha = 0.35f)
+                style = PaintingStyle.Stroke
+                strokeWidth = 3.5.dp.toPx()
+                asFrameworkPaint().maskFilter = BlurMaskFilter(2.5.dp.toPx(), BlurMaskFilter.Blur.NORMAL)
+            }
+            canvas.drawRoundRect(
+                left = 1f,
+                top = 1f,
+                right = size.width - 1f,
+                bottom = size.height - 1f,
+                radiusX = cornerRadiusPx,
+                radiusY = cornerRadiusPx,
+                paint = glowPaint
+            )
+
+            // Pass 2: Crisp Core Laser Rim
+            val corePaint = Paint().apply {
+                color = neonGlowColor.copy(alpha = 0.95f)
+                style = PaintingStyle.Stroke
+                strokeWidth = 1.6.dp.toPx()
+            }
+            canvas.drawRoundRect(
+                left = 0.8f,
+                top = 0.8f,
+                right = size.width - 0.8f,
+                bottom = size.height - 0.8f,
+                radiusX = cornerRadiusPx,
+                radiusY = cornerRadiusPx,
+                paint = corePaint
+            )
+        }
+    }
 }
+

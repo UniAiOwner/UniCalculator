@@ -245,3 +245,26 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-14 — Option 2 Perimeter Neon Ring Button & Slab Pressed State
+
+### 🚀 Major Achievements:
+- Dual-Pass Neon Glow Shader (`NeumorphicModifier.kt`): Added hardware-accelerated dual-pass neon glow border rendering:
+  - Pass 1: Soft outer ambient halo glow (`3.5dp stroke`, `alpha = 0.35f`).
+  - Pass 2: Crisp core laser rim (`1.6dp stroke`, `alpha = 0.95f`).
+- Tactile Pressed State Upgrade (`NeumorphicButton.kt` & `NeumorphicComponents.kt`): Enabled the Option 2 Perimeter Neon Ring shader across all buttons and slab pills on press and active selection, combined with deep concave cavity sinking.
+- Contextual Theme Color Mapping: Emerald Green for standard slabs/digits, Saffron Amber for 28% luxury slab & −GST, Sapphire Blue for Equals, and Operator Orange for arithmetic keys.
+
+### 🧪 Verification:
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Hardware Deployment: Installed APK onto physical device `Realme RMX3998` via ADB.
+- Interactive Verification: Tested tapping across different GST slabs (`• +18%` in Emerald Green, `• +28%` in Saffron Amber) and numpad buttons, verifying crisp laser neon borders and deep tactile cavity depression.
+
+### 📌 Current State:
+- Version: v1.0.0-rc11 (Option 2 Perimeter Neon Ring Pressed State, 100% hardware tested).
+
+### 📝 Next Steps:
+- Commit and push updates to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*

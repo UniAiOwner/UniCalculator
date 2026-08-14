@@ -41,12 +41,13 @@ fun NeumorphicButton(
     val colors = LocalNeumorphicColors.current
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.96f else 1.0f,
+        targetValue = if (isPressed) 0.93f else 1.0f,
         animationSpec = spring(dampingRatio = 0.75f, stiffness = 500f),
         label = "button_scale"
     )
 
     val currentShape = if (isPressed) NeumorphicShape.CONCAVE else NeumorphicShape.CONVEX
+    val activeNeonColor = textColor ?: if (isAccent) (accentColor ?: colors.accentEmerald) else colors.accentEmerald
 
     Box(
         modifier = modifier
@@ -57,10 +58,11 @@ fun NeumorphicButton(
             .neumorphic(
                 shape = currentShape,
                 cornerRadius = cornerRadius,
-                elevation = if (isPressed) 3.dp else 6.dp,
+                elevation = if (isPressed) 4.dp else 6.dp,
                 lightShadowColor = colors.lightHighlight,
                 darkShadowColor = colors.darkShadow,
-                backgroundColor = colors.background
+                backgroundColor = colors.background,
+                neonGlowColor = if (isPressed) activeNeonColor else null
             )
             .clickable(
                 interactionSource = interactionSource,
