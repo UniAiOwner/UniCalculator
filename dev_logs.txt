@@ -111,3 +111,26 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-14 — GST Pro Unified Master Receipt Card & Zero-Scroll Numpad Layout
+
+### 🚀 Major Achievements:
+- Unified Master Receipt Card: Merged the top amount display and calculation summary plate into a single, cohesive Neumorphic card (`GSTProScreen.kt`), saving over 150dp of vertical screen space.
+- Shifted GST Slabs Row: Re-anchored the `+3%, +5%, +12%, +18%, +28%` rate pills immediately beneath the unified receipt card for faster thumb reach.
+- Action Bar Integration: Styled 4-button action bar with `[📤 Share]`, `[💾 Save]`, `[📋 Copy]`, and `[C]` (Clear).
+- 100% Zero-Scroll Keypad: Rebuilt the 4-row numpad (`789⌫`, `456±`, `123%`, `00 0 . =`) to fit completely on the viewport without vertical scrolling on physical devices.
+- In-Words Engine Precision: Enhanced `GSTProViewModel.kt` to target the Total Payable Invoice Amount with full Indian currency words transcription.
+
+### 🧪 Verification:
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Hardware Deployment: Deployed to `Realme RMX3998` via ADB stream install.
+- Screen & Calculation Test: Captured live screenshots verifying zero scrolling, full numpad visibility, and instant dynamic tax split calculation.
+
+### 📌 Current State:
+- Version: v1.0.0-rc5 (Unified Receipt Card, Zero-Scroll Ergonomics, 100% hardware tested).
+
+### 📝 Next Steps:
+- Commit and push updates to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*
