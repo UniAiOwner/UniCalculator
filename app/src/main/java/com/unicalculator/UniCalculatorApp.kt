@@ -17,8 +17,10 @@ import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
@@ -55,62 +58,76 @@ fun UniCalculatorApp() {
 
     Scaffold(
         bottomBar = {
-            // Sculpted Neumorphic Bottom Navigation Bar
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .neumorphic(
-                        shape = NeumorphicShape.CONVEX,
-                        cornerRadius = 24.dp,
-                        elevation = 6.dp,
-                        lightShadowColor = colors.lightHighlight,
-                        darkShadowColor = colors.darkShadow,
-                        backgroundColor = colors.background
-                    )
-                    .padding(horizontal = 8.dp, vertical = 6.dp)
+            // Sculpted Neumorphic Bottom Navigation Bar with Edge-to-Edge Safe Padding
+            Surface(
+                color = colors.background,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
-                    MainTab.entries.forEachIndexed { index, tab ->
-                        val isSelected = selectedTab == index
-                        val activeColor = if (isSelected) RupeeEmeraldGreen else colors.textSecondary
-
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(56.dp)
-                                .neumorphic(
-                                    shape = if (isSelected) NeumorphicShape.CONCAVE else NeumorphicShape.FLAT,
-                                    cornerRadius = 16.dp,
-                                    elevation = if (isSelected) 3.dp else 0.dp,
-                                    lightShadowColor = colors.lightHighlight,
-                                    darkShadowColor = colors.darkShadow,
-                                    backgroundColor = colors.background
-                                )
-                                .clickable { selectedTab = index }
-                                .padding(4.dp),
-                            contentAlignment = Alignment.Center
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp)
+                            .neumorphic(
+                                shape = NeumorphicShape.CONVEX,
+                                cornerRadius = 22.dp,
+                                elevation = 6.dp,
+                                lightShadowColor = colors.lightHighlight,
+                                darkShadowColor = colors.darkShadow,
+                                backgroundColor = colors.background
+                            )
+                            .padding(horizontal = 6.dp, vertical = 4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Icon(
-                                    imageVector = tab.icon,
-                                    contentDescription = tab.title,
-                                    tint = activeColor,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                                Text(
-                                    text = tab.title,
-                                    fontSize = 10.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                    color = activeColor
-                                )
+                            MainTab.entries.forEachIndexed { index, tab ->
+                                val isSelected = selectedTab == index
+                                val activeColor = if (isSelected) RupeeEmeraldGreen else colors.textSecondary
+
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(52.dp)
+                                        .neumorphic(
+                                            shape = if (isSelected) NeumorphicShape.CONCAVE else NeumorphicShape.FLAT,
+                                            cornerRadius = 14.dp,
+                                            elevation = if (isSelected) 3.dp else 0.dp,
+                                            lightShadowColor = colors.lightHighlight,
+                                            darkShadowColor = colors.darkShadow,
+                                            backgroundColor = colors.background
+                                        )
+                                        .clickable { selectedTab = index }
+                                        .padding(2.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = tab.icon,
+                                            contentDescription = tab.title,
+                                            tint = activeColor,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Text(
+                                            text = tab.title,
+                                            fontSize = 9.5.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                            color = activeColor,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

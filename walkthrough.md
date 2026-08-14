@@ -62,4 +62,5 @@ UniCalculator/
   - Execution: App launched successfully on device (`com.unicalculator/.MainActivity`).
   - Keypad Reorganization: Verified 4-column matrix with enlarged button targets (~25% bigger), function keys (`C`, `⌫`, `%`, `÷`) positioned directly above `7, 8, 9`, and `+` operator key situated directly above `=`.
   - Cash Tally Upgrades: Verified Neumorphic `C / CE (Clear All)` button in header and direct editable numeric count fields (`KeyboardType.Number`) alongside `+ / −` steppers for rapid counting.
+  - Edge-to-Edge System Navigation Inset Fix: Implemented dynamic `Modifier.navigationBarsPadding()` within a seamless background `Surface` container in `UniCalculatorApp.kt`. Verified on hardware that all 5 bottom navigation tabs (*Standard*, *GST Pro*, *Cash Tally*, *Tools*, *History*) float safely above the 3 Android system buttons (`≡ ☐ ◁`) with zero text cut-off and 100% touch accessibility.
 
