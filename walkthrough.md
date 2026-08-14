@@ -1,23 +1,22 @@
-# Walkthrough: Option 2 — Perimeter Neon Ring Pressed State
+# Walkthrough: Professional In-Words Typography & DOCS Current Progress Suite
 
 ## 🎯 Overview
-Successfully implemented **Option 2: Perimeter Neon Ring (Crisp Glowing Inset Rim)**:
-1. **Dual-Pass Neon Shader (`NeumorphicModifier.kt`)**:
-   - `Pass 1`: Outer soft ambient halo glow (`strokeWidth = 3.5dp`, `alpha = 0.35f`, gaussian blur mask filter).
-   - `Pass 2`: Core crisp laser rim (`strokeWidth = 1.6dp`, `alpha = 0.95f`).
-2. **Deep Concave Inset Well**: Combines top-left charcoal inner drop shadow, ambient cavity darkening, and tactile spring scale depression (`0.92f` - `0.93f`).
-3. **Adaptive Color Mapping**:
-   - `+3%, +5%, +12%, +18%`: Rupee Emerald Green (`#10B981`)
-   - `+28% Luxury & −GST`: Gst Saffron Amber (`#F59E0B`)
-   - `Equals & IGST`: Electric Sapphire Blue (`#2563EB`)
-   - `Operators (×, ÷)`: Operator Orange (`#F97316`)
-   - `Clear C`: Delete Red (`#EF4444`)
+1. **Clean Professional In-Words Typography**:
+   - Replaced playful `✍️` writing hand emoji with formal `IN WORDS:` banking label (`GSTProScreen.kt`).
+   - Container styled with `NeumorphicShape.CONCAVE` micro-plate and multi-line wrapping.
+2. **Complete `DOCS/current_progress/` Documentation Suite**:
+   - Captured 6 pristine live hardware screenshots directly from physical device `Realme RMX3998`.
+   - Authored complete architecture, UI hierarchy, and mathematical specifications across all screens and design systems.
 
 ---
 
-## 📱 Hardware Verification & Live Snapshots
+## 📱 Visual Highlights
 
-| State | Feature | Live Hardware Snapshot |
+| Screen | State | Live Screenshot |
 |---|---|---|
-| **• +18% Selected** | Emerald Green Perimeter Neon Ring + Deep Concave Well | ![Emerald Neon Ring](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_option2_neon_ring_live.png) |
-| **• +28% Selected** | Saffron Amber Perimeter Neon Ring + Deep Concave Well | ![Amber Neon Ring](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/PLANNING/visuals/gst_pro_option2_28_neon_live.png) |
+| **Standard Calculator** | Default State | ![Standard](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/01_screen_standard_calc.png) |
+| **GST Pro (+GST)** | Forward Mode (18% Emerald Neon Ring, `IN WORDS:`) | ![GST Pro Forward](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/02_screen_gst_pro_forward.png) |
+| **GST Pro (−GST)** | Reverse Mode (28% Amber Neon Ring, Inter-State IGST) | ![GST Pro Reverse](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/03_screen_gst_pro_reverse_interstate.png) |
+| **Cash Tally** | Denomination Counter | ![Cash Tally](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/04_screen_cash_tally.png) |
+| **Business Tools** | Margin & Markup Solver | ![Business Tools](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/05_screen_business_tools.png) |
+| **History Tape** | Calculation Audit Roll | ![History Tape](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/06_screen_history_tape.png) |

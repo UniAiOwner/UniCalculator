@@ -214,20 +214,35 @@ fun GSTProScreen(
                             darkShadowColor = colors.darkShadow,
                             backgroundColor = colors.background
                         )
-                        .padding(horizontal = 8.dp, vertical = 5.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
-                    Text(
-                        text = "✍️ In Words: ${state.inWordsText}",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 11.sp,
-                            lineHeight = 15.sp,
-                            color = colors.textSecondary
-                        ),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            text = "IN WORDS: ",
+                            style = androidx.compose.ui.text.TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.5.sp,
+                                color = colors.textSecondary,
+                                letterSpacing = 0.5.sp
+                            )
+                        )
+                        Text(
+                            text = state.inWordsText,
+                            style = androidx.compose.ui.text.TextStyle(
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 11.sp,
+                                lineHeight = 15.sp,
+                                color = colors.textPrimary
+                            ),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         }
