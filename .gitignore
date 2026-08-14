@@ -1,0 +1,19 @@
+# Explicitly ignore PLANNING folder as requested
+PLANNING/
+planning/
+
+# Android & Gradle
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+*/build
+*.apk
+*.aab
+
+# OS & Environment
+.gemini/
+*.token
+*.log
