@@ -507,6 +507,38 @@
 ---
 *Signed by: Shoeb Ahmad*
 
+## 📅 Date: 2026-08-16 — Cash Tally Pixel-Perfect Column Grid Alignment & 2-Line Count Header
+
+### 🚀 Major Achievements:
+- Deterministic Slot Matrix Architecture: Aligned Table Header Pills and Denomination Rows with shared geometry:
+  - Column 1 (`💵 NOTE`): `66.dp` fixed width header pill vertically aligned above every currency badge (`66.dp`).
+  - Slot 2 (`×`): `16.dp` dedicated mathematical operator slot.
+  - Column 2 (`COUNT \n (Pcs)`): `80.dp` fixed width 2-line header pill centered directly above every count input well (`80.dp`).
+  - Slot 4 (`=`): `16.dp` dedicated mathematical operator slot.
+  - Column 3 (`💰 SUBTOTAL`): `weight(1f)` flexible column right-aligned directly above every currency subtotal.
+- Single-Line Subtotal Enforcement: Added `maxLines = 1` and `softWrap = false` to guarantee currency amounts never wrap across two lines.
+- 2-Line Header Typography: Formatted count badge into `COUNT` (11sp extra bold) and `(Pcs)` (9sp bold secondary).
+
+### 🧪 Verification:
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Live Hardware Deployment: Tested and verified on physical `Realme RMX3998` (`XGQ8JFZXEITGJ7IB`), Android 14.
+- Checks Verified:
+  1. `[ 💵 NOTE ]` pill aligns vertically above currency badges.
+  2. `[ COUNT \n (Pcs) ]` pill is 2 lines and centered directly above input wells.
+  3. `[ 💰 SUBTOTAL ]` pill aligns directly above single-line emerald subtotals.
+  4. Mathematical operators (`×`, `=`) align vertically in dedicated slots.
+  5. Captured visual snapshot: `21_cash_tally_pixel_perfect_final_fullscreen.png`.
+
+### 📌 Current State:
+- Version: v1.0.0-rc22 (Cash Tally Pixel-Perfect Column Alignment Active).
+
+### 📝 Next Steps:
+- Commit and push changes to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*
+
+
 
 
 

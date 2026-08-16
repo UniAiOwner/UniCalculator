@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -347,18 +348,20 @@ fun CashTallyScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // 4. SCULPTED NEUMORPHIC TABLE HEADER PILLS
+        // 4. SCULPTED NEUMORPHIC TABLE HEADER PILLS (Unified Slot Matrix)
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 2.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // [ 💵 NOTE ]
+            // [ 💵 NOTE ] (Exact 66.dp width)
             Box(
                 modifier = Modifier
-                    .size(width = 72.dp, height = 34.dp)
+                    .width(66.dp)
+                    .height(38.dp)
                     .neumorphic(
                         shape = NeumorphicShape.CONVEX,
                         cornerRadius = 10.dp,
@@ -371,17 +374,21 @@ fun CashTallyScreen(
             ) {
                 Text(
                     text = "💵 NOTE",
-                    fontSize = 10.5.sp,
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.ExtraBold,
                     fontFamily = FontFamily.Monospace,
                     color = colors.textPrimary
                 )
             }
 
-            // [ 🔢 COUNT (PCS) ]
+            // Multiplication Column Spacer (Exact 16.dp width)
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // [ 🔢 COUNT / (Pcs) ] (Exact 80.dp width - 2 Line Layout)
             Box(
                 modifier = Modifier
-                    .size(width = 104.dp, height = 34.dp)
+                    .width(80.dp)
+                    .height(38.dp)
                     .neumorphic(
                         shape = NeumorphicShape.CONVEX,
                         cornerRadius = 10.dp,
@@ -392,21 +399,37 @@ fun CashTallyScreen(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "🔢 COUNT (PCS)",
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontFamily = FontFamily.Monospace,
-                    color = colors.textPrimary
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "COUNT",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontFamily = FontFamily.Monospace,
+                        color = colors.textPrimary,
+                        lineHeight = 12.sp
+                    )
+                    Text(
+                        text = "(Pcs)",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Monospace,
+                        color = colors.textSecondary,
+                        lineHeight = 10.sp
+                    )
+                }
             }
 
-            // [ 💰 SUBTOTAL ]
+            // Equals Column Spacer (Exact 16.dp width)
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // [ 💰 SUBTOTAL ] (Flexible weight(1f) width)
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(34.dp)
-                    .padding(start = 8.dp)
+                    .height(38.dp)
                     .neumorphic(
                         shape = NeumorphicShape.CONVEX,
                         cornerRadius = 10.dp,
@@ -427,7 +450,7 @@ fun CashTallyScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         // 5. Denomination Note Counter Rows (₹500 down to ₹1) - Clean Ledger Grid with Active Glow
         state.state.denominations.forEach { item ->
@@ -446,21 +469,21 @@ fun CashTallyScreen(
             NeumorphicPlate(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 3.5.dp),
+                    .padding(vertical = 3.dp),
                 cornerRadius = 18.dp,
                 elevation = if (isActive) 4.dp else 2.5.dp
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 6.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 1. Currency Face Badge (Left, 68.dp wide)
+                    // 1. Currency Face Badge (Left, Exact 66.dp wide)
                     Box(
                         modifier = Modifier
-                            .size(width = 68.dp, height = 38.dp)
+                            .width(66.dp)
+                            .height(38.dp)
                             .neumorphic(
                                 shape = NeumorphicShape.CONCAVE,
                                 cornerRadius = 10.dp,
@@ -473,26 +496,31 @@ fun CashTallyScreen(
                     ) {
                         Text(
                             text = "₹${item.faceValue}",
-                            fontSize = 15.sp,
+                            fontSize = 14.5.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
                             color = Color(0xFF1C2833)
                         )
                     }
 
-                    // Mathematical Multiplication Sign (×)
-                    Text(
-                        text = "×",
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.textSecondary.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(horizontal = 2.dp)
-                    )
+                    // Mathematical Multiplication Sign Slot (Exact 16.dp wide)
+                    Box(
+                        modifier = Modifier.width(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "×",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textSecondary.copy(alpha = 0.6f)
+                        )
+                    }
 
-                    // 2. Direct Numeric Input Quantity Field (Center, 84.dp wide)
+                    // 2. Direct Numeric Input Quantity Field (Center, Exact 80.dp wide)
                     Box(
                         modifier = Modifier
-                            .size(width = 84.dp, height = 38.dp)
+                            .width(80.dp)
+                            .height(38.dp)
                             .neumorphic(
                                 shape = NeumorphicShape.CONCAVE,
                                 cornerRadius = 10.dp,
@@ -511,7 +539,7 @@ fun CashTallyScreen(
                                 viewModel.updateCount(item.faceValue, count)
                             },
                             textStyle = TextStyle(
-                                fontSize = 16.sp,
+                                fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace,
                                 color = if (isActive) colors.textPrimary else colors.textSecondary.copy(alpha = 0.5f),
@@ -522,12 +550,12 @@ fun CashTallyScreen(
                             cursorBrush = SolidColor(colors.accentEmerald),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 4.dp)
+                                .padding(horizontal = 2.dp)
                         )
                         if (item.count == 0) {
                             Text(
                                 text = "0",
-                                fontSize = 16.sp,
+                                fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace,
                                 color = colors.textSecondary.copy(alpha = 0.35f),
@@ -536,23 +564,29 @@ fun CashTallyScreen(
                         }
                     }
 
-                    // Mathematical Equals Sign (=)
-                    Text(
-                        text = "=",
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.textSecondary.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(horizontal = 2.dp)
-                    )
+                    // Mathematical Equals Sign Slot (Exact 16.dp wide)
+                    Box(
+                        modifier = Modifier.width(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "=",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textSecondary.copy(alpha = 0.6f)
+                        )
+                    }
 
-                    // 3. Row Subtotal (Right, Bold Emerald Highlight)
+                    // 3. Row Subtotal (Right, Bold Emerald Highlight, strictly singleLine)
                     Text(
                         text = IndianVedicFormatter.formatCurrency(item.subtotal),
-                        fontSize = 15.sp,
+                        fontSize = 14.5.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
                         color = if (isActive) RupeeEmeraldGreen else colors.textSecondary.copy(alpha = 0.45f),
                         textAlign = TextAlign.End,
+                        maxLines = 1,
+                        softWrap = false,
                         modifier = Modifier.weight(1f)
                     )
                 }
