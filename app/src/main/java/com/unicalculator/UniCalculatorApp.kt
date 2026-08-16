@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,6 +42,7 @@ import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 import com.unicalculator.feature.calculator.GSTProScreen
 import com.unicalculator.feature.calculator.StandardCalculatorScreen
 import com.unicalculator.feature.cashtally.CashTallyScreen
+import com.unicalculator.feature.history.HistoryFilter
 import com.unicalculator.feature.history.HistoryTapeScreen
 import com.unicalculator.feature.tools.BusinessToolsScreen
 
@@ -55,6 +57,7 @@ enum class MainTab(val title: String, val icon: ImageVector) {
 @Composable
 fun UniCalculatorApp() {
     var selectedTab by remember { mutableIntStateOf(0) }
+    var historyFilter by remember { mutableStateOf(HistoryFilter.ALL) }
     val colors = LocalNeumorphicColors.current
 
     Scaffold(
@@ -105,7 +108,12 @@ fun UniCalculatorApp() {
                                             darkShadowColor = colors.darkShadow,
                                             backgroundColor = colors.background
                                         )
-                                        .clickable { selectedTab = index }
+                                        .clickable {
+                                            if (index == 4 && selectedTab != 4) {
+                                                historyFilter = HistoryFilter.ALL
+                                            }
+                                            selectedTab = index
+                                        }
                                         .padding(2.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -144,12 +152,15 @@ fun UniCalculatorApp() {
         ) {
             when (selectedTab) {
                 0 -> StandardCalculatorScreen(
-                    onNavigateToHistory = { selectedTab = 4 }
+                    onNavigateToHistory = {
+                        historyFilter = HistoryFilter.STANDARD
+                        selectedTab = 4
+                    }
                 )
                 1 -> GSTProScreen()
                 2 -> CashTallyScreen()
                 3 -> BusinessToolsScreen()
-                4 -> HistoryTapeScreen()
+                4 -> HistoryTapeScreen(initialFilter = historyFilter)
             }
         }
     }

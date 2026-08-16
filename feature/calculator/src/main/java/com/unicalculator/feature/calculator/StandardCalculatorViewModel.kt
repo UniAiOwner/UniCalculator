@@ -19,7 +19,7 @@ data class CalculationTapeItem(
 
 data class CalculatorUiState(
     val expression: String = "",
-    val displayResult: String = "₹ 0.00",
+    val displayResult: String = "₹ 0",
     val wordsText: String = "Zero Rupees Only",
     val memoryValue: BigDecimal = BigDecimal.ZERO,
     val tapeHistory: List<CalculationTapeItem> = emptyList()
@@ -51,11 +51,12 @@ class StandardCalculatorViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 expression = "",
-                displayResult = "₹ 0.00",
+                displayResult = "₹ 0",
                 wordsText = "Zero Rupees Only"
             )
         }
     }
+
 
     fun onClearTape() {
         _uiState.update { it.copy(tapeHistory = emptyList()) }
@@ -156,17 +157,22 @@ class StandardCalculatorViewModel : ViewModel() {
                 _uiState.update {
                     it.copy(
                         expression = "",
-                        displayResult = "₹ 0.00",
+                        displayResult = "₹ 0",
                         wordsText = "Zero Rupees Only"
                     )
                 }
                 return
             }
-            val eval = ShuntingYardEvaluator.evaluate(currentRawInput.toString())
+            val raw = currentRawInput.toString()
+            val eval = ShuntingYardEvaluator.evaluate(raw)
+            var formatted = IndianVedicFormatter.formatCurrency(eval, includeSymbol = true, showDecimalsAlways = false)
+            if (raw.endsWith(".") && !formatted.contains(".")) {
+                formatted += "."
+            }
             _uiState.update {
                 it.copy(
-                    expression = currentRawInput.toString(),
-                    displayResult = IndianVedicFormatter.formatCurrency(eval),
+                    expression = raw,
+                    displayResult = formatted,
                     wordsText = IndianCurrencyWordConverter.convertToWords(eval)
                 )
             }

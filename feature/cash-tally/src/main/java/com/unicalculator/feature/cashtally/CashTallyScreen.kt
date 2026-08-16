@@ -172,10 +172,9 @@ fun CashTallyScreen(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // 2. Denomination Note Counter Rows (₹2000 down to ₹1)
+        // 2. Denomination Note Counter Rows (₹500 down to ₹1)
         state.state.denominations.forEach { item ->
             val noteBadgeColor = when (item.faceValue) {
-                2000 -> Color(0xFFD98880)
                 500 -> Color(0xFFA3E4D7)
                 200 -> Color(0xFFF9E79F)
                 100 -> Color(0xFFD2B4DE)

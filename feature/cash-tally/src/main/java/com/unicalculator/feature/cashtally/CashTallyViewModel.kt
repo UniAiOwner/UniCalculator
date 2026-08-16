@@ -14,7 +14,6 @@ import java.math.BigDecimal
 data class CashTallyUiState(
     val state: CashTallyState = CashTallyState(
         denominations = listOf(
-            DenominationItem(2000, 0),
             DenominationItem(500, 250),
             DenominationItem(200, 80),
             DenominationItem(100, 150),

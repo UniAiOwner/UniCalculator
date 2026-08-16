@@ -48,7 +48,6 @@ data class CashTallyState(
 
     companion object {
         fun defaultDenominations(): List<DenominationItem> = listOf(
-            DenominationItem(2000),
             DenominationItem(500),
             DenominationItem(200),
             DenominationItem(100),
