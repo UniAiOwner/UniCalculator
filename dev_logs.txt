@@ -451,6 +451,35 @@
 ---
 *Signed by: Shoeb Ahmad*
 
+## 📅 Date: 2026-08-16 — Cash Tally Table Column Header & Clean Ledger Row Grid
+
+### 🚀 Major Achievements:
+- Added Table Column Header Bar: Integrated an attractive, prominent Neumorphic column header plate (`NOTE` | `COUNT (PCS)` | `SUBTOTAL`) right above the denomination list.
+- Clean, Stepless Ledger Rows: Completely eliminated redundant `+` / `−` steppers and repetitive per-row labels (`Count (Type)` and `Subtotal`).
+- Optimized Row Grid Alignment:
+  - Currency Face Badge: 72 × 38 dp tactile color-coded pill.
+  - Count Input Well: 96 × 38 dp centered recessed LCD well with monospace bold font.
+  - Subtotal Readout: Spacious, bold monospace amount right-aligned with the `SUBTOTAL` column header.
+
+### 🧪 Verification:
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Live Hardware Deployment: Tested on physical `Realme RMX3998` (`XGQ8JFZXEITGJ7IB`), Android 14.
+- Checks Verified:
+  1. Header Bar (`NOTE` | `COUNT (PCS)` | `SUBTOTAL`) is aligned with all columns.
+  2. Denomination rows are clean, spacious, and stepless.
+  3. Real-time typing updates row Subtotals and Grand Total dynamically.
+  4. Captured visual snapshot: `15_cash_tally_table_header.png`.
+
+### 📌 Current State:
+- Version: v1.0.0-rc20 (Cash Tally Table Header & Clean Ledger Grid Active).
+
+### 📝 Next Steps:
+- Commit and push changes to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*
+
+
 
 
 

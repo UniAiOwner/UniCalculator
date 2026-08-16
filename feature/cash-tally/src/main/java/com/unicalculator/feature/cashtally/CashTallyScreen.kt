@@ -245,9 +245,55 @@ fun CashTallyScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-        // 2. Denomination Note Counter Rows (₹500 down to ₹1)
+        // 3. Table Column Header Bar: NOTE | COUNT (PCS) | SUBTOTAL
+        NeumorphicPlate(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            cornerRadius = 14.dp,
+            elevation = 2.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "NOTE",
+                    fontSize = 11.5.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = FontFamily.Monospace,
+                    color = colors.textSecondary,
+                    modifier = Modifier.width(72.dp)
+                )
+                Text(
+                    text = "COUNT (PCS)",
+                    fontSize = 11.5.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = FontFamily.Monospace,
+                    color = colors.textSecondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(96.dp)
+                )
+                Text(
+                    text = "SUBTOTAL",
+                    fontSize = 11.5.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = FontFamily.Monospace,
+                    color = colors.textSecondary,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        // 4. Denomination Note Counter Rows (₹500 down to ₹1) - Clean Ledger Grid
         state.state.denominations.forEach { item ->
             val noteBadgeColor = when (item.faceValue) {
                 500 -> Color(0xFFA3E4D7)
@@ -267,17 +313,19 @@ fun CashTallyScreen(
                 elevation = 3.dp
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Currency Face Badge
+                    // 1. Currency Face Badge (Left, 72.dp wide)
                     Box(
                         modifier = Modifier
-                            .size(width = 64.dp, height = 36.dp)
+                            .size(width = 72.dp, height = 38.dp)
                             .neumorphic(
                                 shape = NeumorphicShape.CONCAVE,
-                                cornerRadius = 8.dp,
+                                cornerRadius = 10.dp,
                                 elevation = 2.dp,
                                 lightShadowColor = colors.lightHighlight,
                                 darkShadowColor = colors.darkShadow,
@@ -294,100 +342,63 @@ fun CashTallyScreen(
                         )
                     }
 
-                    // Direct Numeric Input Quantity Field (Recessed Well with Numpad Keyboard)
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Count (Type)", fontSize = 9.sp, color = colors.textSecondary)
-                        Box(
+                    // 2. Direct Numeric Input Quantity Field (Center, 96.dp wide)
+                    Box(
+                        modifier = Modifier
+                            .size(width = 96.dp, height = 38.dp)
+                            .neumorphic(
+                                shape = NeumorphicShape.CONCAVE,
+                                cornerRadius = 10.dp,
+                                elevation = 2.dp,
+                                lightShadowColor = colors.lightHighlight,
+                                darkShadowColor = colors.darkShadow,
+                                backgroundColor = colors.lcdWellBackground
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BasicTextField(
+                            value = if (item.count == 0) "" else "${item.count}",
+                            onValueChange = { input ->
+                                val sanitized = input.filter { it.isDigit() }
+                                val count = sanitized.toIntOrNull() ?: 0
+                                viewModel.updateCount(item.faceValue, count)
+                            },
+                            textStyle = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace,
+                                color = colors.textPrimary,
+                                textAlign = TextAlign.Center
+                            ),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            cursorBrush = SolidColor(colors.accentEmerald),
                             modifier = Modifier
-                                .size(width = 72.dp, height = 34.dp)
-                                .neumorphic(
-                                    shape = NeumorphicShape.CONCAVE,
-                                    cornerRadius = 8.dp,
-                                    elevation = 2.dp,
-                                    lightShadowColor = colors.lightHighlight,
-                                    darkShadowColor = colors.darkShadow,
-                                    backgroundColor = colors.lcdWellBackground
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            BasicTextField(
-                                value = if (item.count == 0) "" else "${item.count}",
-                                onValueChange = { input ->
-                                    val sanitized = input.filter { it.isDigit() }
-                                    val count = sanitized.toIntOrNull() ?: 0
-                                    viewModel.updateCount(item.faceValue, count)
-                                },
-                                textStyle = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = FontFamily.Monospace,
-                                    color = colors.textPrimary,
-                                    textAlign = TextAlign.Center
-                                ),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                singleLine = true,
-                                cursorBrush = SolidColor(colors.accentEmerald),
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+                                .fillMaxWidth()
+                                .padding(horizontal = 6.dp)
+                        )
+                        if (item.count == 0) {
+                            Text(
+                                text = "0",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace,
+                                color = colors.textSecondary.copy(alpha = 0.4f),
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
 
-                    // Row Subtotal
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text("Subtotal", fontSize = 10.sp, color = colors.textSecondary)
-                        Text(
-                            text = IndianVedicFormatter.formatCurrency(item.subtotal),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = FontFamily.Monospace,
-                            color = colors.textPrimary
-                        )
-                    }
-
-                    // Steppers (+ and -) for quick small adjustments
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        // Plus
-                        Box(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .neumorphic(
-                                    shape = NeumorphicShape.CONVEX,
-                                    cornerRadius = 8.dp,
-                                    elevation = 3.dp,
-                                    lightShadowColor = colors.lightHighlight,
-                                    darkShadowColor = colors.darkShadow,
-                                    backgroundColor = colors.background
-                                )
-                                .clickable {
-                                    hapticEngine.playKeyClick()
-                                    viewModel.increment(item.faceValue)
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("+", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
-                        }
-
-                        // Minus
-                        Box(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .neumorphic(
-                                    shape = NeumorphicShape.CONVEX,
-                                    cornerRadius = 8.dp,
-                                    elevation = 3.dp,
-                                    lightShadowColor = colors.lightHighlight,
-                                    darkShadowColor = colors.darkShadow,
-                                    backgroundColor = colors.background
-                                )
-                                .clickable {
-                                    hapticEngine.playKeyClick()
-                                    viewModel.decrement(item.faceValue)
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("−", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
-                        }
-                    }
+                    // 3. Row Subtotal (Right, flexible weight, right-aligned)
+                    Text(
+                        text = IndianVedicFormatter.formatCurrency(item.subtotal),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Monospace,
+                        color = colors.textPrimary,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }
