@@ -1,6 +1,10 @@
 package com.unicalculator.feature.cashtally
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,17 +17,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unicalculator.core.common.format.IndianVedicFormatter
+import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicHapticEngine
 import com.unicalculator.core.designsystem.component.NeumorphicIconButton
 import com.unicalculator.core.designsystem.component.NeumorphicPlate
@@ -61,78 +63,78 @@ fun CashTallyScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val colors = LocalNeumorphicColors.current
+    val hapticEngine = NeumorphicHapticEngine(LocalContext.current)
     val context = LocalContext.current
-    val hapticEngine = NeumorphicHapticEngine(context)
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(colors.background)
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        // 1. Top Action Bar: Screen Title (Left) + 3 Neumorphic Action Buttons (Right)
+        Spacer(modifier = Modifier.height(6.dp))
+
+        // 1. Consistent Top Action Bar (Title + History, Theme, Settings)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp, top = 2.dp),
+                .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "Cash Tally",
-                style = TextStyle(
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = colors.textPrimary,
-                    letterSpacing = 0.5.sp
-                )
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+                color = colors.textPrimary
             )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Button 1: History Tape
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                // History Button (Opens Cash Tally Segregated History)
                 NeumorphicIconButton(
                     icon = Icons.Outlined.History,
                     contentDescription = "Cash Tally History",
                     onClick = {
-                        hapticEngine.playOperatorTick()
+                        hapticEngine.playKeyClick()
                         onNavigateToHistory?.invoke()
                     },
-                    iconTint = colors.accentEmerald
+                    size = 42.dp,
+                    cornerRadius = 14.dp,
+                    iconTint = RupeeEmeraldGreen
                 )
 
-                // Button 2: Light / Dark Theme
+                // Theme Switcher Button
                 NeumorphicIconButton(
                     icon = Icons.Outlined.DarkMode,
                     contentDescription = "Toggle Theme",
                     onClick = {
-                        hapticEngine.playOperatorTick()
+                        hapticEngine.playKeyClick()
                         onToggleTheme?.invoke()
                     },
-                    iconTint = colors.textSecondary
+                    size = 42.dp,
+                    cornerRadius = 14.dp
                 )
 
-                // Button 3: Settings
+                // Settings Button
                 NeumorphicIconButton(
                     icon = Icons.Outlined.Settings,
                     contentDescription = "Settings",
                     onClick = {
-                        hapticEngine.playOperatorTick()
+                        hapticEngine.playKeyClick()
                         onOpenSettings?.invoke()
                     },
-                    iconTint = colors.textSecondary
+                    size = 42.dp,
+                    cornerRadius = 14.dp
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(2.dp))
 
-        // 2. Master Neumorphic Summary Header Plate with C/CE Repositioned to Top-Right
+        // 2. Master Neumorphic Summary Header Plate (Clean Total & Notes Readout)
         NeumorphicPlate(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = 24.dp,
@@ -142,13 +144,13 @@ fun CashTallyScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Left Column: Total Cash Heading + Large Amount
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "TOTAL CASH:",
-                            fontSize = 13.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.textSecondary
                         )
@@ -164,57 +166,28 @@ fun CashTallyScreen(
                         )
                     }
 
-                    // Right Column: C/CE Button (Top-Right) + Total Notes underneath
-                    Column(
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    // Right Column: Total Notes count
+                    Box(
+                        modifier = Modifier
+                            .neumorphic(
+                                shape = NeumorphicShape.CONCAVE,
+                                cornerRadius = 12.dp,
+                                elevation = 2.dp,
+                                lightShadowColor = colors.lightHighlight,
+                                darkShadowColor = colors.darkShadow,
+                                backgroundColor = colors.lcdWellBackground
+                            )
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
                     ) {
-                        // Clear Entries (C / CE) Action Button in Top-Right
-                        Box(
-                            modifier = Modifier
-                                .size(width = 64.dp, height = 34.dp)
-                                .neumorphic(
-                                    shape = NeumorphicShape.CONVEX,
-                                    cornerRadius = 10.dp,
-                                    elevation = 3.dp,
-                                    lightShadowColor = colors.lightHighlight,
-                                    darkShadowColor = colors.darkShadow,
-                                    backgroundColor = colors.background
-                                )
-                                .clickable {
-                                    hapticEngine.playOperatorTick()
-                                    viewModel.resetAll()
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "C/CE",
-                                fontSize = 13.sp,
+                        Text(
+                            text = "Notes: ${state.totalNotesCount} Pcs",
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold,
-                                color = DeleteRed
+                                fontSize = 13.sp,
+                                color = colors.textPrimary
                             )
-                        }
-
-                        // Total Notes readout placed right below C/CE
-                        Row(
-                            verticalAlignment = Alignment.Bottom,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(
-                                text = "Notes:",
-                                fontSize = 11.sp,
-                                color = colors.textSecondary
-                            )
-                            Text(
-                                text = "${state.totalNotesCount} Pcs",
-                                style = TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 15.sp,
-                                    color = colors.textPrimary
-                                )
-                            )
-                        }
+                        )
                     }
                 }
 
@@ -245,55 +218,218 @@ fun CashTallyScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-        // 3. Table Column Header Bar: NOTE | COUNT (PCS) | SUBTOTAL
-        NeumorphicPlate(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            cornerRadius = 14.dp,
-            elevation = 2.dp
+        // 3. ACTION BAR (Share | Save | Copy | C/CE)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Row(
+            // Share Action
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(1.1f)
+                    .height(38.dp)
+                    .neumorphic(
+                        shape = NeumorphicShape.CONVEX,
+                        cornerRadius = 12.dp,
+                        elevation = 3.dp,
+                        lightShadowColor = colors.lightHighlight,
+                        darkShadowColor = colors.darkShadow,
+                        backgroundColor = colors.background
+                    )
+                    .clickable {
+                        hapticEngine.playKeyClick()
+                        val slip = viewModel.generateWhatsAppSlipText()
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, slip)
+                            type = "text/plain"
+                        }
+                        context.startActivity(Intent.createChooser(sendIntent, "Share Cash Closing Slip"))
+                    },
+                contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "NOTE",
-                    fontSize = 11.5.sp,
-                    fontWeight = FontWeight.ExtraBold,
+                    text = "📤 Share",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
-                    color = colors.textSecondary,
-                    modifier = Modifier.width(72.dp)
+                    color = RupeeEmeraldGreen
                 )
+            }
+
+            // Save Action
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(38.dp)
+                    .neumorphic(
+                        shape = NeumorphicShape.CONVEX,
+                        cornerRadius = 12.dp,
+                        elevation = 3.dp,
+                        lightShadowColor = colors.lightHighlight,
+                        darkShadowColor = colors.darkShadow,
+                        backgroundColor = colors.background
+                    )
+                    .clickable {
+                        hapticEngine.playKeyClick()
+                        Toast.makeText(context, "Cash Tally Saved to History", Toast.LENGTH_SHORT).show()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
-                    text = "COUNT (PCS)",
-                    fontSize = 11.5.sp,
-                    fontWeight = FontWeight.ExtraBold,
+                    text = "💾 Save",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
-                    color = colors.textSecondary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.width(96.dp)
+                    color = colors.textPrimary
                 )
+            }
+
+            // Copy Action
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(38.dp)
+                    .neumorphic(
+                        shape = NeumorphicShape.CONVEX,
+                        cornerRadius = 12.dp,
+                        elevation = 3.dp,
+                        lightShadowColor = colors.lightHighlight,
+                        darkShadowColor = colors.darkShadow,
+                        backgroundColor = colors.background
+                    )
+                    .clickable {
+                        hapticEngine.playKeyClick()
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText("Cash Tally Breakdown", viewModel.generateWhatsAppSlipText())
+                        clipboard.setPrimaryClip(clip)
+                        Toast.makeText(context, "Breakdown Copied to Clipboard", Toast.LENGTH_SHORT).show()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
-                    text = "SUBTOTAL",
-                    fontSize = 11.5.sp,
-                    fontWeight = FontWeight.ExtraBold,
+                    text = "📋 Copy",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
-                    color = colors.textSecondary,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.weight(1f)
+                    color = colors.textPrimary
+                )
+            }
+
+            // C/CE Action
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(38.dp)
+                    .neumorphic(
+                        shape = NeumorphicShape.CONVEX,
+                        cornerRadius = 12.dp,
+                        elevation = 3.dp,
+                        lightShadowColor = colors.lightHighlight,
+                        darkShadowColor = colors.darkShadow,
+                        backgroundColor = colors.background
+                    )
+                    .clickable {
+                        hapticEngine.playOperatorTick()
+                        viewModel.resetAll()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "C/CE",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Monospace,
+                    color = DeleteRed
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        // 4. Denomination Note Counter Rows (₹500 down to ₹1) - Clean Ledger Grid
+        // 4. SCULPTED NEUMORPHIC TABLE HEADER PILLS
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // [ 💵 NOTE ]
+            Box(
+                modifier = Modifier
+                    .size(width = 72.dp, height = 34.dp)
+                    .neumorphic(
+                        shape = NeumorphicShape.CONVEX,
+                        cornerRadius = 10.dp,
+                        elevation = 3.dp,
+                        lightShadowColor = colors.lightHighlight,
+                        darkShadowColor = colors.darkShadow,
+                        backgroundColor = colors.background
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "💵 NOTE",
+                    fontSize = 10.5.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = FontFamily.Monospace,
+                    color = colors.textPrimary
+                )
+            }
+
+            // [ 🔢 COUNT (PCS) ]
+            Box(
+                modifier = Modifier
+                    .size(width = 104.dp, height = 34.dp)
+                    .neumorphic(
+                        shape = NeumorphicShape.CONVEX,
+                        cornerRadius = 10.dp,
+                        elevation = 3.dp,
+                        lightShadowColor = colors.lightHighlight,
+                        darkShadowColor = colors.darkShadow,
+                        backgroundColor = colors.background
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "🔢 COUNT (PCS)",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = FontFamily.Monospace,
+                    color = colors.textPrimary
+                )
+            }
+
+            // [ 💰 SUBTOTAL ]
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(34.dp)
+                    .padding(start = 8.dp)
+                    .neumorphic(
+                        shape = NeumorphicShape.CONVEX,
+                        cornerRadius = 10.dp,
+                        elevation = 3.dp,
+                        lightShadowColor = colors.lightHighlight,
+                        darkShadowColor = colors.darkShadow,
+                        backgroundColor = colors.background
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "💰 SUBTOTAL",
+                    fontSize = 10.5.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = FontFamily.Monospace,
+                    color = RupeeEmeraldGreen
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        // 5. Denomination Note Counter Rows (₹500 down to ₹1) - Clean Ledger Grid with Active Glow
         state.state.denominations.forEach { item ->
             val noteBadgeColor = when (item.faceValue) {
                 500 -> Color(0xFFA3E4D7)
@@ -305,31 +441,33 @@ fun CashTallyScreen(
                 else -> Color(0xFFD5DBDB)
             }
 
+            val isActive = item.count > 0
+
             NeumorphicPlate(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp),
+                    .padding(vertical = 3.5.dp),
                 cornerRadius = 18.dp,
-                elevation = 3.dp
+                elevation = if (isActive) 4.dp else 2.5.dp
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 1. Currency Face Badge (Left, 72.dp wide)
+                    // 1. Currency Face Badge (Left, 68.dp wide)
                     Box(
                         modifier = Modifier
-                            .size(width = 72.dp, height = 38.dp)
+                            .size(width = 68.dp, height = 38.dp)
                             .neumorphic(
                                 shape = NeumorphicShape.CONCAVE,
                                 cornerRadius = 10.dp,
                                 elevation = 2.dp,
                                 lightShadowColor = colors.lightHighlight,
                                 darkShadowColor = colors.darkShadow,
-                                backgroundColor = noteBadgeColor.copy(alpha = 0.6f)
+                                backgroundColor = noteBadgeColor.copy(alpha = if (isActive) 0.85f else 0.45f)
                             ),
                         contentAlignment = Alignment.Center
                     ) {
@@ -342,10 +480,19 @@ fun CashTallyScreen(
                         )
                     }
 
-                    // 2. Direct Numeric Input Quantity Field (Center, 96.dp wide)
+                    // Mathematical Multiplication Sign (×)
+                    Text(
+                        text = "×",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textSecondary.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(horizontal = 2.dp)
+                    )
+
+                    // 2. Direct Numeric Input Quantity Field (Center, 84.dp wide)
                     Box(
                         modifier = Modifier
-                            .size(width = 96.dp, height = 38.dp)
+                            .size(width = 84.dp, height = 38.dp)
                             .neumorphic(
                                 shape = NeumorphicShape.CONCAVE,
                                 cornerRadius = 10.dp,
@@ -367,7 +514,7 @@ fun CashTallyScreen(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace,
-                                color = colors.textPrimary,
+                                color = if (isActive) colors.textPrimary else colors.textSecondary.copy(alpha = 0.5f),
                                 textAlign = TextAlign.Center
                             ),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -375,7 +522,7 @@ fun CashTallyScreen(
                             cursorBrush = SolidColor(colors.accentEmerald),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 6.dp)
+                                .padding(horizontal = 4.dp)
                         )
                         if (item.count == 0) {
                             Text(
@@ -383,66 +530,32 @@ fun CashTallyScreen(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace,
-                                color = colors.textSecondary.copy(alpha = 0.4f),
+                                color = colors.textSecondary.copy(alpha = 0.35f),
                                 textAlign = TextAlign.Center
                             )
                         }
                     }
 
-                    // 3. Row Subtotal (Right, flexible weight, right-aligned)
+                    // Mathematical Equals Sign (=)
+                    Text(
+                        text = "=",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textSecondary.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(horizontal = 2.dp)
+                    )
+
+                    // 3. Row Subtotal (Right, Bold Emerald Highlight)
                     Text(
                         text = IndianVedicFormatter.formatCurrency(item.subtotal),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
-                        color = colors.textPrimary,
+                        color = if (isActive) RupeeEmeraldGreen else colors.textSecondary.copy(alpha = 0.45f),
                         textAlign = TextAlign.End,
                         modifier = Modifier.weight(1f)
                     )
                 }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // 3. Primary WhatsApp Share Slip Action Button
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-                .neumorphic(
-                    shape = NeumorphicShape.CONVEX,
-                    cornerRadius = 16.dp,
-                    elevation = 6.dp,
-                    lightShadowColor = RupeeEmeraldGreen.copy(alpha = 0.4f),
-                    darkShadowColor = Color.Black.copy(alpha = 0.25f),
-                    backgroundColor = RupeeEmeraldGreen
-                )
-                .clickable {
-                    hapticEngine.playOperatorTick()
-                    val slip = viewModel.generateWhatsAppSlipText()
-                    val sendIntent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, slip)
-                        type = "text/plain"
-                    }
-                    val shareIntent = Intent.createChooser(sendIntent, "Share Cash Closing Slip")
-                    context.startActivity(shareIntent)
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(Icons.Default.Share, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Share WhatsApp Closing Slip",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
             }
         }
 

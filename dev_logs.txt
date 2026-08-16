@@ -479,6 +479,35 @@
 ---
 *Signed by: Shoeb Ahmad*
 
+## 📅 Date: 2026-08-16 — Cash Tally 4-Action Bar (Share, Save, Copy, C/CE) & Sculpted Neumorphic Badges
+
+### 🚀 Major Achievements:
+- Added 4-Button Action Bar Below Display: Integrated `[ 📤 Share ]`, `[ 💾 Save ]`, `[ 📋 Copy ]`, `[ C/CE ]` directly under the master summary plate matching GST Pro layout.
+- Clean Summary Display Plate: Removed internal `C/CE` button from within the display, keeping clean readouts for `TOTAL CASH:`, `Notes: ... Pcs`, and `In Words: ...`.
+- Sculpted Neumorphic Table Header Badges: Replaced flat text headers with 3 elevated 3D convex Neumorphic pill badges (`[ 💵 NOTE ]`, `[ 🔢 COUNT (PCS) ]`, `[ 💰 SUBTOTAL ]`).
+- Mathematical Row Alignment: Embedded formula operators `[ ₹500 ]   ×   [ 250 ]   =   ₹ 1,25,000` with bold Rupee Emerald highlighted subtotals and active row glow.
+- App-Wide Dynamic Theme Switching: Connected live theme toggle callback from Top Action Bar to MainActivity dynamic state.
+
+### 🧪 Verification:
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Live Hardware Deployment: Tested and verified on physical `Realme RMX3998` (`XGQ8JFZXEITGJ7IB`), Android 14.
+- Checks Verified:
+  1. 4-Action Bar renders below display in both Dark and Light themes.
+  2. Tapping `C/CE` resets all note counts.
+  3. 3 Sculpted Neumorphic header badges align with all columns.
+  4. Mathematical formula operators (`×`, `=`) and Emerald subtotals verified.
+  5. Live visual snapshots captured: `17_cash_tally_action_bar_perfect.png` and `18_cash_tally_light_mode_action_bar.png`.
+
+### 📌 Current State:
+- Version: v1.0.0-rc21 (Cash Tally Unified 4-Action Bar & Sculpted Table Headers Active).
+
+### 📝 Next Steps:
+- Commit and push changes to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*
+
+
 
 
 

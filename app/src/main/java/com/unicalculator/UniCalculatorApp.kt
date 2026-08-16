@@ -55,7 +55,10 @@ enum class MainTab(val title: String, val icon: ImageVector) {
 }
 
 @Composable
-fun UniCalculatorApp() {
+fun UniCalculatorApp(
+    isDarkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {}
+) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var historyFilter by remember { mutableStateOf(HistoryFilter.ALL) }
     val colors = LocalNeumorphicColors.current
@@ -155,14 +158,16 @@ fun UniCalculatorApp() {
                     onNavigateToHistory = {
                         historyFilter = HistoryFilter.STANDARD
                         selectedTab = 4
-                    }
+                    },
+                    onToggleTheme = onToggleTheme
                 )
                 1 -> GSTProScreen()
                 2 -> CashTallyScreen(
                     onNavigateToHistory = {
                         historyFilter = HistoryFilter.CASH_TALLY
                         selectedTab = 4
-                    }
+                    },
+                    onToggleTheme = onToggleTheme
                 )
                 3 -> BusinessToolsScreen()
                 4 -> HistoryTapeScreen(initialFilter = historyFilter)
