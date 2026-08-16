@@ -135,24 +135,26 @@ fun CashTallyScreen(
 
         Spacer(modifier = Modifier.height(2.dp))
 
-        // 2. Master Neumorphic Summary Header Plate (Clean Total & Notes Readout)
+        // 2. Master Neumorphic Summary Header Plate (Variant 3: Cashier Pro Split Dual-Metric HUD)
         NeumorphicPlate(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = 24.dp,
             elevation = 6.dp
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
+                // Split Dual Metrics: Left = Total Cash, Right = Total Pcs Card
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Left Column: Total Cash Heading + Large Amount
-                    Column(modifier = Modifier.weight(1f)) {
+                    // Left Metric: TOTAL CASH
+                    Column(modifier = Modifier.weight(1.3f)) {
                         Text(
                             text = "TOTAL CASH:",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.Monospace,
                             color = colors.textSecondary
                         )
                         Spacer(modifier = Modifier.height(2.dp))
@@ -161,34 +163,50 @@ fun CashTallyScreen(
                             style = TextStyle(
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 26.sp,
-                                color = colors.textPrimary
-                            )
+                                fontSize = 24.sp,
+                                color = RupeeEmeraldGreen
+                            ),
+                            maxLines = 1
                         )
                     }
 
-                    // Right Column: Total Notes count
+                    // Right Metric: TOTAL PCS (Dedicated Neumorphic Card)
                     Box(
                         modifier = Modifier
+                            .weight(0.7f)
+                            .height(52.dp)
                             .neumorphic(
                                 shape = NeumorphicShape.CONCAVE,
-                                cornerRadius = 12.dp,
-                                elevation = 2.dp,
+                                cornerRadius = 14.dp,
+                                elevation = 2.5.dp,
                                 lightShadowColor = colors.lightHighlight,
                                 darkShadowColor = colors.darkShadow,
                                 backgroundColor = colors.lcdWellBackground
                             )
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "Notes: ${state.totalNotesCount} Pcs",
-                            style = TextStyle(
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "TOTAL PCS",
+                                fontSize = 9.5.sp,
+                                fontWeight = FontWeight.ExtraBold,
                                 fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = colors.textPrimary
+                                color = colors.textSecondary,
+                                lineHeight = 11.sp
                             )
-                        )
+                            Text(
+                                text = "${state.totalNotesCount}",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace,
+                                color = colors.textPrimary,
+                                lineHeight = 22.sp
+                            )
+                        }
                     }
                 }
 
@@ -226,7 +244,7 @@ fun CashTallyScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Share Action
+            // Share Action (Solid Emerald Pill)
             Box(
                 modifier = Modifier
                     .weight(1.1f)
@@ -237,7 +255,7 @@ fun CashTallyScreen(
                         elevation = 3.dp,
                         lightShadowColor = colors.lightHighlight,
                         darkShadowColor = colors.darkShadow,
-                        backgroundColor = colors.background
+                        backgroundColor = RupeeEmeraldGreen
                     )
                     .clickable {
                         hapticEngine.playKeyClick()
@@ -256,7 +274,7 @@ fun CashTallyScreen(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
-                    color = RupeeEmeraldGreen
+                    color = Color.White
                 )
             }
 
@@ -319,7 +337,7 @@ fun CashTallyScreen(
                 )
             }
 
-            // C/CE Action
+            // C/CE Action (Solid Crimson Red Pill)
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -330,7 +348,7 @@ fun CashTallyScreen(
                         elevation = 3.dp,
                         lightShadowColor = colors.lightHighlight,
                         darkShadowColor = colors.darkShadow,
-                        backgroundColor = colors.background
+                        backgroundColor = DeleteRed
                     )
                     .clickable {
                         hapticEngine.playOperatorTick()
@@ -343,7 +361,7 @@ fun CashTallyScreen(
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
-                    color = DeleteRed
+                    color = Color.White
                 )
             }
         }

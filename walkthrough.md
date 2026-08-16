@@ -1,32 +1,29 @@
-# Walkthrough: Pixel-Perfect Cash Tally Column Lock & 2-Line Count Header
+# Walkthrough: Cash Tally Variant 3 (Cashier Pro Dual-Tone)
 
-## 🎯 What Was Done & Verified
+## 🎯 What Was Built & Verified
 
-### 1. Unified Column Slot Matrix (Deterministic Vertical Lock)
-- Replaced fluid spaced-between positioning with a rigid slot matrix that guarantees vertical alignment between headers and data rows:
-  - **Column 1 (`NOTE`)**: `66.dp` fixed width header pill vertically locked over every `66.dp` note badge (`₹500`, `₹200`, `₹100`...).
-  - **Slot 2 (`×`)**: `16.dp` dedicated operator slot.
-  - **Column 2 (`COUNT`)**: `80.dp` fixed width header pill vertically locked over every `80.dp` count input well (`250`, `80`, `150`...).
-  - **Slot 4 (`=`)**: `16.dp` dedicated operator slot.
-  - **Column 3 (`SUBTOTAL`)**: `weight(1f)` flexible subtotal column right-aligned with `softWrap = false` and `maxLines = 1` preventing multiline wrapping.
+### 1. Split Dual-Metric Master HUD
+- **Left Metric**: `TOTAL CASH:` with large glowing Rupee Emerald amount (`₹ 1,60,650`).
+- **Right Metric Card**: Dedicated Neumorphic pill with `TOTAL PCS` label and bold white note count (`640`).
+- **In-Words Recessed Plate**: Precision etched well showing full currency in words with Hindi/English toggle.
 
-### 2. Two-Line Count Header Pill
-- Refactored `COUNT` column pill to 2-line layout:
-  ```
-  COUNT
-  (Pcs)
-  ```
+### 2. High-Contrast 4-Action Bar
+- **`[ 📤 Share ]`**: Solid Rupee Emerald capsule pill with crisp white text.
+- **`[ 💾 Save ]` & `[ 📋 Copy ]`**: Convex tactile Neumorphic plates.
+- **`[ C/CE ]`**: Solid Crimson Ruby Red capsule pill with crisp white text.
 
-| Pixel-Perfect Cash Tally Layout |
-| :---: |
-| ![Cash Tally Alignment](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/21_cash_tally_pixel_perfect_final_fullscreen.png) |
+### 3. Unified Column Slot Matrix & Pastel Denominations
+- `[ 💵 NOTE ]` (66dp) aligned with authentic RBI currency pastel badges (`₹500`, `₹200`, `₹100`, etc.).
+- `[ COUNT \n (Pcs) ]` (80dp in 2 lines) aligned with deep recessed numeric wells.
+- `[ 💰 SUBTOTAL ]` (weight 1f) aligned with single-line bold emerald totals.
 
 ---
 
-## 🧪 Physical Hardware Verification Results
+## 🧪 Physical Hardware Verification
+
+| Variant 3 Light Mode | Variant 3 Dark Mode |
+| :---: | :---: |
+| ![Light Mode](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/22_cash_tally_variant_3_live_light.png) | ![Dark Mode](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/23_cash_tally_variant_3_live_dark.png) |
+
 - **Device**: Realme RMX3998 (`XGQ8JFZXEITGJ7IB`), Android 14.
-- **Verification Checks**:
-  1. `[ 💵 NOTE ]` pill aligns vertically above currency badges.
-  2. `[ COUNT \n (Pcs) ]` pill is 2 lines and centered above input wells.
-  3. `[ 💰 SUBTOTAL ]` pill aligns above single-line emerald totals.
-  4. Formula operators (`×`, `=`) align vertically in dedicated slots.
+- **Status**: Verified live in both Light and Dark themes.
