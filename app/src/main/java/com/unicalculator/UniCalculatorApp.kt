@@ -158,7 +158,12 @@ fun UniCalculatorApp() {
                     }
                 )
                 1 -> GSTProScreen()
-                2 -> CashTallyScreen()
+                2 -> CashTallyScreen(
+                    onNavigateToHistory = {
+                        historyFilter = HistoryFilter.CASH_TALLY
+                        selectedTab = 4
+                    }
+                )
                 3 -> BusinessToolsScreen()
                 4 -> HistoryTapeScreen(initialFilter = historyFilter)
             }

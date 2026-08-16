@@ -20,6 +20,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unicalculator.core.common.format.IndianVedicFormatter
 import com.unicalculator.core.designsystem.component.NeumorphicHapticEngine
+import com.unicalculator.core.designsystem.component.NeumorphicIconButton
 import com.unicalculator.core.designsystem.component.NeumorphicPlate
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
@@ -49,6 +53,9 @@ import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 
 @Composable
 fun CashTallyScreen(
+    onNavigateToHistory: (() -> Unit)? = null,
+    onToggleTheme: (() -> Unit)? = null,
+    onOpenSettings: (() -> Unit)? = null,
     viewModel: CashTallyViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -61,11 +68,71 @@ fun CashTallyScreen(
         modifier = modifier
             .fillMaxSize()
             .background(colors.background)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 1. Master Neumorphic Summary Header Plate with Clear (C / CE) Button
+        // 1. Top Action Bar: Screen Title (Left) + 3 Neumorphic Action Buttons (Right)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp, top = 2.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Cash Tally",
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = colors.textPrimary,
+                    letterSpacing = 0.5.sp
+                )
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Button 1: History Tape
+                NeumorphicIconButton(
+                    icon = Icons.Outlined.History,
+                    contentDescription = "Cash Tally History",
+                    onClick = {
+                        hapticEngine.playOperatorTick()
+                        onNavigateToHistory?.invoke()
+                    },
+                    iconTint = colors.accentEmerald
+                )
+
+                // Button 2: Light / Dark Theme
+                NeumorphicIconButton(
+                    icon = Icons.Outlined.DarkMode,
+                    contentDescription = "Toggle Theme",
+                    onClick = {
+                        hapticEngine.playOperatorTick()
+                        onToggleTheme?.invoke()
+                    },
+                    iconTint = colors.textSecondary
+                )
+
+                // Button 3: Settings
+                NeumorphicIconButton(
+                    icon = Icons.Outlined.Settings,
+                    contentDescription = "Settings",
+                    onClick = {
+                        hapticEngine.playOperatorTick()
+                        onOpenSettings?.invoke()
+                    },
+                    iconTint = colors.textSecondary
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        // 2. Master Neumorphic Summary Header Plate with C/CE Repositioned to Top-Right
         NeumorphicPlate(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = 24.dp,
@@ -75,8 +142,9 @@ fun CashTallyScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Top
                 ) {
+                    // Left Column: Total Cash Heading + Large Amount
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "TOTAL CASH:",
@@ -84,6 +152,7 @@ fun CashTallyScreen(
                             fontWeight = FontWeight.Bold,
                             color = colors.textSecondary
                         )
+                        Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = state.totalCashFormatted,
                             style = TextStyle(
@@ -95,51 +164,57 @@ fun CashTallyScreen(
                         )
                     }
 
-                    // Clear Entries (C / CE) Action Button
-                    Box(
-                        modifier = Modifier
-                            .size(width = 68.dp, height = 40.dp)
-                            .neumorphic(
-                                shape = NeumorphicShape.CONVEX,
-                                cornerRadius = 10.dp,
-                                elevation = 3.dp,
-                                lightShadowColor = colors.lightHighlight,
-                                darkShadowColor = colors.darkShadow,
-                                backgroundColor = colors.background
-                            )
-                            .clickable {
-                                hapticEngine.playOperatorTick()
-                                viewModel.resetAll()
-                            },
-                        contentAlignment = Alignment.Center
+                    // Right Column: C/CE Button (Top-Right) + Total Notes underneath
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        // Clear Entries (C / CE) Action Button in Top-Right
+                        Box(
+                            modifier = Modifier
+                                .size(width = 64.dp, height = 34.dp)
+                                .neumorphic(
+                                    shape = NeumorphicShape.CONVEX,
+                                    cornerRadius = 10.dp,
+                                    elevation = 3.dp,
+                                    lightShadowColor = colors.lightHighlight,
+                                    darkShadowColor = colors.darkShadow,
+                                    backgroundColor = colors.background
+                                )
+                                .clickable {
+                                    hapticEngine.playOperatorTick()
+                                    viewModel.resetAll()
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
                             Text(
                                 text = "C/CE",
-                                fontSize = 14.sp,
+                                fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = DeleteRed
                             )
                         }
-                    }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text(
-                            text = "Total Notes",
-                            fontSize = 12.sp,
-                            color = colors.textSecondary
-                        )
-                        Text(
-                            text = "${state.totalNotesCount} Pcs",
-                            style = TextStyle(
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
-                                color = colors.textPrimary
+                        // Total Notes readout placed right below C/CE
+                        Row(
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = "Notes:",
+                                fontSize = 11.sp,
+                                color = colors.textSecondary
                             )
-                        )
+                            Text(
+                                text = "${state.totalNotesCount} Pcs",
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    color = colors.textPrimary
+                                )
+                            )
+                        }
                     }
                 }
 

@@ -426,6 +426,32 @@
 ---
 *Signed by: Shoeb Ahmad*
 
+## 📅 Date: 2026-08-16 — Cash Tally Top Action Bar & Top-Right C/CE Repositioning
+
+### 🚀 Major Achievements:
+- Added Top Action Bar to Cash Tally: Integrated screen title `Cash Tally` with 3 Neumorphic icon buttons (History 📜, Theme 🌓, Settings ⚙️).
+- Repositioned C/CE Clear Button: Relocated `C/CE` to the top-right corner of the summary header plate, placing `Total Notes: ... Pcs` directly underneath.
+- Connected Isolated History: Wired Cash Tally top History button to open History pre-filtered specifically to Cash Tally sessions.
+
+### 🧪 Verification:
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Live Hardware Deployment: Installed and verified on `Realme RMX3998`.
+- Checks Verified:
+  1. Cash Tally top bar displays `Cash Tally` title + 3 action buttons.
+  2. `C/CE` is positioned at top-right above `Notes: 640 Pcs`.
+  3. Tapping Top History opens History filtered to `Cash Tally`.
+  4. Captured visual snapshots: `13_cash_tally_top_bar_and_c_ce_repositioned.png` and `14_cash_tally_isolated_history.png`.
+
+### 📌 Current State:
+- Version: v1.0.0-rc19 (Cash Tally Top Action Bar & Ergonomic C/CE Layout Active).
+
+### 📝 Next Steps:
+- Commit and push changes to Git repository `UniAiOwner/UniCalculator` (`main` branch).
+
+---
+*Signed by: Shoeb Ahmad*
+
+
 
 
 
