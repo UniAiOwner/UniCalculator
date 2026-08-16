@@ -142,39 +142,17 @@ fun CashTallyScreen(
             elevation = 6.dp
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                // Split Dual Metrics: Left = Total Cash, Right = Total Pcs Card
+                // Top Row: Split Dual Sunken Wells (Left: TOTAL CASH, Right: TOTAL PCS)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Left Metric: TOTAL CASH
-                    Column(modifier = Modifier.weight(1.3f)) {
-                        Text(
-                            text = "TOTAL CASH:",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontFamily = FontFamily.Monospace,
-                            color = colors.textSecondary
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = state.totalCashFormatted,
-                            style = TextStyle(
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 24.sp,
-                                color = RupeeEmeraldGreen
-                            ),
-                            maxLines = 1
-                        )
-                    }
-
-                    // Right Metric: TOTAL PCS (Dedicated Neumorphic Card)
+                    // Left Sunken Well: TOTAL CASH
                     Box(
                         modifier = Modifier
-                            .weight(0.7f)
-                            .height(52.dp)
+                            .weight(1.35f)
+                            .height(62.dp)
                             .neumorphic(
                                 shape = NeumorphicShape.CONCAVE,
                                 cornerRadius = 14.dp,
@@ -183,7 +161,46 @@ fun CashTallyScreen(
                                 darkShadowColor = colors.darkShadow,
                                 backgroundColor = colors.lcdWellBackground
                             )
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Column(verticalArrangement = Arrangement.Center) {
+                            Text(
+                                text = "TOTAL CASH:",
+                                fontSize = 10.5.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontFamily = FontFamily.Monospace,
+                                color = colors.textSecondary,
+                                lineHeight = 12.sp
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = state.totalCashFormatted,
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 22.sp,
+                                    color = RupeeEmeraldGreen
+                                ),
+                                maxLines = 1
+                            )
+                        }
+                    }
+
+                    // Right Sunken Well: TOTAL PCS
+                    Box(
+                        modifier = Modifier
+                            .weight(0.65f)
+                            .height(62.dp)
+                            .neumorphic(
+                                shape = NeumorphicShape.CONCAVE,
+                                cornerRadius = 14.dp,
+                                elevation = 2.5.dp,
+                                lightShadowColor = colors.lightHighlight,
+                                darkShadowColor = colors.darkShadow,
+                                backgroundColor = colors.lcdWellBackground
+                            )
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
@@ -200,26 +217,26 @@ fun CashTallyScreen(
                             )
                             Text(
                                 text = "${state.totalNotesCount}",
-                                fontSize = 20.sp,
+                                fontSize = 21.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace,
                                 color = colors.textPrimary,
-                                lineHeight = 22.sp
+                                lineHeight = 23.sp
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                // In Words Sub-Badge (Recessed Well)
+                // Bottom Sunken Well: In Words Sub-Badge
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .neumorphic(
                             shape = NeumorphicShape.CONCAVE,
-                            cornerRadius = 14.dp,
-                            elevation = 3.dp,
+                            cornerRadius = 12.dp,
+                            elevation = 2.5.dp,
                             lightShadowColor = colors.lightHighlight,
                             darkShadowColor = colors.darkShadow,
                             backgroundColor = colors.lcdWellBackground
@@ -229,8 +246,9 @@ fun CashTallyScreen(
                 ) {
                     Text(
                         text = "In Words: ${state.wordsText}",
-                        fontSize = 12.sp,
+                        fontSize = 11.5.sp,
                         fontWeight = FontWeight.Medium,
+                        fontFamily = FontFamily.Monospace,
                         color = colors.textPrimary
                     )
                 }
@@ -366,9 +384,9 @@ fun CashTallyScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
-        // 4. SCULPTED NEUMORPHIC TABLE HEADER PILLS (Unified Slot Matrix)
+        // 4. TABLE COLUMN HEADERS (Unified Slot Matrix - 66dp, 16dp, 80dp, 16dp, weight 1f)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -379,11 +397,11 @@ fun CashTallyScreen(
             Box(
                 modifier = Modifier
                     .width(66.dp)
-                    .height(38.dp)
+                    .height(36.dp)
                     .neumorphic(
                         shape = NeumorphicShape.CONVEX,
                         cornerRadius = 10.dp,
-                        elevation = 3.dp,
+                        elevation = 2.5.dp,
                         lightShadowColor = colors.lightHighlight,
                         darkShadowColor = colors.darkShadow,
                         backgroundColor = colors.background
@@ -391,8 +409,8 @@ fun CashTallyScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "💵 NOTE",
-                    fontSize = 10.sp,
+                    text = "[ 💵 NOTE ]",
+                    fontSize = 9.5.sp,
                     fontWeight = FontWeight.ExtraBold,
                     fontFamily = FontFamily.Monospace,
                     color = colors.textPrimary
@@ -402,15 +420,15 @@ fun CashTallyScreen(
             // Multiplication Column Spacer (Exact 16.dp width)
             Spacer(modifier = Modifier.width(16.dp))
 
-            // [ 🔢 COUNT / (Pcs) ] (Exact 80.dp width - 2 Line Layout)
+            // [ COUNT (Pcs) ] (Exact 80.dp width - 2 Line Layout)
             Box(
                 modifier = Modifier
                     .width(80.dp)
-                    .height(38.dp)
+                    .height(36.dp)
                     .neumorphic(
                         shape = NeumorphicShape.CONVEX,
                         cornerRadius = 10.dp,
-                        elevation = 3.dp,
+                        elevation = 2.5.dp,
                         lightShadowColor = colors.lightHighlight,
                         darkShadowColor = colors.darkShadow,
                         backgroundColor = colors.background
@@ -422,20 +440,20 @@ fun CashTallyScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "COUNT",
-                        fontSize = 11.sp,
+                        text = "[ COUNT ]",
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.ExtraBold,
                         fontFamily = FontFamily.Monospace,
                         color = colors.textPrimary,
-                        lineHeight = 12.sp
+                        lineHeight = 11.sp
                     )
                     Text(
                         text = "(Pcs)",
-                        fontSize = 9.sp,
+                        fontSize = 8.5.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
                         color = colors.textSecondary,
-                        lineHeight = 10.sp
+                        lineHeight = 9.5.sp
                     )
                 }
             }
@@ -447,11 +465,11 @@ fun CashTallyScreen(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(38.dp)
+                    .height(36.dp)
                     .neumorphic(
                         shape = NeumorphicShape.CONVEX,
                         cornerRadius = 10.dp,
-                        elevation = 3.dp,
+                        elevation = 2.5.dp,
                         lightShadowColor = colors.lightHighlight,
                         darkShadowColor = colors.darkShadow,
                         backgroundColor = colors.background
@@ -459,8 +477,8 @@ fun CashTallyScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "💰 SUBTOTAL",
-                    fontSize = 10.5.sp,
+                    text = "[ 💰 SUBTOTAL ]",
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.ExtraBold,
                     fontFamily = FontFamily.Monospace,
                     color = RupeeEmeraldGreen
@@ -470,7 +488,7 @@ fun CashTallyScreen(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // 5. Denomination Note Counter Rows (₹500 down to ₹1) - Clean Ledger Grid with Active Glow
+        // 5. Denomination Note Counter Rows (₹500 down to ₹1) - Direct Surface Ledger
         state.state.denominations.forEach { item ->
             val noteBadgeColor = when (item.faceValue) {
                 500 -> Color(0xFFA3E4D7)
@@ -484,130 +502,122 @@ fun CashTallyScreen(
 
             val isActive = item.count > 0
 
-            NeumorphicPlate(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 3.dp),
-                cornerRadius = 18.dp,
-                elevation = if (isActive) 4.dp else 2.5.dp
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
+                // 1. Currency Face Badge (Left, Exact 66.dp wide, Convex Pill)
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .width(66.dp)
+                        .height(38.dp)
+                        .neumorphic(
+                            shape = NeumorphicShape.CONVEX,
+                            cornerRadius = 10.dp,
+                            elevation = if (isActive) 3.5.dp else 2.5.dp,
+                            lightShadowColor = colors.lightHighlight,
+                            darkShadowColor = colors.darkShadow,
+                            backgroundColor = noteBadgeColor.copy(alpha = if (isActive) 1f else 0.85f)
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // 1. Currency Face Badge (Left, Exact 66.dp wide)
-                    Box(
-                        modifier = Modifier
-                            .width(66.dp)
-                            .height(38.dp)
-                            .neumorphic(
-                                shape = NeumorphicShape.CONCAVE,
-                                cornerRadius = 10.dp,
-                                elevation = 2.dp,
-                                lightShadowColor = colors.lightHighlight,
-                                darkShadowColor = colors.darkShadow,
-                                backgroundColor = noteBadgeColor.copy(alpha = if (isActive) 0.85f else 0.45f)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "₹${item.faceValue}",
-                            fontSize = 14.5.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = FontFamily.Monospace,
-                            color = Color(0xFF1C2833)
-                        )
-                    }
-
-                    // Mathematical Multiplication Sign Slot (Exact 16.dp wide)
-                    Box(
-                        modifier = Modifier.width(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "×",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = colors.textSecondary.copy(alpha = 0.6f)
-                        )
-                    }
-
-                    // 2. Direct Numeric Input Quantity Field (Center, Exact 80.dp wide)
-                    Box(
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(38.dp)
-                            .neumorphic(
-                                shape = NeumorphicShape.CONCAVE,
-                                cornerRadius = 10.dp,
-                                elevation = 2.dp,
-                                lightShadowColor = colors.lightHighlight,
-                                darkShadowColor = colors.darkShadow,
-                                backgroundColor = colors.lcdWellBackground
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        BasicTextField(
-                            value = if (item.count == 0) "" else "${item.count}",
-                            onValueChange = { input ->
-                                val sanitized = input.filter { it.isDigit() }
-                                val count = sanitized.toIntOrNull() ?: 0
-                                viewModel.updateCount(item.faceValue, count)
-                            },
-                            textStyle = TextStyle(
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace,
-                                color = if (isActive) colors.textPrimary else colors.textSecondary.copy(alpha = 0.5f),
-                                textAlign = TextAlign.Center
-                            ),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            singleLine = true,
-                            cursorBrush = SolidColor(colors.accentEmerald),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 2.dp)
-                        )
-                        if (item.count == 0) {
-                            Text(
-                                text = "0",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace,
-                                color = colors.textSecondary.copy(alpha = 0.35f),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-
-                    // Mathematical Equals Sign Slot (Exact 16.dp wide)
-                    Box(
-                        modifier = Modifier.width(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "=",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = colors.textSecondary.copy(alpha = 0.6f)
-                        )
-                    }
-
-                    // 3. Row Subtotal (Right, Bold Emerald Highlight, strictly singleLine)
                     Text(
-                        text = IndianVedicFormatter.formatCurrency(item.subtotal),
+                        text = "₹${item.faceValue}",
                         fontSize = 14.5.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
-                        color = if (isActive) RupeeEmeraldGreen else colors.textSecondary.copy(alpha = 0.45f),
-                        textAlign = TextAlign.End,
-                        maxLines = 1,
-                        softWrap = false,
-                        modifier = Modifier.weight(1f)
+                        color = Color(0xFF1C2833)
                     )
                 }
+
+                // Mathematical Multiplication Sign Slot (Exact 16.dp wide)
+                Box(
+                    modifier = Modifier.width(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "×",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textSecondary.copy(alpha = 0.65f)
+                    )
+                }
+
+                // 2. Direct Numeric Input Quantity Field (Center, Exact 80.dp wide, Deep Recessed Concave Well)
+                Box(
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(38.dp)
+                        .neumorphic(
+                            shape = NeumorphicShape.CONCAVE,
+                            cornerRadius = 10.dp,
+                            elevation = 2.5.dp,
+                            lightShadowColor = colors.lightHighlight,
+                            darkShadowColor = colors.darkShadow,
+                            backgroundColor = colors.lcdWellBackground
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    BasicTextField(
+                        value = if (item.count == 0) "" else "${item.count}",
+                        onValueChange = { input ->
+                            val sanitized = input.filter { it.isDigit() }
+                            val count = sanitized.toIntOrNull() ?: 0
+                            viewModel.updateCount(item.faceValue, count)
+                        },
+                        textStyle = TextStyle(
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.Monospace,
+                            color = if (isActive) colors.textPrimary else colors.textSecondary.copy(alpha = 0.5f),
+                            textAlign = TextAlign.Center
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        cursorBrush = SolidColor(colors.accentEmerald),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 2.dp)
+                    )
+                    if (item.count == 0) {
+                        Text(
+                            text = "0",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.Monospace,
+                            color = colors.textSecondary.copy(alpha = 0.35f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                // Mathematical Equals Sign Slot (Exact 16.dp wide)
+                Box(
+                    modifier = Modifier.width(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "=",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textSecondary.copy(alpha = 0.65f)
+                    )
+                }
+
+                // 3. Row Subtotal (Right, Bold Emerald Highlight, strictly singleLine)
+                Text(
+                    text = IndianVedicFormatter.formatCurrency(item.subtotal),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Monospace,
+                    color = if (isActive) RupeeEmeraldGreen else colors.textSecondary.copy(alpha = 0.45f),
+                    textAlign = TextAlign.End,
+                    maxLines = 1,
+                    softWrap = false,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
 
