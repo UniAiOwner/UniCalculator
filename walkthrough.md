@@ -1,22 +1,20 @@
-# Walkthrough: Professional In-Words Typography & DOCS Current Progress Suite
+# Walkthrough: Standard Calculator HTML Spec Alignment
 
 ## 🎯 Overview
-1. **Clean Professional In-Words Typography**:
-   - Replaced playful `✍️` writing hand emoji with formal `IN WORDS:` banking label (`GSTProScreen.kt`).
-   - Container styled with `NeumorphicShape.CONCAVE` micro-plate and multi-line wrapping.
-2. **Complete `DOCS/current_progress/` Documentation Suite**:
-   - Captured 6 pristine live hardware screenshots directly from physical device `Realme RMX3998`.
-   - Authored complete architecture, UI hierarchy, and mathematical specifications across all screens and design systems.
+Successfully aligned the **Standard Calculator** with the conceptual architecture specified in `unicalculator_all_screens.html`:
+1. **5-Row Ergonomic Keypad Matrix**: Streamlined the keypad to exactly 5 tall squircle rows (`64.dp` height), eliminating clutter and providing maximum key surface area for cashier speed.
+   - Row 1: `[ C ] (DeleteRed)` · `[ ⌫ ] (Amber)` · `[ % ] (Orange)` · `[ ÷ ] (Orange)`
+   - Row 2: `[ 7 ]` · `[ 8 ]` · `[ 9 ]` · `[ × ] (Orange)`
+   - Row 3: `[ 4 ]` · `[ 5 ]` · `[ 6 ]` · `[ − ] (Orange)`
+   - Row 4: `[ 1 ]` · `[ 2 ]` · `[ 3 ]` · `[ + ] (Orange)`
+   - Row 5: `[ 00 ]` · `[ 0 ]` · `[ . ]` · `[ = ] (Solid Emerald Green)`
+2. **Solid Emerald Green Equals Button**: Upgraded `=` to a solid **Rupee Emerald Green (`#059669`)** 3D raised key with crisp white typography.
+3. **Grand LCD Recessed Display**: Recessed concave well displaying live arithmetic expression, emerald result amount (`₹ 10,000.00`), and real-time Vedic currency transcription (`Ten Thousand Rupees Only`).
 
 ---
 
-## 📱 Visual Highlights
+## 📱 Hardware Verification & Live Snapshots
 
-| Screen | State | Live Screenshot |
+| Screen | State | Live Physical Hardware Snapshot |
 |---|---|---|
-| **Standard Calculator** | Default State | ![Standard](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/01_screen_standard_calc.png) |
-| **GST Pro (+GST)** | Forward Mode (18% Emerald Neon Ring, `IN WORDS:`) | ![GST Pro Forward](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/02_screen_gst_pro_forward.png) |
-| **GST Pro (−GST)** | Reverse Mode (28% Amber Neon Ring, Inter-State IGST) | ![GST Pro Reverse](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/03_screen_gst_pro_reverse_interstate.png) |
-| **Cash Tally** | Denomination Counter | ![Cash Tally](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/04_screen_cash_tally.png) |
-| **Business Tools** | Margin & Markup Solver | ![Business Tools](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/05_screen_business_tools.png) |
-| **History Tape** | Calculation Audit Roll | ![History Tape](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/06_screen_history_tape.png) |
+| **Standard Calculator** | Active Calculation (`7500 + 2500 = ₹10,000.00`) | ![Standard Calc Live](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/DOCS/current_progress/visuals/01_screen_standard_calc.png) |

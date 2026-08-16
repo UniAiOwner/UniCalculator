@@ -34,7 +34,9 @@ fun NeumorphicButton(
     textColor: Color? = null,
     fontSize: Int = 24,
     isAccent: Boolean = false,
-    accentColor: Color? = null
+    accentColor: Color? = null,
+    isSolidAccent: Boolean = false,
+    backgroundColor: Color? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -49,6 +51,19 @@ fun NeumorphicButton(
     val currentShape = if (isPressed) NeumorphicShape.CONCAVE else NeumorphicShape.CONVEX
     val activeNeonColor = textColor ?: if (isAccent) (accentColor ?: colors.accentEmerald) else colors.accentEmerald
 
+    val resolvedBgColor = when {
+        isSolidAccent -> backgroundColor ?: (accentColor ?: colors.accentEmerald)
+        backgroundColor != null -> backgroundColor
+        else -> colors.background
+    }
+
+    val resolvedTextColor = when {
+        isSolidAccent -> textColor ?: Color.White
+        textColor != null -> textColor
+        isAccent -> accentColor ?: colors.accentEmerald
+        else -> colors.textPrimary
+    }
+
     Box(
         modifier = modifier
             .graphicsLayer {
@@ -59,10 +74,10 @@ fun NeumorphicButton(
                 shape = currentShape,
                 cornerRadius = cornerRadius,
                 elevation = if (isPressed) 4.dp else 6.dp,
-                lightShadowColor = colors.lightHighlight,
-                darkShadowColor = colors.darkShadow,
-                backgroundColor = colors.background,
-                neonGlowColor = if (isPressed) activeNeonColor else null
+                lightShadowColor = if (isSolidAccent) colors.lightHighlight.copy(alpha = 0.6f) else colors.lightHighlight,
+                darkShadowColor = if (isSolidAccent) colors.darkShadow.copy(alpha = 0.7f) else colors.darkShadow,
+                backgroundColor = resolvedBgColor,
+                neonGlowColor = if (isPressed) (if (isSolidAccent) Color.White.copy(alpha = 0.7f) else activeNeonColor) else null
             )
             .clickable(
                 interactionSource = interactionSource,
@@ -78,7 +93,7 @@ fun NeumorphicButton(
                 fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.Bold,
                 fontSize = fontSize.sp,
-                color = textColor ?: if (isAccent) (accentColor ?: colors.accentEmerald) else colors.textPrimary
+                color = resolvedTextColor
             )
         )
     }

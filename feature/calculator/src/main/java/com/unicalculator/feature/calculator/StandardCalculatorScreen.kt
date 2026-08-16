@@ -57,58 +57,11 @@ fun StandardCalculatorScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 2. 4-Column Ergonomic 3D Squircle Keypad Matrix
+        // 2. 5-Row Ergonomic 3D Squircle Keypad Matrix (Zero dead space, tall keys)
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Memory Row (MC, MR, M-, M+)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                NeumorphicButton(
-                    text = "MC",
-                    onClick = {
-                        hapticEngine.playKeyClick()
-                        viewModel.onMemoryClear()
-                    },
-                    modifier = Modifier.weight(1f).height(46.dp),
-                    textColor = MemoryGrey,
-                    fontSize = 15
-                )
-                NeumorphicButton(
-                    text = "MR",
-                    onClick = {
-                        hapticEngine.playKeyClick()
-                        viewModel.onMemoryRecall()
-                    },
-                    modifier = Modifier.weight(1f).height(46.dp),
-                    textColor = MemoryGrey,
-                    fontSize = 15
-                )
-                NeumorphicButton(
-                    text = "M-",
-                    onClick = {
-                        hapticEngine.playKeyClick()
-                        viewModel.onMemorySubtract()
-                    },
-                    modifier = Modifier.weight(1f).height(46.dp),
-                    textColor = MemoryGrey,
-                    fontSize = 15
-                )
-                NeumorphicButton(
-                    text = "M+",
-                    onClick = {
-                        hapticEngine.playKeyClick()
-                        viewModel.onMemoryAdd()
-                    },
-                    modifier = Modifier.weight(1f).height(46.dp),
-                    textColor = MemoryGrey,
-                    fontSize = 15
-                )
-            }
-
             // Row 1: C, ⌫ (Backspace), %, ÷ (Directly Above 7, 8, 9)
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -120,9 +73,9 @@ fun StandardCalculatorScreen(
                         hapticEngine.playOperatorTick()
                         viewModel.onClear()
                     },
-                    modifier = Modifier.weight(1f).height(58.dp),
+                    modifier = Modifier.weight(1f).height(64.dp),
                     textColor = DeleteRed,
-                    fontSize = 22
+                    fontSize = 24
                 )
                 NeumorphicButton(
                     text = "⌫",
@@ -130,9 +83,9 @@ fun StandardCalculatorScreen(
                         hapticEngine.playKeyClick()
                         viewModel.onDelete()
                     },
-                    modifier = Modifier.weight(1f).height(58.dp),
-                    textColor = DeleteRed,
-                    fontSize = 20
+                    modifier = Modifier.weight(1f).height(64.dp),
+                    textColor = OperatorOrange,
+                    fontSize = 22
                 )
                 NeumorphicButton(
                     text = "%",
@@ -140,9 +93,9 @@ fun StandardCalculatorScreen(
                         hapticEngine.playOperatorTick()
                         viewModel.onPercentage()
                     },
-                    modifier = Modifier.weight(1f).height(58.dp),
+                    modifier = Modifier.weight(1f).height(64.dp),
                     textColor = OperatorOrange,
-                    fontSize = 22
+                    fontSize = 24
                 )
                 NeumorphicButton(
                     text = "÷",
@@ -150,9 +103,9 @@ fun StandardCalculatorScreen(
                         hapticEngine.playOperatorTick()
                         viewModel.onOperator("÷")
                     },
-                    modifier = Modifier.weight(1f).height(58.dp),
+                    modifier = Modifier.weight(1f).height(64.dp),
                     textColor = OperatorOrange,
-                    fontSize = 24
+                    fontSize = 26
                 )
             }
 
@@ -161,13 +114,13 @@ fun StandardCalculatorScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                NeumorphicButton("7", { hapticEngine.playKeyClick(); viewModel.onDigit("7") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
-                NeumorphicButton("8", { hapticEngine.playKeyClick(); viewModel.onDigit("8") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
-                NeumorphicButton("9", { hapticEngine.playKeyClick(); viewModel.onDigit("9") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("7", { hapticEngine.playKeyClick(); viewModel.onDigit("7") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
+                NeumorphicButton("8", { hapticEngine.playKeyClick(); viewModel.onDigit("8") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
+                NeumorphicButton("9", { hapticEngine.playKeyClick(); viewModel.onDigit("9") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
                 NeumorphicButton("×", {
                     hapticEngine.playOperatorTick()
                     viewModel.onOperator("×")
-                }, Modifier.weight(1f).height(58.dp), textColor = OperatorOrange, fontSize = 24)
+                }, Modifier.weight(1f).height(64.dp), textColor = OperatorOrange, fontSize = 26)
             }
 
             // Row 3: 4, 5, 6, −
@@ -175,13 +128,13 @@ fun StandardCalculatorScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                NeumorphicButton("4", { hapticEngine.playKeyClick(); viewModel.onDigit("4") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
-                NeumorphicButton("5", { hapticEngine.playKeyClick(); viewModel.onDigit("5") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
-                NeumorphicButton("6", { hapticEngine.playKeyClick(); viewModel.onDigit("6") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("4", { hapticEngine.playKeyClick(); viewModel.onDigit("4") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
+                NeumorphicButton("5", { hapticEngine.playKeyClick(); viewModel.onDigit("5") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
+                NeumorphicButton("6", { hapticEngine.playKeyClick(); viewModel.onDigit("6") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
                 NeumorphicButton("−", {
                     hapticEngine.playOperatorTick()
                     viewModel.onOperator("-")
-                }, Modifier.weight(1f).height(58.dp), textColor = OperatorOrange, fontSize = 24)
+                }, Modifier.weight(1f).height(64.dp), textColor = OperatorOrange, fontSize = 26)
             }
 
             // Row 4: 1, 2, 3, + (Directly Above =)
@@ -189,27 +142,35 @@ fun StandardCalculatorScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                NeumorphicButton("1", { hapticEngine.playKeyClick(); viewModel.onDigit("1") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
-                NeumorphicButton("2", { hapticEngine.playKeyClick(); viewModel.onDigit("2") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
-                NeumorphicButton("3", { hapticEngine.playKeyClick(); viewModel.onDigit("3") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
+                NeumorphicButton("1", { hapticEngine.playKeyClick(); viewModel.onDigit("1") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
+                NeumorphicButton("2", { hapticEngine.playKeyClick(); viewModel.onDigit("2") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
+                NeumorphicButton("3", { hapticEngine.playKeyClick(); viewModel.onDigit("3") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
                 NeumorphicButton("+", {
                     hapticEngine.playOperatorTick()
                     viewModel.onOperator("+")
-                }, Modifier.weight(1f).height(58.dp), textColor = OperatorOrange, fontSize = 24)
+                }, Modifier.weight(1f).height(64.dp), textColor = OperatorOrange, fontSize = 26)
             }
 
-            // Row 5: 00, 0, ., = (Directly Below +)
+            // Row 5: 00, 0, ., = (Solid Rupee Emerald Green Button)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                NeumorphicButton("00", { hapticEngine.playKeyClick(); viewModel.onDigit("00") }, Modifier.weight(1f).height(58.dp), fontSize = 20)
-                NeumorphicButton("0", { hapticEngine.playKeyClick(); viewModel.onDigit("0") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
-                NeumorphicButton(".", { hapticEngine.playKeyClick(); viewModel.onDigit(".") }, Modifier.weight(1f).height(58.dp), fontSize = 22)
-                NeumorphicButton("=", {
-                    hapticEngine.playOperatorTick()
-                    viewModel.onEquals()
-                }, Modifier.weight(1f).height(58.dp), textColor = RupeeEmeraldGreen, isAccent = true, fontSize = 26)
+                NeumorphicButton("00", { hapticEngine.playKeyClick(); viewModel.onDigit("00") }, Modifier.weight(1f).height(64.dp), fontSize = 22)
+                NeumorphicButton("0", { hapticEngine.playKeyClick(); viewModel.onDigit("0") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
+                NeumorphicButton(".", { hapticEngine.playKeyClick(); viewModel.onDigit(".") }, Modifier.weight(1f).height(64.dp), fontSize = 24)
+                NeumorphicButton(
+                    text = "=",
+                    onClick = {
+                        hapticEngine.playOperatorTick()
+                        viewModel.onEquals()
+                    },
+                    modifier = Modifier.weight(1f).height(64.dp),
+                    isSolidAccent = true,
+                    backgroundColor = RupeeEmeraldGreen,
+                    textColor = androidx.compose.ui.graphics.Color.White,
+                    fontSize = 28
+                )
             }
         }
 

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>UniCalculator Bharat — Screen Suite (Revised)</title>
+<style>
+  :root{
+    --bg:#F0EEE9;
+    --key:#F0EEE9;
+    --well:#E6E2DA;
+    --light:#FFFFFF;
+    --dark:#C7C2B6;
+    --ink:#2B2822;
+    --muted:#8A8578;
+    --emerald:#059669;
+    --amber:#D97706;
+    --sapphire:#2563EB;
+    --orange:#EA580C;
+    --red:#DC2626;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    padding:40px 24px;
+    background:#1c1a17;
+    font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  h1{
+    color:#F0EEE9;
+    text-align:center;
+    font-weight:600;
+    font-size:22px;
+    letter-spacing:0.5px;
+    margin:0 0 6px;
+  }
+  p.sub{
+    color:#8A8578;
+    text-align:center;
+    font-size:13px;
+    margin:0 0 36px;
+  }
+  .rack{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    justify-content:center;
+    max-width:1600px;
+    margin:0 auto;
+  }
+  .phone{
+    width:250px;
+    background:var(--bg);
+    border-radius:26px;
+    padding:12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+    position:relative;
+  }
+  .label{
+    text-align:center;
+    color:#F0EEE9;
+    font-size:12px;
+    font-weight:600;
+    margin-bottom:10px;
+    letter-spacing:0.4px;
+  }
+  .topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:2px 4px 10px;
+  }
+  .appname{font-size:11px;font-weight:600;color:var(--ink);}
+  .icons{display:flex;gap:6px;}
+  .icon{
+    width:20px;height:20px;border-radius:7px;background:var(--key);
+    box-shadow:2px 2px 4px var(--dark), -2px -2px 4px var(--light);
+  }
+  .well{
+    background:var(--well);
+    border-radius:16px;
+    padding:12px 12px 10px;
+    margin-bottom:10px;
+    box-shadow: inset 5px 5px 10px var(--dark), inset -5px -5px 10px var(--light);
+  }
+  .well .amt{
+    font-family:'Consolas',monospace;
+    font-size:22px;font-weight:600;color:var(--emerald);
+    text-align:right;
+  }
+  .well .words{
+    font-size:9px;color:var(--muted);font-style:italic;text-align:right;margin-top:3px;
+    line-height:1.3;
+  }
+  .grid4{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  }
+  .key{
+    background:var(--key);
+    border-radius:10px;
+    text-align:center;
+    padding:10px 0;
+    font-size:12px;font-weight:500;color:var(--ink);
+    box-shadow:3px 3px 6px var(--dark), -3px -3px 6px var(--light);
+  }
+  .key.op{color:var(--orange);}
+  .key.eq{background:var(--emerald);color:#fff;}
+  .key.eq.blue{background:var(--sapphire);}
+  .key.clear{color:var(--red);}
+  .navbar{
+    display:flex;justify-content:space-around;align-items:center;
+    margin-top:10px;background:var(--well);border-radius:14px;padding:7px 2px;
+    box-shadow: inset 2px 2px 4px var(--dark), inset -2px -2px 4px var(--light);
+  }
+  .navitem{text-align:center;color:var(--muted);font-size:7px;}
+  .navitem.active{color:var(--emerald);font-weight:600;}
+  .navdot{width:12px;height:12px;border-radius:50%;background:currentColor;margin:0 auto 2px;opacity:0.85;}
+
+  /* GST Pro specifics */
+  .receipt{background:var(--well);border-radius:16px;padding:12px;margin-bottom:9px;
+    box-shadow: inset 5px 5px 10px var(--dark), inset -5px -5px 10px var(--light);}
+  .receipt .row{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);
+    border-bottom:1px solid #d6d1c5;padding-bottom:6px;margin-bottom:6px;}
+  .receipt .row .base{font-family:monospace;font-size:13px;color:var(--ink);font-weight:600;}
+  .receipt .cols{display:flex;justify-content:space-between;}
+  .receipt .cgst{font-size:9px;color:var(--emerald);margin-bottom:2px;}
+  .receipt .total{font-family:monospace;font-size:13px;color:var(--sapphire);font-weight:600;text-align:right;}
+  .receipt .tax{font-size:9px;color:var(--muted);text-align:right;margin-bottom:2px;}
+  .inwords{margin-top:8px;background:#DCD8D0;border-radius:9px;padding:6px 8px;
+    box-shadow:inset 2px 2px 4px var(--dark), inset -2px -2px 4px var(--light);}
+  .inwords .lbl{font-size:7px;color:var(--muted);letter-spacing:0.3px;}
+  .inwords .txt{font-size:8.5px;color:var(--ink);line-height:1.3;}
+  .switchrow{display:flex;gap:6px;margin-bottom:8px;}
+  .switch{flex:1;display:flex;background:var(--well);border-radius:10px;padding:2px;
+    box-shadow: inset 2px 2px 4px var(--dark), inset -2px -2px 4px var(--light);}
+  .switch .on{flex:1;text-align:center;padding:6px 0;border-radius:8px;font-size:8px;font-weight:600;color:#fff;background:var(--emerald);}
+  .switch .off{flex:1;text-align:center;padding:6px 0;font-size:8px;color:var(--muted);}
+  .switch.blue .on{background:var(--sapphire);}
+  .slabrow{display:flex;gap:5px;margin-bottom:8px;}
+  .slab{flex:1;background:var(--key);border-radius:9px;text-align:center;padding:8px 0;
+    font-size:9px;font-weight:500;color:#5a564d;
+    box-shadow:3px 3px 6px var(--dark), -3px -3px 6px var(--light);}
+  .slab.active{
+    background:var(--well);color:var(--emerald);font-weight:700;
+    box-shadow: inset 2px 2px 4px var(--dark), inset -2px -2px 4px var(--light),
+      0 0 0 1.4px var(--emerald), 0 0 8px 2px rgba(5,150,105,0.5);
+  }
+  .actionrow{display:flex;gap:5px;margin-bottom:8px;}
+  .action{flex:1;background:var(--key);border-radius:9px;text-align:center;padding:7px 0;
+    font-size:8px;font-weight:500;color:#5a564d;
+    box-shadow:3px 3px 6px var(--dark), -3px -3px 6px var(--light);}
+
+  /* Cash tally specifics */
+  .cashhead{background:var(--well);border-radius:16px;padding:12px;margin-bottom:9px;
+    box-shadow: inset 5px 5px 10px var(--dark), inset -5px -5px 10px var(--light);
+    position:relative;}
+  .cashhead .lbl{font-size:8px;color:var(--muted);letter-spacing:0.3px;}
+  .cashhead .total{font-family:monospace;font-size:19px;font-weight:600;color:var(--ink);margin:2px 0;}
+  .cashhead .meta{display:flex;justify-content:space-between;font-size:8px;color:var(--muted);margin-top:2px;}
+  .clearbtn{position:absolute;top:10px;right:10px;background:var(--key);border-radius:7px;
+    padding:3px 7px;font-size:7px;color:var(--red);font-weight:600;
+    box-shadow:2px 2px 4px var(--dark), -2px -2px 4px var(--light);}
+  .denomrow{display:flex;align-items:center;gap:6px;background:var(--key);border-radius:10px;
+    padding:6px 8px;margin-bottom:5px;box-shadow:2px 2px 5px var(--dark), -2px -2px 5px var(--light);}
+  .badge{width:32px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;
+    font-size:7px;font-weight:700;color:#4a4536;flex-shrink:0;}
+  .cnt{background:var(--well);border-radius:6px;padding:3px 6px;font-size:9px;font-weight:600;color:var(--ink);
+    box-shadow:inset 1.5px 1.5px 3px var(--dark), inset -1.5px -1.5px 3px var(--light);min-width:22px;text-align:center;}
+  .sub{flex:1;font-size:9px;color:var(--ink);text-align:right;font-family:monospace;}
+  .stepbtn{width:16px;height:16px;border-radius:5px;background:var(--key);font-size:9px;text-align:center;line-height:16px;color:var(--muted);
+    box-shadow:1.5px 1.5px 3px var(--dark), -1.5px -1.5px 3px var(--light);}
+
+  /* Business tools */
+  .toolstabs{display:flex;gap:6px;margin-bottom:9px;}
+  .tab{flex:1;text-align:center;padding:7px 0;border-radius:10px;font-size:8.5px;font-weight:500;
+    background:var(--key);color:var(--muted);box-shadow:3px 3px 6px var(--dark), -3px -3px 6px var(--light);}
+  .tab.active{color:var(--emerald);font-weight:700;
+    box-shadow: inset 2px 2px 4px var(--dark), inset -2px -2px 4px var(--light), 0 0 0 1.2px var(--emerald);}
+  .solver{background:var(--well);border-radius:16px;padding:12px;margin-bottom:9px;
+    box-shadow: inset 5px 5px 10px var(--dark), inset -5px -5px 10px var(--light);}
+  .field{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .field .fl{font-size:9px;color:var(--muted);}
+  .field .fv{background:var(--key);border-radius:7px;padding:4px 8px;font-size:10px;font-weight:600;color:var(--ink);
+    box-shadow:2px 2px 4px var(--dark), -2px -2px 4px var(--light);font-family:monospace;}
+  .field.result .fv{color:var(--emerald);background:none;box-shadow:none;font-size:12px;}
+  .field.result .fl{color:var(--ink);font-weight:600;}
+  .gstline{background:var(--key);border-radius:9px;padding:8px;text-align:center;font-size:9px;
+    color:var(--sapphire);font-weight:600;box-shadow:3px 3px 6px var(--dark), -3px -3px 6px var(--light);}
+
+  /* History tape */
+  .tapetitle{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+  .filters{display:flex;gap:5px;margin-bottom:9px;}
+  .filter{flex:1;text-align:center;padding:5px 0;border-radius:8px;font-size:7.5px;font-weight:500;
+    background:var(--key);color:var(--muted);box-shadow:2px 2px 4px var(--dark), -2px -2px 4px var(--light);}
+  .filter.active{color:var(--emerald);font-weight:700;
+    box-shadow:inset 2px 2px 4px var(--dark), inset -2px -2px 4px var(--light), 0 0 0 1.2px var(--emerald);}
+  .tapeitem{background:var(--key);border-radius:11px;padding:9px 10px;margin-bottom:7px;
+    box-shadow:3px 3px 7px var(--dark), -3px -3px 7px var(--light);}
+  .tapeitem .th{display:flex;justify-content:space-between;font-size:8px;margin-bottom:3px;}
+  .tapeitem .th .num{color:var(--emerald);font-weight:700;}
+  .tapeitem .th .time{color:var(--muted);}
+  .tapeitem .expr{font-size:8px;color:var(--muted);margin-bottom:3px;}
+  .tapeitem .res{font-family:monospace;font-size:12px;font-weight:700;color:var(--ink);}
+</style>
+</head>
+<body>
+
+<h1>UniCalculator Bharat — Revised Screen Suite</h1>
+<p class="sub">Deeper tactile shadows · zero dead space · fixed text-wrap · dual-pass neon ring</p>
+
+<div class="rack">
+
+  <!-- STANDARD CALCULATOR -->
+  <div>
+    <div class="label">1 · Standard Calculator</div>
+    <div class="phone">
+      <div class="topbar">
+        <span class="appname">UniCalculator</span>
+        <div class="icons"><div class="icon" style="font-size:8px;color:var(--emerald);font-weight:700;display:flex;align-items:center;justify-content:center">M</div><div class="icon"></div><div class="icon"></div></div>
+      </div>
+      <div class="well">
+        <div class="amt">₹ 0.00</div>
+        <div class="words">Zero Rupees Only</div>
+      </div>
+      <div class="grid4" style="--key-pad:16px">
+        <div class="key clear" style="padding:16px 0;font-size:14px">C</div><div class="key op" style="padding:16px 0;font-size:14px">⌫</div><div class="key op" style="padding:16px 0;font-size:14px">%</div><div class="key op" style="padding:16px 0;font-size:14px">÷</div>
+        <div class="key" style="padding:16px 0;font-size:15px">7</div><div class="key" style="padding:16px 0;font-size:15px">8</div><div class="key" style="padding:16px 0;font-size:15px">9</div><div class="key op" style="padding:16px 0;font-size:15px">×</div>
+        <div class="key" style="padding:16px 0;font-size:15px">4</div><div class="key" style="padding:16px 0;font-size:15px">5</div><div class="key" style="padding:16px 0;font-size:15px">6</div><div class="key op" style="padding:16px 0;font-size:15px">−</div>
+        <div class="key" style="padding:16px 0;font-size:15px">1</div><div class="key" style="padding:16px 0;font-size:15px">2</div><div class="key" style="padding:16px 0;font-size:15px">3</div><div class="key op" style="padding:16px 0;font-size:15px">+</div>
+        <div class="key" style="padding:16px 0;font-size:14px">00</div><div class="key" style="padding:16px 0;font-size:15px">0</div><div class="key" style="padding:16px 0;font-size:15px">.</div><div class="key eq" style="padding:16px 0;font-size:15px">=</div>
+      </div>
+      <div class="navbar">
+        <div class="navitem active"><div class="navdot"></div>Standard</div>
+        <div class="navitem"><div class="navdot"></div>GST Pro</div>
+        <div class="navitem"><div class="navdot"></div>Cash</div>
+        <div class="navitem"><div class="navdot"></div>Tools</div>
+        <div class="navitem"><div class="navdot"></div>History</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GST PRO -->
+  <div>
+    <div class="label">2 · GST Pro (Forward, Intra-State)</div>
+    <div class="phone">
+      <div class="topbar">
+        <span class="appname">GST Pro</span>
+        <div class="icons"><div class="icon"></div></div>
+      </div>
+      <div class="receipt">
+        <div class="row"><span>BASE AMOUNT</span><span class="base">₹45,000.00</span></div>
+        <div class="cols">
+          <div>
+            <div class="cgst">CGST (9.0%): ₹4,050.00</div>
+            <div class="cgst">SGST (9.0%): ₹4,050.00</div>
+          </div>
+          <div>
+            <div class="tax">Total Tax (18%): ₹8,100.00</div>
+            <div class="total">₹53,100.00</div>
+          </div>
+        </div>
+        <div class="inwords">
+          <div class="lbl">IN WORDS</div>
+          <div class="txt">Fifty Three Thousand One Hundred Rupees Only</div>
+        </div>
+      </div>
+      <div class="switchrow">
+        <div class="switch"><div class="on">+GST</div><div class="off">−GST</div></div>
+        <div class="switch blue"><div class="on">CGST+SGST</div><div class="off">IGST</div></div>
+      </div>
+      <div class="slabrow">
+        <div class="slab">3%</div><div class="slab">5%</div><div class="slab">12%</div>
+        <div class="slab active">+18%</div><div class="slab">28%</div>
+      </div>
+      <div class="actionrow">
+        <div class="action" style="color:var(--emerald)">Share</div>
+        <div class="action">Save</div><div class="action">Copy</div>
+        <div class="action" style="color:var(--red)">C</div>
+      </div>
+      <div class="grid4">
+        <div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key op">⌫</div>
+        <div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key op">÷</div>
+        <div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key op">×</div>
+        <div class="key">.</div><div class="key">0</div><div class="key">00</div><div class="key eq blue">=</div>
+      </div>
+      <div class="navbar">
+        <div class="navitem"><div class="navdot"></div>Standard</div>
+        <div class="navitem active"><div class="navdot"></div>GST Pro</div>
+        <div class="navitem"><div class="navdot"></div>Cash</div>
+        <div class="navitem"><div class="navdot"></div>Tools</div>
+        <div class="navitem"><div class="navdot"></div>History</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASH TALLY -->
+  <div>
+    <div class="label">3 · Cash Tally (Rokad)</div>
+    <div class="phone">
+      <div class="topbar">
+        <span class="appname">Cash Tally</span>
+        <div class="icons"><div class="icon"></div></div>
+      </div>
+      <div class="cashhead">
+        <div class="clearbtn">C/CE</div>
+        <div class="lbl">TOTAL CASH</div>
+        <div class="total">₹1,60,650.00</div>
+        <div class="meta"><span>640 Pcs</span><span>One Lakh Sixty Thousand<br>Six Hundred Fifty Only</span></div>
+      </div>
+      <div class="denomrow"><div class="badge" style="background:#f3c9c9">₹2000</div><div class="cnt">0</div><div class="sub">₹0.00</div><div class="stepbtn">−</div><div class="stepbtn">+</div></div>
+      <div class="denomrow"><div class="badge" style="background:#bfe3d4">₹500</div><div class="cnt">250</div><div class="sub">₹1,25,000</div><div class="stepbtn">−</div><div class="stepbtn">+</div></div>
+      <div class="denomrow"><div class="badge" style="background:#f0e3ad">₹200</div><div class="cnt">80</div><div class="sub">₹16,000</div><div class="stepbtn">−</div><div class="stepbtn">+</div></div>
+      <div class="denomrow"><div class="badge" style="background:#d7c8ec">₹100</div><div class="cnt">150</div><div class="sub">₹15,000</div><div class="stepbtn">−</div><div class="stepbtn">+</div></div>
+      <div class="denomrow"><div class="badge" style="background:#bcd9ec">₹50</div><div class="cnt">65</div><div class="sub">₹3,250</div><div class="stepbtn">−</div><div class="stepbtn">+</div></div>
+      <div class="navbar">
+        <div class="navitem"><div class="navdot"></div>Standard</div>
+        <div class="navitem"><div class="navdot"></div>GST Pro</div>
+        <div class="navitem active"><div class="navdot"></div>Cash</div>
+        <div class="navitem"><div class="navdot"></div>Tools</div>
+        <div class="navitem"><div class="navdot"></div>History</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUSINESS TOOLS -->
+  <div>
+    <div class="label">4 · Business Tools</div>
+    <div class="phone">
+      <div class="topbar">
+        <span class="appname">Business Tools</span>
+        <div class="icons"><div class="icon"></div></div>
+      </div>
+      <div class="toolstabs">
+        <div class="tab active">Margin & Markup</div>
+        <div class="tab">Loan EMI</div>
+      </div>
+      <div class="solver">
+        <div class="field"><span class="fl">Cost Price (CP)</span><span class="fv">₹1,200.00</span></div>
+        <div class="field"><span class="fl">Selling Price (SP)</span><span class="fv">₹1,600.00</span></div>
+        <div class="field result"><span class="fl">Gross Profit</span><span class="fv">₹400.00</span></div>
+        <div class="field result"><span class="fl">Margin (on SP)</span><span class="fv" style="color:var(--emerald)">25.00%</span></div>
+        <div class="field result"><span class="fl">Markup (on CP)</span><span class="fv" style="color:var(--amber)">33.33%</span></div>
+      </div>
+      <div class="gstline">+18% GST Add-on → Final Price: ₹1,888.00</div>
+      <div style="height:64px"></div>
+      <div class="navbar">
+        <div class="navitem"><div class="navdot"></div>Standard</div>
+        <div class="navitem"><div class="navdot"></div>GST Pro</div>
+        <div class="navitem"><div class="navdot"></div>Cash</div>
+        <div class="navitem active"><div class="navdot"></div>Tools</div>
+        <div class="navitem"><div class="navdot"></div>History</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAPE -->
+  <div>
+    <div class="label">5 · History Tape</div>
+    <div class="phone">
+      <div class="topbar">
+        <span class="appname">Audit Tape</span>
+        <div class="icons"><div class="icon"></div><div class="icon"></div></div>
+      </div>
+      <div class="tapetitle">Calculation Audit Tape</div>
+      <div class="filters">
+        <div class="filter active">All</div><div class="filter">GST</div>
+        <div class="filter">Cash</div><div class="filter">Math</div>
+      </div>
+      <div class="tapeitem">
+        <div class="th"><span class="num">Item #4</span><span class="time">Today</span></div>
+        <div class="expr">1,25,000 + 18% GST (Intra-State)</div>
+        <div class="res">₹1,47,500.00</div>
+      </div>
+      <div class="tapeitem">
+        <div class="th"><span class="num">Item #3</span><span class="time">Today</span></div>
+        <div class="expr">Cash Tally Session: 412 Notes</div>
+        <div class="res">₹1,84,650.00</div>
+      </div>
+      <div class="tapeitem">
+        <div class="th"><span class="num">Item #2</span><span class="time">Today</span></div>
+        <div class="expr">50,000 + 12% GST (Inter-State)</div>
+        <div class="res">₹56,000.00</div>
+      </div>
+      <div class="tapeitem">
+        <div class="th"><span class="num">Item #1</span><span class="time">Today</span></div>
+        <div class="expr">45,000 − 18% Reverse GST</div>
+        <div class="res">₹38,135.59</div>
+      </div>
+      <div class="navbar">
+        <div class="navitem"><div class="navdot"></div>Standard</div>
+        <div class="navitem"><div class="navdot"></div>GST Pro</div>
+        <div class="navitem"><div class="navdot"></div>Cash</div>
+        <div class="navitem"><div class="navdot"></div>Tools</div>
+        <div class="navitem active"><div class="navdot"></div>History</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
