@@ -11,11 +11,18 @@ import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+data class CalculationTapeItem(
+    val expression: String,
+    val result: String,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
 data class CalculatorUiState(
     val expression: String = "",
     val displayResult: String = "₹ 0.00",
     val wordsText: String = "Zero Rupees Only",
-    val memoryValue: BigDecimal = BigDecimal.ZERO
+    val memoryValue: BigDecimal = BigDecimal.ZERO,
+    val tapeHistory: List<CalculationTapeItem> = emptyList()
 )
 
 class StandardCalculatorViewModel : ViewModel() {
@@ -50,6 +57,17 @@ class StandardCalculatorViewModel : ViewModel() {
         }
     }
 
+    fun onClearTape() {
+        _uiState.update { it.copy(tapeHistory = emptyList()) }
+    }
+
+    fun onTapeRecall(item: CalculationTapeItem) {
+        // Strip rupee formatting and set as active input
+        val cleanNumber = item.result.replace("₹", "").replace(",", "").trim()
+        currentRawInput = StringBuilder(cleanNumber)
+        recalculateMath()
+    }
+
     fun onDelete() {
         if (currentRawInput.isNotEmpty()) {
             currentRawInput.deleteCharAt(currentRawInput.length - 1)
@@ -59,12 +77,24 @@ class StandardCalculatorViewModel : ViewModel() {
 
     fun onEquals() {
         try {
-            val eval = ShuntingYardEvaluator.evaluate(currentRawInput.toString())
+            val exprToEvaluate = currentRawInput.toString()
+            if (exprToEvaluate.isEmpty()) return
+
+            val eval = ShuntingYardEvaluator.evaluate(exprToEvaluate)
+            val formattedResult = IndianVedicFormatter.formatCurrency(eval)
+            val inWords = IndianCurrencyWordConverter.convertToWords(eval)
+
+            val newTapeItem = CalculationTapeItem(
+                expression = exprToEvaluate,
+                result = formattedResult
+            )
+
             currentRawInput = StringBuilder(eval.toPlainString())
             _uiState.update {
                 it.copy(
-                    displayResult = IndianVedicFormatter.formatCurrency(eval),
-                    wordsText = IndianCurrencyWordConverter.convertToWords(eval)
+                    displayResult = formattedResult,
+                    wordsText = inWords,
+                    tapeHistory = it.tapeHistory + newTapeItem
                 )
             }
         } catch (_: Exception) {}
@@ -74,12 +104,21 @@ class StandardCalculatorViewModel : ViewModel() {
         try {
             val eval = ShuntingYardEvaluator.evaluate(currentRawInput.toString())
             val percentVal = eval.divide(BigDecimal("100"), 4, RoundingMode.HALF_EVEN)
+            val formattedResult = IndianVedicFormatter.formatCurrency(percentVal)
+            val inWords = IndianCurrencyWordConverter.convertToWords(percentVal)
+
+            val newTapeItem = CalculationTapeItem(
+                expression = "${currentRawInput}%",
+                result = formattedResult
+            )
+
             currentRawInput = StringBuilder(percentVal.stripTrailingZeros().toPlainString())
             _uiState.update {
                 it.copy(
                     expression = currentRawInput.toString(),
-                    displayResult = IndianVedicFormatter.formatCurrency(percentVal),
-                    wordsText = IndianCurrencyWordConverter.convertToWords(percentVal)
+                    displayResult = formattedResult,
+                    wordsText = inWords,
+                    tapeHistory = it.tapeHistory + newTapeItem
                 )
             }
         } catch (_: Exception) {}
@@ -136,4 +175,5 @@ class StandardCalculatorViewModel : ViewModel() {
         }
     }
 }
+
 

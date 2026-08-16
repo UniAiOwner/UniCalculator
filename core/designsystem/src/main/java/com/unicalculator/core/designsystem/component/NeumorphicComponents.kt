@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -276,4 +280,61 @@ fun NeumorphicSlideSwitch(
         }
     }
 }
+
+@Composable
+fun NeumorphicIconButton(
+    icon: ImageVector,
+    contentDescription: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    size: Dp = 40.dp,
+    cornerRadius: Dp = 12.dp,
+    iconTint: Color? = null,
+    iconSize: Dp = 20.dp
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val colors = LocalNeumorphicColors.current
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.90f else 1.0f,
+        animationSpec = spring(dampingRatio = 0.75f, stiffness = 500f),
+        label = "icon_btn_scale"
+    )
+
+    val currentShape = if (isPressed) NeumorphicShape.CONCAVE else NeumorphicShape.CONVEX
+
+    Box(
+        modifier = modifier
+            .size(size)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .neumorphic(
+                shape = currentShape,
+                cornerRadius = cornerRadius,
+                elevation = if (isPressed) 2.dp else 4.dp,
+                lightShadowColor = colors.lightHighlight,
+                darkShadowColor = colors.darkShadow,
+                backgroundColor = colors.background,
+                neonGlowColor = if (isPressed) (iconTint ?: colors.accentEmerald) else null
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            modifier = Modifier.size(iconSize),
+            tint = iconTint ?: colors.textPrimary
+        )
+    }
+}
+
+
 

@@ -143,7 +143,9 @@ fun UniCalculatorApp() {
                 .padding(innerPadding)
         ) {
             when (selectedTab) {
-                0 -> StandardCalculatorScreen()
+                0 -> StandardCalculatorScreen(
+                    onNavigateToHistory = { selectedTab = 4 }
+                )
                 1 -> GSTProScreen()
                 2 -> CashTallyScreen()
                 3 -> BusinessToolsScreen()
