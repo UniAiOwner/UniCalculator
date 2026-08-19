@@ -32,6 +32,18 @@ class StandardCalculatorViewModel : ViewModel() {
     private var currentRawInput = StringBuilder()
 
     fun onDigit(digit: String) {
+        if (digit == ".") {
+            val current = currentRawInput.toString()
+            val lastToken = current.split(Regex("""[+\-*×/÷−\s]""")).lastOrNull() ?: ""
+            if (lastToken.contains(".")) {
+                return // Prevent duplicate decimal points in same number
+            }
+            if (lastToken.isEmpty() || current.endsWith(" ")) {
+                currentRawInput.append("0.")
+                recalculateMath()
+                return
+            }
+        }
         if (currentRawInput.toString() == "0" && digit != ".") {
             currentRawInput.clear()
         }
@@ -40,10 +52,16 @@ class StandardCalculatorViewModel : ViewModel() {
     }
 
     fun onOperator(op: String) {
-        if (currentRawInput.isNotEmpty()) {
-            currentRawInput.append(" $op ")
-            _uiState.update { it.copy(expression = currentRawInput.toString()) }
+        if (currentRawInput.isEmpty()) return
+        val current = currentRawInput.toString().trimEnd()
+        val lastOpRegex = Regex("""[+\-*×/÷−]\s*$""")
+        if (lastOpRegex.containsMatchIn(current)) {
+            val stripped = current.replace(lastOpRegex, "").trimEnd()
+            currentRawInput = StringBuilder(stripped).append(" $op ")
+        } else {
+            currentRawInput = StringBuilder(current).append(" $op ")
         }
+        _uiState.update { it.copy(expression = currentRawInput.toString()) }
     }
 
     fun onClear() {
@@ -71,7 +89,19 @@ class StandardCalculatorViewModel : ViewModel() {
 
     fun onDelete() {
         if (currentRawInput.isNotEmpty()) {
-            currentRawInput.deleteCharAt(currentRawInput.length - 1)
+            val current = currentRawInput.toString()
+            if (current.endsWith(" ")) {
+                // If ending with operator padding like " + ", delete the entire operator block
+                val trimmed = current.trimEnd()
+                val lastOpRegex = Regex("""[+\-*×/÷−]$""")
+                if (lastOpRegex.containsMatchIn(trimmed)) {
+                    currentRawInput = StringBuilder(trimmed.replace(lastOpRegex, "").trimEnd())
+                } else {
+                    currentRawInput.deleteCharAt(currentRawInput.length - 1)
+                }
+            } else {
+                currentRawInput.deleteCharAt(currentRawInput.length - 1)
+            }
             recalculateMath()
         }
     }
@@ -90,7 +120,7 @@ class StandardCalculatorViewModel : ViewModel() {
                 result = formattedResult
             )
 
-            currentRawInput = StringBuilder(eval.toPlainString())
+            currentRawInput = StringBuilder(eval.stripTrailingZeros().toPlainString())
             _uiState.update {
                 it.copy(
                     displayResult = formattedResult,
@@ -103,17 +133,19 @@ class StandardCalculatorViewModel : ViewModel() {
 
     fun onPercentage() {
         try {
-            val eval = ShuntingYardEvaluator.evaluate(currentRawInput.toString())
-            val percentVal = eval.divide(BigDecimal("100"), 4, RoundingMode.HALF_EVEN)
-            val formattedResult = IndianVedicFormatter.formatCurrency(percentVal)
-            val inWords = IndianCurrencyWordConverter.convertToWords(percentVal)
+            if (currentRawInput.isEmpty()) return
+            val raw = currentRawInput.toString().trim()
+            val exprWithPercent = "$raw%"
+            val eval = ShuntingYardEvaluator.evaluate(exprWithPercent)
+            val formattedResult = IndianVedicFormatter.formatCurrency(eval)
+            val inWords = IndianCurrencyWordConverter.convertToWords(eval)
 
             val newTapeItem = CalculationTapeItem(
-                expression = "${currentRawInput}%",
+                expression = exprWithPercent,
                 result = formattedResult
             )
 
-            currentRawInput = StringBuilder(percentVal.stripTrailingZeros().toPlainString())
+            currentRawInput = StringBuilder(eval.stripTrailingZeros().toPlainString())
             _uiState.update {
                 it.copy(
                     expression = currentRawInput.toString(),

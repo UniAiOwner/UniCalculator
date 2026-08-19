@@ -593,6 +593,37 @@
 ---
 *Signed by: Shoeb Ahmad*
 
+## 📅 Date: 2026-08-19 — Standard Calculator: Commercial Percentage Engine (`100 - 10% = 90`) & Arithmetic Precision
+
+### 🚀 Major Achievements:
+- Commercial Percentage Engine Architecture: Upgraded `ShuntingYardEvaluator.kt` and `StandardCalculatorViewModel.kt` with contextual commercial percentage preprocessing:
+  - Discount: `100 - 10%` ➔ `₹ 90` (`Ninety Rupees Only`).
+  - Markup / Tax: `100 + 10%` ➔ `₹ 110` (`One Hundred Ten Rupees Only`).
+  - Portion: `100 × 10%` ➔ `₹ 10`.
+  - Gross Margin Ratio: `100 ÷ 10%` ➔ `₹ 1,000`.
+  - Standalone: `50%` ➔ `₹ 0.50`.
+- Operator Replacement Glitch Resolution: Configured `onOperator` to seamlessly replace previous pending operators (`100 +` followed by `×` automatically becomes `100 ×`).
+- Multiple Decimal Prevention: Guarded `onDigit` against injecting multiple decimal points within a single operand.
+- Operator Block Backspace (`⌫`): Updated backspace logic to cleanly clear operator blocks and whitespace padding.
+
+### 🧪 Verification:
+- Unit Test Suite: `./gradlew :core:math-engine:testDebugUnitTest` -> **BUILD SUCCESSFUL** (All discount, markup, portion, ratio tests passed).
+- Physical Hardware Deployment: Tested and verified on physical `Realme RMX3998` (`XGQ8JFZXEITGJ7IB`), Android 14.
+- Checks Verified:
+  1. Live calculation `100 - 10% = ₹ 90` displayed on device screen and saved in tape (`26_standard_calc_percentage_verified.png`).
+  2. Live calculation `100 + 10% = ₹ 110` displayed on device screen and saved in tape (`27_standard_calc_markup_verified.png`).
+  3. Hindi / English currency words generated cleanly without rounding artifacts.
+
+### 📌 Current State:
+- Version: v1.0.0-rc25 (Standard Calculator Commercial Percentage Engine Active).
+
+### 📝 Next Steps:
+- Continue auditing and refining business tools and GST pro features.
+
+---
+*Signed by: Shoeb Ahmad*
+
+
 
 
 

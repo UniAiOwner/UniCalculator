@@ -1,32 +1,25 @@
-# Walkthrough: 1:1 Pixel-Perfect Match for Cash Tally (Variant 3 Cashier Pro Dual-Tone)
+# Walkthrough: Commercial Percentage & Standard Calculator Arithmetic Precision Fixes
 
-## 🎯 What Was Built & Verified
+## 🎯 What Was Fixed & Verified
 
-### 1. Master Summary 3-Well HUD
-- **Left Sunken Well**: Dedicated recessed well containing `TOTAL CASH:` and large glowing Rupee Emerald amount (`₹ 1,60,650`).
-- **Right Sunken Well**: Dedicated recessed well containing `TOTAL PCS` and large bold note count (`640`).
-- **Bottom Sunken Well**: Full-width etched well for `In Words: ...` with tap-to-toggle Hindi/English pronunciation.
+### 1. Contextual Commercial Percentage Engine (`%`)
+- **Problem**: Previously, entering `100 - 10%` evaluated to `0.90` because the engine naively divided the evaluated expression `(100 - 10) / 100 = 0.90`.
+- **Solution**: Implemented standard commercial/desk calculator percentage preprocessing in `ShuntingYardEvaluator.kt` and `StandardCalculatorViewModel.kt`:
+  - **Discount (`A - B%`)**: `A - (A * B / 100)` ➔ `100 - 10%` = **`₹ 90`** (`Ninety Rupees Only`).
+  - **Markup / Tax (`A + B%`)**: `A + (A * B / 100)` ➔ `100 + 10%` = **`₹ 110`** (`One Hundred Ten Rupees Only`).
+  - **Portion (`A × B%`)**: `A * (B / 100)` ➔ `100 × 10%` = **`₹ 10`**.
+  - **Ratio / Margin (`A ÷ B%`)**: `A / (B / 100)` ➔ `100 ÷ 10%` = **`₹ 1,000`**.
+  - **Standalone (`B%`)**: `B / 100` ➔ `50%` = **`₹ 0.50`**.
 
-### 2. Direct Surface Ledger Rows (Removed Outer Card Wrappers)
-- Removed enclosing card plates around denomination rows.
-- Each denomination row now floats directly on the sleek Neumorphic background:
-  - **Note Badges (`66dp × 38dp`)**: Tactile convex pastel badges (`₹500` Mint Teal, `₹200` Saffron Yellow, `₹100` Lavender, `₹50` Sky Blue, `₹20` Lemon, etc.).
-  - **Operator Slots (`16dp`)**: Formula operators `×` and `=` positioned in dedicated fixed slots.
-  - **Count Wells (`80dp × 38dp`)**: Deep recessed concave dark wells with crisp monospace numeric entry.
-  - **Subtotals (`weight 1f`)**: Single-line right-aligned bold emerald totals.
-
-### 3. Bracketed Table Header Badges & Solid Action Bar
-- Header pills styled with bracketed typography: `[ 💵 NOTE ]`, `[ COUNT ] (Pcs)`, `[ 💰 SUBTOTAL ]`.
-- High-contrast action pills: `[ 📤 Share ]` in Solid Emerald Green and `[ C/CE ]` in Solid Crimson Red.
+### 2. Consecutive Operator Replacement & Decimal Safety
+- Seamlessly replaces previous operator if a new operator is tapped (`100 +` followed by `×` becomes `100 ×`).
+- Protected against multiple decimal point inputs within a single operand.
+- Operator block backspacing (`⌫`) cleans trailing operator padding cleanly without corrupting the formula string.
 
 ---
 
 ## 🧪 Physical Hardware Verification (Realme RMX3998)
 
-| Target Design (User Uploaded) | Live Android 14 Physical Result (Dark Mode) |
+| Discount Test (`100 - 10% = ₹ 90`) | Markup Test (`100 + 10% = ₹ 110`) |
 | :---: | :---: |
-| ![Target](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/.user_uploaded/uploaded_media_1786896295661.png) | ![Live Dark Result](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/25_cash_tally_exact_variant3_dark.png) |
-
-| Live Light Mode |
-| :---: |
-| ![Live Light Result](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/24_cash_tally_exact_variant3_light.png) |
+| ![Discount 90](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/26_standard_calc_percentage_verified.png) | ![Markup 110](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/27_standard_calc_markup_verified.png) |

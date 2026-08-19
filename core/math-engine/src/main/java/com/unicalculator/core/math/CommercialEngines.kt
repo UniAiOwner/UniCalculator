@@ -14,13 +14,59 @@ object ShuntingYardEvaluator {
         val sanitized = expression
             .replace("×", "*")
             .replace("÷", "/")
+            .replace("−", "-")
             .replace(" ", "")
 
         if (sanitized.isEmpty()) return BigDecimal.ZERO
 
-        val tokens = tokenize(sanitized)
+        val expanded = preprocessPercentages(sanitized)
+        val tokens = tokenize(expanded)
         val rpn = toRPN(tokens)
         return evaluateRPN(rpn)
+    }
+
+    /**
+     * Preprocesses commercial percentage syntax:
+     * - A + B% => A + (A * B / 100)
+     * - A - B% => A - (A * B / 100)
+     * - A * B% => A * (B / 100)
+     * - A / B% => A / (B / 100)
+     * - B%     => (B / 100)
+     */
+    fun preprocessPercentages(expr: String): String {
+        if (!expr.contains("%")) return expr
+
+        var result = expr
+
+        // Match: (number or parenthesis) followed by (+ or -) followed by (number)%
+        val addSubPercentRegex = Regex("""(\d+(?:\.\d+)?|\))\s*([+\-])\s*(\d+(?:\.\d+)?)%""")
+        while (addSubPercentRegex.containsMatchIn(result)) {
+            result = addSubPercentRegex.replace(result) { match ->
+                val base = match.groupValues[1]
+                val op = match.groupValues[2]
+                val pct = match.groupValues[3]
+                "$base$op($base*$pct/100)"
+            }
+        }
+
+        // Match: (number or parenthesis) followed by (* or /) followed by (number)%
+        val mulDivPercentRegex = Regex("""(\d+(?:\.\d+)?|\))\s*([*/])\s*(\d+(?:\.\d+)?)%""")
+        while (mulDivPercentRegex.containsMatchIn(result)) {
+            result = mulDivPercentRegex.replace(result) { match ->
+                val base = match.groupValues[1]
+                val op = match.groupValues[2]
+                val pct = match.groupValues[3]
+                "$base$op($pct/100)"
+            }
+        }
+
+        // Standalone number% (e.g. 50% => (50/100))
+        val standalonePercentRegex = Regex("""(\d+(?:\.\d+)?)%""")
+        result = standalonePercentRegex.replace(result) { match ->
+            "(${match.groupValues[1]}/100)"
+        }
+
+        return result
     }
 
     private fun tokenize(expr: String): List<String> {

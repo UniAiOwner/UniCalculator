@@ -37,6 +37,37 @@ class IndianGSTCalculationEngineTest {
         assertEquals(BigDecimal("70.00"), result)
 
         val bracketResult = ShuntingYardEvaluator.evaluate("(10 + 20) * 3")
-        assertEquals(BigDecimal("90.00"), result.setScale(2).let { bracketResult })
+        assertEquals(BigDecimal("90.00"), bracketResult)
+    }
+
+    @Test
+    fun `test commercial percentage discount 100 minus 10 percent`() {
+        val result = ShuntingYardEvaluator.evaluate("100 - 10%")
+        assertEquals(BigDecimal("90.00"), result)
+    }
+
+    @Test
+    fun `test commercial percentage markup 100 plus 10 percent`() {
+        val result = ShuntingYardEvaluator.evaluate("100 + 10%")
+        assertEquals(BigDecimal("110.00"), result)
+    }
+
+    @Test
+    fun `test commercial percentage portion 100 times 10 percent`() {
+        val result = ShuntingYardEvaluator.evaluate("100 × 10%")
+        assertEquals(BigDecimal("10.00"), result)
+    }
+
+    @Test
+    fun `test commercial percentage ratio 100 div 10 percent`() {
+        val result = ShuntingYardEvaluator.evaluate("100 ÷ 10%")
+        assertEquals(BigDecimal("1000.00"), result)
+    }
+
+    @Test
+    fun `test standalone percentage 50 percent`() {
+        val result = ShuntingYardEvaluator.evaluate("50%")
+        assertEquals(BigDecimal("0.50"), result)
     }
 }
+
