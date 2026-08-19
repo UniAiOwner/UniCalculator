@@ -1,6 +1,9 @@
 package com.unicalculator.core.math
 
+import com.unicalculator.core.common.format.IndianVedicFormatter
+import com.unicalculator.core.common.words.IndianCurrencyWordConverter
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.math.BigDecimal
 
@@ -69,5 +72,44 @@ class IndianGSTCalculationEngineTest {
         val result = ShuntingYardEvaluator.evaluate("50%")
         assertEquals(BigDecimal("0.50"), result)
     }
+
+    @Test
+    fun `test commercial margin and markup calculation`() {
+        val cp = BigDecimal("1200.00")
+        val sp = BigDecimal("1600.00")
+        val result = CommercialCalculatorEngine.calculateMarginMarkup(cp, sp)
+
+        assertEquals(BigDecimal("400.00"), result.grossProfit)
+        assertEquals(BigDecimal("25.00"), result.profitMarginPercent)
+        assertEquals(BigDecimal("33.33"), result.markupPercent)
+    }
+
+    @Test
+    fun `test loan emi calculation 5 lakh at 8_5 percent for 36 months`() {
+        val principal = BigDecimal("500000.00")
+        val rate = BigDecimal("8.50")
+        val tenure = 36
+        val result = CommercialCalculatorEngine.calculateLoanEmi(principal, rate, tenure)
+
+        assertTrue(result.monthlyEmi > BigDecimal("15000.00"))
+        assertTrue(result.totalPayment > principal)
+        assertEquals(result.totalPayment.subtract(principal), result.totalInterest)
+    }
+
+    @Test
+    fun `test Indian Vedic currency formatting`() {
+        val formatted = IndianVedicFormatter.formatCurrency(BigDecimal("123456789.50"), includeSymbol = true)
+        assertEquals("₹ 12,34,56,789.50", formatted)
+    }
+
+    @Test
+    fun `test Indian currency words in English and Hindi`() {
+        val englishWords = IndianCurrencyWordConverter.convertToWords(BigDecimal("125000.00"), inHindi = false)
+        assertEquals("One Lakh Twenty Five Thousand Rupees Only", englishWords)
+
+        val hindiWords = IndianCurrencyWordConverter.convertToWords(BigDecimal("125000.00"), inHindi = true)
+        assertEquals("एक लाख पच्चीस हज़ार रुपये मात्र", hindiWords)
+    }
 }
+
 
