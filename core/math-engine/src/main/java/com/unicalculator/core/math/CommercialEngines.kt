@@ -27,46 +27,70 @@ object ShuntingYardEvaluator {
 
     /**
      * Preprocesses commercial percentage syntax:
-     * - A + B% => A + (A * B / 100)
-     * - A - B% => A - (A * B / 100)
+     * - Commercial Cumulative Running Total: A + B - C% => ((A + B) - ((A + B) * C / 100))
+     *   e.g. 900 + 100 - 10% => ((900+100)-((900+100)*10/100)) = 900
      * - A * B% => A * (B / 100)
      * - A / B% => A / (B / 100)
-     * - B%     => (B / 100)
+     * - Standalone B% => (B / 100)
      */
     fun preprocessPercentages(expr: String): String {
         if (!expr.contains("%")) return expr
 
-        var result = expr
+        var current = expr
 
-        // Match: (number or parenthesis) followed by (+ or -) followed by (number)%
-        val addSubPercentRegex = Regex("""(\d+(?:\.\d+)?|\))\s*([+\-])\s*(\d+(?:\.\d+)?)%""")
-        while (addSubPercentRegex.containsMatchIn(result)) {
-            result = addSubPercentRegex.replace(result) { match ->
-                val base = match.groupValues[1]
-                val op = match.groupValues[2]
-                val pct = match.groupValues[3]
-                "$base$op($base*$pct/100)"
+        while (current.contains("%")) {
+            val pctIndex = current.indexOf('%')
+
+            // Extract the number immediately preceding '%'
+            var numStart = pctIndex - 1
+            while (numStart >= 0 && (current[numStart].isDigit() || current[numStart] == '.')) {
+                numStart--
             }
-        }
+            numStart++
 
-        // Match: (number or parenthesis) followed by (* or /) followed by (number)%
-        val mulDivPercentRegex = Regex("""(\d+(?:\.\d+)?|\))\s*([*/])\s*(\d+(?:\.\d+)?)%""")
-        while (mulDivPercentRegex.containsMatchIn(result)) {
-            result = mulDivPercentRegex.replace(result) { match ->
-                val base = match.groupValues[1]
-                val op = match.groupValues[2]
-                val pct = match.groupValues[3]
-                "$base$op($pct/100)"
+            val pctNum = current.substring(numStart, pctIndex)
+            if (pctNum.isEmpty()) {
+                current = current.removeRange(pctIndex, pctIndex + 1)
+                continue
             }
+
+            val opIndex = numStart - 1
+            if (opIndex >= 0 && (current[opIndex] == '+' || current[opIndex] == '-')) {
+                val op = current[opIndex]
+                var baseStart = opIndex - 1
+                var parenDepth = 0
+                while (baseStart >= 0) {
+                    val c = current[baseStart]
+                    if (c == ')') parenDepth++
+                    else if (c == '(') {
+                        if (parenDepth == 0) {
+                            baseStart++
+                            break
+                        }
+                        parenDepth--
+                    }
+                    baseStart--
+                }
+                if (baseStart < 0) baseStart = 0
+
+                val base = current.substring(baseStart, opIndex).trim()
+                if (base.isNotEmpty()) {
+                    val replacement = "(($base)$op(($base)*$pctNum/100))"
+                    current = current.substring(0, baseStart) + replacement + current.substring(pctIndex + 1)
+                    continue
+                }
+            } else if (opIndex >= 0 && (current[opIndex] == '*' || current[opIndex] == '/')) {
+                val replacement = "($pctNum/100)"
+                current = current.substring(0, numStart) + replacement + current.substring(pctIndex + 1)
+                continue
+            }
+
+            // Standalone %
+            val replacement = "($pctNum/100)"
+            current = current.substring(0, numStart) + replacement + current.substring(pctIndex + 1)
         }
 
-        // Standalone number% (e.g. 50% => (50/100))
-        val standalonePercentRegex = Regex("""(\d+(?:\.\d+)?)%""")
-        result = standalonePercentRegex.replace(result) { match ->
-            "(${match.groupValues[1]}/100)"
-        }
-
-        return result
+        return current
     }
 
     private fun tokenize(expr: String): List<String> {

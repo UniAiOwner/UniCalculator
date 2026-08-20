@@ -960,3 +960,28 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-20 — Commercial Running Total Percentage Mode (Universal Default)
+
+### 🚀 Major Achievements:
+- **Commercial Cumulative Percentage Engine (`CommercialEngines.kt`)**:
+  - Upgraded `ShuntingYardEvaluator.preprocessPercentages` to dynamically resolve percentages across the full cumulative running total accumulator.
+  - Mathematical expression `900 + 100 - 10%` evaluates to `((900+100) - ((900+100)*10/100)) = 900.00` in real-time live preview (without even pressing `=`).
+  - Supports chained commercial discounts like `1000 - 10% - 10% = 810.00` and markup like `100 + 10% = 110.00`.
+- **Unit Tests Added (`IndianGSTCalculationEngineTest.kt`)**:
+  - Added unit test coverage for cumulative running total arithmetic and chained percentage discounts.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% tests passing across all 10 modules).
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment (`Realme RMX3998`):
+  - Verified live calculation of `900 + 100 - 10%` directly renders `900` in real-time on LCD (`142_commercial_percentage_live_verified.png`).
+
+### 📌 Current State:
+- Version: v1.0.0-commercial-percentage-verified (Default commercial percentage alignment with standard trade calculators).
+
+### 📝 Next Steps:
+- Ready for next user requests or features.
+
+---
+*Signed by: Shoeb Ahmad*

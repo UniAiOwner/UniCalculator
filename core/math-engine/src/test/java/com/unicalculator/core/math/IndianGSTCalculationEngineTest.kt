@@ -74,6 +74,18 @@ class IndianGSTCalculationEngineTest {
     }
 
     @Test
+    fun `test commercial cumulative running total 900 plus 100 minus 10 percent`() {
+        val result = ShuntingYardEvaluator.evaluate("900 + 100 - 10%")
+        assertEquals(BigDecimal("900.00"), result)
+    }
+
+    @Test
+    fun `test commercial chained discount 1000 minus 10 percent minus 10 percent`() {
+        val result = ShuntingYardEvaluator.evaluate("1000 - 10% - 10%")
+        assertEquals(BigDecimal("810.00"), result)
+    }
+
+    @Test
     fun `test commercial margin and markup calculation`() {
         val cp = BigDecimal("1200.00")
         val sp = BigDecimal("1600.00")
