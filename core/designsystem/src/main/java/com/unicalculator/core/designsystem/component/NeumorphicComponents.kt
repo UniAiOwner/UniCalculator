@@ -213,12 +213,15 @@ fun NeumorphicSlideSwitch(
     onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     activeColor: Color? = null,
+    leftActiveColor: Color? = null,
+    rightActiveColor: Color? = null,
     height: Dp = 38.dp
 ) {
     val colors = LocalNeumorphicColors.current
     val context = androidx.compose.ui.platform.LocalContext.current
     val hapticEngine = remember { NeumorphicHapticEngine(context) }
-    val accent = activeColor ?: colors.accentEmerald
+    val currentActiveColor = if (isRightSelected) (rightActiveColor ?: activeColor ?: colors.accentEmerald)
+        else (leftActiveColor ?: activeColor ?: colors.accentEmerald)
 
     val slideProgress by animateFloatAsState(
         targetValue = if (isRightSelected) 1f else 0f,
@@ -226,7 +229,7 @@ fun NeumorphicSlideSwitch(
         label = "slide_switch_progress"
     )
 
-    // Outer Recessed Trench ("Gadda / Concave Well")
+    // Outer Recessed Trench ("Concave Well")
     Box(
         modifier = modifier
             .height(height)
@@ -243,7 +246,7 @@ fun NeumorphicSlideSwitch(
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val thumbWidth = maxWidth / 2
 
-            // Floating 3D Convex Thumb (The sliding knob)
+            // Floating 3D Solid Active Thumb
             Box(
                 modifier = Modifier
                     .offset(x = thumbWidth * slideProgress)
@@ -252,10 +255,10 @@ fun NeumorphicSlideSwitch(
                     .neumorphic(
                         shape = NeumorphicShape.CONVEX,
                         cornerRadius = 9.dp,
-                        elevation = 3.dp,
+                        elevation = 2.dp,
                         lightShadowColor = colors.lightHighlight,
                         darkShadowColor = colors.darkShadow,
-                        backgroundColor = colors.background
+                        backgroundColor = currentActiveColor
                     )
             )
 
@@ -282,8 +285,8 @@ fun NeumorphicSlideSwitch(
                         style = TextStyle(
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = if (!isRightSelected) FontWeight.Bold else FontWeight.Medium,
-                            fontSize = 12.sp,
-                            color = if (!isRightSelected) accent else colors.textSecondary
+                            fontSize = 11.5.sp,
+                            color = if (!isRightSelected) Color.White else colors.textSecondary
                         ),
                         maxLines = 1
                     )
@@ -310,8 +313,8 @@ fun NeumorphicSlideSwitch(
                         style = TextStyle(
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = if (isRightSelected) FontWeight.Bold else FontWeight.Medium,
-                            fontSize = 12.sp,
-                            color = if (isRightSelected) accent else colors.textSecondary
+                            fontSize = 11.5.sp,
+                            color = if (isRightSelected) Color.White else colors.textSecondary
                         ),
                         maxLines = 1
                     )

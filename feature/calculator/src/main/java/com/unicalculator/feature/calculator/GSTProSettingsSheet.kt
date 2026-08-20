@@ -100,7 +100,8 @@ fun GSTProSettingsSheet(
                 )
             }
 
-            // 1. Default GST Slab
+            // 1. Default / Custom GST Slab
+            var customRateInput by remember(defaultGstRate) { mutableStateOf(defaultGstRate.toString()) }
             NeumorphicPlate(
                 modifier = Modifier.fillMaxWidth(),
                 shape = NeumorphicShape.CONVEX,
@@ -108,7 +109,7 @@ fun GSTProSettingsSheet(
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
                     Text(
-                        text = "DEFAULT GST SLAB ON LAUNCH",
+                        text = "DEFAULT / CUSTOM GST SLAB",
                         style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = colors.textSecondary)
                     )
                     Spacer(modifier = Modifier.height(10.dp))
@@ -120,11 +121,70 @@ fun GSTProSettingsSheet(
                             NeumorphicGstPill(
                                 text = "$slab%",
                                 isSelected = defaultGstRate == slab,
-                                onClick = { prefs.setDefaultGstRate(slab) },
+                                onClick = {
+                                    prefs.setDefaultGstRate(slab)
+                                    customRateInput = slab.toString()
+                                },
                                 modifier = Modifier.weight(1f),
                                 fontSize = 12
                             )
                         }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp)
+                                .neumorphic(
+                                    shape = NeumorphicShape.CONCAVE,
+                                    cornerRadius = 8.dp,
+                                    elevation = 2.dp,
+                                    lightShadowColor = colors.lightHighlight,
+                                    darkShadowColor = colors.darkShadow,
+                                    backgroundColor = colors.background
+                                )
+                                .padding(horizontal = 10.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            BasicTextField(
+                                value = customRateInput,
+                                onValueChange = { customRateInput = it },
+                                textStyle = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp,
+                                    color = colors.textPrimary
+                                ),
+                                cursorBrush = SolidColor(colors.accentEmerald),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                decorationBox = { innerTextField ->
+                                    if (customRateInput.isEmpty()) {
+                                        Text("Enter Custom Rate % (e.g. 40, 1)", color = colors.textSecondary.copy(alpha = 0.5f), fontSize = 12.sp)
+                                    }
+                                    innerTextField()
+                                }
+                            )
+                        }
+                        NeumorphicButton(
+                            text = "Set Custom",
+                            onClick = {
+                                val rate = customRateInput.toIntOrNull()
+                                if (rate != null && rate in 1..100) {
+                                    prefs.setDefaultGstRate(rate)
+                                    Toast.makeText(context, "GST Rate set to $rate%", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Enter a valid integer percentage (1-100)", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            modifier = Modifier.height(40.dp),
+                            fontSize = 11
+                        )
                     }
                 }
             }
