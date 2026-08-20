@@ -114,13 +114,61 @@ class IndianGSTCalculationEngineTest {
         assertEquals("₹ 12,34,56,789.50", formatted)
     }
 
-    @Test
-    fun `test Indian currency words in English and Hindi`() {
-        val englishWords = IndianCurrencyWordConverter.convertToWords(BigDecimal("125000.00"), inHindi = false)
-        assertEquals("One Lakh Twenty Five Thousand Rupees Only", englishWords)
+    @Test(expected = ArithmeticException::class)
+    fun `test divide by zero throws ArithmeticException`() {
+        ShuntingYardEvaluator.evaluate("10 / 0")
+    }
 
-        val hindiWords = IndianCurrencyWordConverter.convertToWords(BigDecimal("125000.00"), inHindi = true)
-        assertEquals("एक लाख पच्चीस हज़ार रुपये मात्र", hindiWords)
+    @Test
+    fun `test Indian currency words with Paise in English and Hindi`() {
+        val englishWords = IndianCurrencyWordConverter.convertToWords(BigDecimal("1250.75"), inHindi = false)
+        assertEquals("One Thousand Two Hundred Fifty Rupees and Seventy Five Paise Only", englishWords)
+
+        val hindiWords = IndianCurrencyWordConverter.convertToWords(BigDecimal("1250.75"), inHindi = true)
+        assertEquals("एक हज़ार दो सौ पचास रुपये पचहत्तर पैसे मात्र", hindiWords)
+    }
+
+    @Test
+    fun `test Indian currency words large amount 50 Crore and 5 Arab`() {
+        val wordsFiftyCrore = IndianCurrencyWordConverter.convertToWords(BigDecimal("500000000.00"), inHindi = false)
+        assertEquals("Fifty Crore Rupees Only", wordsFiftyCrore)
+
+        val wordsFiveArab = IndianCurrencyWordConverter.convertToWords(BigDecimal("5000000000.00"), inHindi = false)
+        assertEquals("Five Arab Rupees Only", wordsFiveArab)
+    }
+
+    @Test
+    fun `test successive festive discount 50 percent plus 20 percent on 1000`() {
+        val (finalPrice, savings) = CommercialCalculatorEngine.calculateSuccessiveDiscount(
+            originalPrice = BigDecimal("1000.00"),
+            discounts = listOf(BigDecimal("50.00"), BigDecimal("20.00"))
+        )
+        assertEquals(BigDecimal("400.00"), finalPrice)
+        assertEquals(BigDecimal("600.00"), savings)
+    }
+
+    @Test
+    fun `test Casio reverse margin solver CP 800 with 20 percent margin gives SP 1000`() {
+        val targetSP = CommercialCalculatorEngine.calculateTargetSellingPrice(
+            costPrice = BigDecimal("800.00"),
+            desiredMarginPercent = BigDecimal("20.00")
+        )
+        assertEquals(BigDecimal("1000.00"), targetSP)
+    }
+
+    @Test
+    fun `test Mandi and Jewellery unit conversions`() {
+        // 5 Quintal = 500 kg
+        val kg = UnitConversionEngine.convertMass(BigDecimal("5.0"), "Quintal (q)", "Kilogram (kg)")
+        assertEquals(0, kg.compareTo(BigDecimal("500")))
+
+        // 1 Tola Vedic to Grams
+        val grams = UnitConversionEngine.convertMass(BigDecimal("1.0"), "Tola (Vedic 11.66g)", "Gram (g)")
+        assertEquals(0, grams.compareTo(BigDecimal("11.6638")))
+
+        // 1 Acre = 40 Guntha
+        val guntha = UnitConversionEngine.convertArea(BigDecimal("1.0"), "Acre", "Guntha")
+        assertTrue(guntha.toDouble() >= 39.9 && guntha.toDouble() <= 40.1)
     }
 }
 

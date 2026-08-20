@@ -169,265 +169,98 @@ fun StandardCalculatorScreen(
                 click()
                 viewModel.onTapeRecall(CalculationTapeItem(item.expression, item.result))
             },
-            onExpandHistory = {
-                tick()
-                isHistoryShadeExpanded = true
-            },
             resultColor = colors.accentEmerald,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = false)
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-        if (isHistoryShadeExpanded) {
-            NeumorphicPlate(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(vertical = 4.dp),
-                shape = NeumorphicShape.CONVEX,
-                cornerRadius = 24.dp,
-                elevation = 6.dp
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "📜 Session Tape (${state.tapeHistory.size})",
-                            style = TextStyle(
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                                color = colors.textPrimary
-                            )
-                        )
-
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            if (state.tapeHistory.isNotEmpty()) {
-                                NeumorphicIconButton(
-                                    icon = Icons.Outlined.DeleteSweep,
-                                    contentDescription = "Clear Session History",
-                                    onClick = {
-                                        tick()
-                                        viewModel.onClearTape()
-                                    },
-                                    size = 38.dp,
-                                    iconTint = DeleteRed
-                                )
-                            }
-                            NeumorphicIconButton(
-                                icon = Icons.Outlined.Close,
-                                contentDescription = "Close History",
-                                onClick = {
-                                    tick()
-                                    isHistoryShadeExpanded = false
-                                },
-                                size = 38.dp,
-                                iconTint = colors.textSecondary
-                            )
-                        }
-                    }
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        thickness = 1.dp,
-                        color = colors.darkShadow.copy(alpha = 0.5f)
-                    )
-
-                    if (state.tapeHistory.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "No calculations in this session yet.",
-                                style = TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontSize = 14.sp,
-                                    color = colors.textSecondary
-                                )
-                            )
-                        }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            items(state.tapeHistory.reversed()) { item ->
-                                NeumorphicPlate(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            click()
-                                            viewModel.onTapeRecall(item)
-                                            isHistoryShadeExpanded = false
-                                        },
-                                    shape = NeumorphicShape.CONCAVE,
-                                    cornerRadius = 14.dp,
-                                    elevation = 2.dp
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 14.dp, vertical = 12.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = item.expression,
-                                            style = TextStyle(
-                                                fontFamily = FontFamily.Monospace,
-                                                fontSize = 15.sp,
-                                                color = colors.textSecondary
-                                            ),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                        Text(
-                                            text = "= ${item.result}",
-                                            style = TextStyle(
-                                                fontFamily = FontFamily.Monospace,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 15.sp,
-                                                color = colors.accentEmerald
-                                            ),
-                                            maxLines = 1
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                tick()
-                                isHistoryShadeExpanded = false
-                            }
-                            .padding(top = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.KeyboardArrowUp,
-                                contentDescription = "Collapse",
-                                tint = colors.textSecondary
-                            )
-                            Text(
-                                text = "Slide up or tap to return to Keypad",
-                                style = TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontSize = 12.sp,
-                                    color = colors.textSecondary
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-        } else {
-            Column(
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    NeumorphicButton(
-                        text = "C",
-                        onClick = { tick(); viewModel.onClear() },
-                        modifier = Modifier.weight(1f).height(62.dp),
-                        textColor = DeleteRed,
-                        fontSize = 24
-                    )
-                    NeumorphicButton(
-                        text = "⌫",
-                        onClick = { click(); viewModel.onDelete() },
-                        modifier = Modifier.weight(1f).height(62.dp),
-                        textColor = OperatorOrange,
-                        fontSize = 22
-                    )
-                    NeumorphicButton(
-                        text = "%",
-                        onClick = { tick(); viewModel.onPercentage() },
-                        modifier = Modifier.weight(1f).height(62.dp),
-                        textColor = OperatorOrange,
-                        fontSize = 24
-                    )
-                    NeumorphicButton(
-                        text = "÷",
-                        onClick = { tick(); viewModel.onOperator("÷") },
-                        modifier = Modifier.weight(1f).height(62.dp),
-                        textColor = OperatorOrange,
-                        fontSize = 26
-                    )
-                }
+                NeumorphicButton(
+                    text = "C",
+                    onClick = { tick(); viewModel.onClear() },
+                    modifier = Modifier.weight(1f).height(62.dp),
+                    textColor = DeleteRed,
+                    fontSize = 24
+                )
+                NeumorphicButton(
+                    text = "⌫",
+                    onClick = { click(); viewModel.onDelete() },
+                    modifier = Modifier.weight(1f).height(62.dp),
+                    textColor = OperatorOrange,
+                    fontSize = 22
+                )
+                NeumorphicButton(
+                    text = "%",
+                    onClick = { tick(); viewModel.onPercentage() },
+                    modifier = Modifier.weight(1f).height(62.dp),
+                    textColor = OperatorOrange,
+                    fontSize = 24
+                )
+                NeumorphicButton(
+                    text = "÷",
+                    onClick = { tick(); viewModel.onOperator("÷") },
+                    modifier = Modifier.weight(1f).height(62.dp),
+                    textColor = OperatorOrange,
+                    fontSize = 26
+                )
+            }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    NeumorphicButton("7", { click(); viewModel.onDigit("7") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton("8", { click(); viewModel.onDigit("8") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton("9", { click(); viewModel.onDigit("9") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton("×", { tick(); viewModel.onOperator("×") }, Modifier.weight(1f).height(62.dp), textColor = OperatorOrange, fontSize = 26)
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                NeumorphicButton("7", { click(); viewModel.onDigit("7") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton("8", { click(); viewModel.onDigit("8") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton("9", { click(); viewModel.onDigit("9") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton("×", { tick(); viewModel.onOperator("×") }, Modifier.weight(1f).height(62.dp), textColor = OperatorOrange, fontSize = 26)
+            }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    NeumorphicButton("4", { click(); viewModel.onDigit("4") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton("5", { click(); viewModel.onDigit("5") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton("6", { click(); viewModel.onDigit("6") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton("−", { tick(); viewModel.onOperator("-") }, Modifier.weight(1f).height(62.dp), textColor = OperatorOrange, fontSize = 26)
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                NeumorphicButton("4", { click(); viewModel.onDigit("4") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton("5", { click(); viewModel.onDigit("5") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton("6", { click(); viewModel.onDigit("6") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton("−", { tick(); viewModel.onOperator("-") }, Modifier.weight(1f).height(62.dp), textColor = OperatorOrange, fontSize = 26)
+            }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    NeumorphicButton("1", { click(); viewModel.onDigit("1") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton("2", { click(); viewModel.onDigit("2") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton("3", { click(); viewModel.onDigit("3") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton("+", { tick(); viewModel.onOperator("+") }, Modifier.weight(1f).height(62.dp), textColor = OperatorOrange, fontSize = 26)
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                NeumorphicButton("1", { click(); viewModel.onDigit("1") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton("2", { click(); viewModel.onDigit("2") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton("3", { click(); viewModel.onDigit("3") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton("+", { tick(); viewModel.onOperator("+") }, Modifier.weight(1f).height(62.dp), textColor = OperatorOrange, fontSize = 26)
+            }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    NeumorphicButton("00", { click(); viewModel.onDigit("00") }, Modifier.weight(1f).height(62.dp), fontSize = 22)
-                    NeumorphicButton("0", { click(); viewModel.onDigit("0") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton(".", { click(); viewModel.onDigit(".") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
-                    NeumorphicButton(
-                        text = "=",
-                        onClick = { tick(); viewModel.onEquals() },
-                        modifier = Modifier.weight(1f).height(62.dp),
-                        isSolidAccent = true,
-                        backgroundColor = RupeeEmeraldGreen,
-                        textColor = androidx.compose.ui.graphics.Color.White,
-                        fontSize = 28
-                    )
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                NeumorphicButton("00", { click(); viewModel.onDigit("00") }, Modifier.weight(1f).height(62.dp), fontSize = 22)
+                NeumorphicButton("0", { click(); viewModel.onDigit("0") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton(".", { click(); viewModel.onDigit(".") }, Modifier.weight(1f).height(62.dp), fontSize = 24)
+                NeumorphicButton(
+                    text = "=",
+                    onClick = { tick(); viewModel.onEquals() },
+                    modifier = Modifier.weight(1f).height(62.dp),
+                    isSolidAccent = true,
+                    backgroundColor = RupeeEmeraldGreen,
+                    textColor = androidx.compose.ui.graphics.Color.White,
+                    fontSize = 28
+                )
             }
         }
         Spacer(modifier = Modifier.height(10.dp))

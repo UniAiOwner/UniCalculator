@@ -29,11 +29,17 @@ object UnitConversionEngine {
         "Kilogram (kg)" to BigDecimal("1.0"),
         "Gram (g)" to BigDecimal("0.001"),
         "Milligram (mg)" to BigDecimal("0.000001"),
-        "Pound (lb)" to BigDecimal("0.45359237"),
-        "Ounce (oz)" to BigDecimal("0.028349523125"),
+        "Quintal (q)" to BigDecimal("100.0"), // 100 kg (Mandi standard)
+        "Maund / Mann" to BigDecimal("40.0"), // 40 kg (Mandi standard)
         "Tonne (t)" to BigDecimal("1000.0"),
-        "Tola (Gold)" to BigDecimal("0.0116638"), // 11.6638 grams
-        "Ratti" to BigDecimal("0.0001215") // 0.1215 grams
+        "Tola (Vedic 11.66g)" to BigDecimal("0.0116638"), // 11.6638 grams
+        "Metric Tola (10g)" to BigDecimal("0.010"), // 10.0 grams
+        "Sovereign / Pavan" to BigDecimal("0.008"), // 8.0 grams
+        "Masha" to BigDecimal("0.000972"), // 0.972 grams
+        "Ratti" to BigDecimal("0.0001215"), // 0.1215 grams
+        "Carat (ct)" to BigDecimal("0.0002"), // 200 mg
+        "Pound (lb)" to BigDecimal("0.45359237"),
+        "Ounce (oz)" to BigDecimal("0.028349523125")
     )
 
     fun convertMass(value: BigDecimal, fromUnit: String, toUnit: String): BigDecimal {
@@ -51,7 +57,12 @@ object UnitConversionEngine {
         "Acre" to BigDecimal("4046.8564224"),
         "Hectare" to BigDecimal("10000.0"),
         "Bigha (Standard)" to BigDecimal("2529.285264"), // ~27,000 sq ft
-        "Guntha" to BigDecimal("101.17141") // ~1,089 sq ft
+        "Guntha" to BigDecimal("101.17141"), // ~1,089 sq ft
+        "Cent" to BigDecimal("40.468564224"), // 435.6 sq ft
+        "Ground" to BigDecimal("222.967296"), // 2,400 sq ft
+        "Marla" to BigDecimal("25.29285264"), // 272.25 sq ft
+        "Kanal" to BigDecimal("505.8570528"), // 5,445 sq ft
+        "Biswa / Katha" to BigDecimal("125.419069") // 1,350 sq ft
     )
 
     fun convertArea(value: BigDecimal, fromUnit: String, toUnit: String): BigDecimal {

@@ -263,12 +263,71 @@ class StandardCalculatorViewModel(
         recalculateMath()
     }
 
+    private var lastConstantOp: String? = null
+    private var lastConstantOperand: String? = null
+
     fun onEquals() {
         try {
             val rawExpr = currentRawInput.toString().trim()
             if (rawExpr.isEmpty()) return
+
+            if (isJustCalculated && lastConstantOp != null && lastConstantOperand != null) {
+                // 🔄 Casio / Citizen Constant Arithmetic (= = = repeat)
+                val prevResult = rawExpr
+                val nextExpr = "$prevResult $lastConstantOp $lastConstantOperand"
+                val eval = ShuntingYardEvaluator.evaluate(nextExpr)
+                val showCurrency = getIncludeCurrency()
+                val formatStyle = getNumberFormat()
+                val precision = getDecimalPrecision()
+                val formattedResult = IndianVedicFormatter.formatCurrency(
+                    amount = eval,
+                    includeSymbol = showCurrency,
+                    showDecimalsAlways = false,
+                    formatStyle = formatStyle,
+                    decimalPrecision = precision
+                )
+                val inWords = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
+
+                val newTapeItem = CalculationTapeItem(
+                    expression = nextExpr,
+                    result = formattedResult
+                )
+
+                historyRepository?.insert(
+                    CalculationHistoryItem(
+                        type = CalculationType.STANDARD_MATH,
+                        formulaExpression = nextExpr,
+                        primaryResult = formattedResult
+                    )
+                )
+
+                currentRawInput = StringBuilder(eval.stripTrailingZeros().toPlainString())
+                currentCursorPos = currentRawInput.length
+                _uiState.update {
+                    it.copy(
+                        expression = currentRawInput.toString(),
+                        cursorPosition = currentCursorPos,
+                        displayResult = formattedResult,
+                        wordsText = inWords,
+                        tapeHistory = it.tapeHistory + newTapeItem
+                    )
+                }
+                return
+            }
+
             val exprToEvaluate = rawExpr.trimEnd('+', '-', '*', '/', '×', '÷', '%', ' ')
             if (exprToEvaluate.isEmpty()) return
+
+            // Extract last operator and operand for Casio constant arithmetic buffer
+            val lastOpRegex = Regex("""([+\-*×/÷−])\s*(\d+(?:\.\d+)?)\s*$""")
+            val match = lastOpRegex.find(exprToEvaluate)
+            if (match != null) {
+                lastConstantOp = match.groupValues[1]
+                lastConstantOperand = match.groupValues[2]
+            } else {
+                lastConstantOp = null
+                lastConstantOperand = null
+            }
 
             val showCurrency = getIncludeCurrency()
             val formatStyle = getNumberFormat()
@@ -306,6 +365,13 @@ class StandardCalculatorViewModel(
                     displayResult = formattedResult,
                     wordsText = inWords,
                     tapeHistory = it.tapeHistory + newTapeItem
+                )
+            }
+        } catch (e: ArithmeticException) {
+            _uiState.update {
+                it.copy(
+                    displayResult = "Error",
+                    wordsText = "Cannot divide by zero"
                 )
             }
         } catch (_: Exception) {}
@@ -419,6 +485,15 @@ class StandardCalculatorViewModel(
                     cursorPosition = currentCursorPos,
                     displayResult = formatted,
                     wordsText = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
+                )
+            }
+        } catch (e: ArithmeticException) {
+            _uiState.update {
+                it.copy(
+                    expression = currentRawInput.toString(),
+                    cursorPosition = currentCursorPos,
+                    displayResult = "Error",
+                    wordsText = "Cannot divide by zero"
                 )
             }
         } catch (_: Exception) {

@@ -985,3 +985,45 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-20 — Retail & Casio/Citizen Standards Overhaul (Google Inline History & Banking Math)
+
+### 🚀 Major Achievements:
+- **Google Calculator Style Inline Scrollable History (`NeumorphicLCDWell.kt` & `StandardCalculatorScreen.kt`)**:
+  - Removed cumbersome session shade popup overlay.
+  - LCD display well now features an integrated, fluid vertical history stream above the active formula.
+  - Tapping any prior calculation immediately recalls it into the active workspace. Keypad remains 100% visible and unblocked.
+- **Casio / Citizen Constant Arithmetic (`= = =`) (`StandardCalculatorViewModel.kt`)**:
+  - Buffered `lastConstantOp` & `lastConstantOperand` on equals evaluation.
+  - Consecutive `=` presses repeatedly apply the constant operator (e.g. `10 + 2 = 12` ➔ `=` ➔ `14` ➔ `=` ➔ `16`).
+- **Divide by Zero Protection (`CommercialEngines.kt` & `StandardCalculatorViewModel.kt`)**:
+  - Eliminated silent `0.00` bug; returns explicit `Error` with subtitle `Cannot divide by zero`.
+- **Indian Number-to-Words Engine with Paise (`IndianCurrencyWordConverter.kt`)**:
+  - Added precision paise extraction (e.g., `₹ 1,250.75` ➔ *"One Thousand Two Hundred Fifty Rupees and Seventy Five Paise Only"* / *"एक हज़ार दो सौ पचास रुपये पचहत्तर पैसे मात्र"*).
+  - Added Arab ($10^9$) and Kharab ($10^{11}$) bounds scaling.
+- **GST Pro BODMAS Fix (`GSTProViewModel.kt`)**:
+  - Replaced custom left-to-right evaluator with `ShuntingYardEvaluator`.
+- **Cash Tally Banking Gaddi/Packet Math (`CashTallyScreen.kt` & `CashTallyViewModel.kt`)**:
+  - Automated 100-note Packet breakdown badge (e.g., `2 Pkts + 50 Pcs`).
+  - Embedded Cashier Name and packet breakdown in WhatsApp closing slip export.
+- **Indian Traditional Units Expansion (`UnitConversionEngine.kt`)**:
+  - Added Quintal (100kg), Maund (40kg), Masha (0.972g), Carat (200mg), Sovereign (8g), Cent, Ground, Marla, Kanal, and Biswa.
+- **Commercial Business Solvers (`CommercialEngines.kt`)**:
+  - Added Casio `MU` reverse margin solver ($SP = CP / (1 - Margin\%)$) and successive festive discount solver ($50\% + 20\%$).
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% tests passing across all 10 modules).
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment (`Realme RMX3998`):
+  - Verified Casio constant arithmetic `10 + 2 = = =` ➔ `14, 16` (`143_constant_arithmetic_and_inline_history.png`).
+  - Verified divide by zero `10 ÷ 0` ➔ `Error` (`144_divide_by_zero_verified.png`).
+  - Verified Cash Tally Gaddi/Packet breakdown `2 Pkt + 50 Pcs` (`145_cash_tally_gaddi_packets_verified.png`).
+
+### 📌 Current State:
+- Version: v1.0.0-retail-casio-google-verified (Full retail, bahi-khata, Casio constant math, and Google inline history parity).
+
+### 📝 Next Steps:
+- Ready for next user requests or testing.
+
+---
+*Signed by: Shoeb Ahmad*

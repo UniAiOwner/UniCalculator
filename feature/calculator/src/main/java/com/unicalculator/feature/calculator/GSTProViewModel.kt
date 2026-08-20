@@ -131,30 +131,10 @@ class GSTProViewModel(
 
     private fun evaluateExpression(expr: String): BigDecimal {
         if (expr.isEmpty()) return BigDecimal.ZERO
-        val sanitized = expr.replace("×", "*").replace("÷", "/")
-        val trimmed = sanitized.trimEnd('*', '/', '+', '-')
-        if (trimmed.isEmpty()) return BigDecimal.ZERO
-
         return try {
-            val tokens = Regex("(?<=[*/+-])|(?=[*/+-])").split(trimmed).map { it.trim() }.filter { it.isNotEmpty() }
-            if (tokens.isEmpty()) return BigDecimal.ZERO
-            var result = tokens[0].toBigDecimalOrNull() ?: BigDecimal.ZERO
-            var i = 1
-            while (i < tokens.size - 1) {
-                val op = tokens[i]
-                val nextVal = tokens[i + 1].toBigDecimalOrNull() ?: BigDecimal.ZERO
-                result = when (op) {
-                    "*" -> result.multiply(nextVal)
-                    "/" -> if (nextVal.compareTo(BigDecimal.ZERO) != 0) result.divide(nextVal, 4, java.math.RoundingMode.HALF_UP) else result
-                    "+" -> result.add(nextVal)
-                    "-" -> result.subtract(nextVal)
-                    else -> result
-                }
-                i += 2
-            }
-            result
+            com.unicalculator.core.math.ShuntingYardEvaluator.evaluate(expr)
         } catch (_: Exception) {
-            trimmed.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            BigDecimal.ZERO
         }
     }
 

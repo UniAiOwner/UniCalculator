@@ -42,6 +42,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -105,6 +106,10 @@ fun CashTallyScreen(
 
     fun click() = hapticEngine.playKeyClick(hapticIntensity)
     fun tick() = hapticEngine.playOperatorTick(hapticIntensity)
+
+    LaunchedEffect(Unit) {
+        viewModel.setPreferences(prefs)
+    }
 
     val filteredDenominations = remember(state.state.denominations, show2000Note, show2Note, show1Note) {
         state.state.denominations.filter { item ->
@@ -727,8 +732,16 @@ private fun DenominationRow(
                 maxLines = 1,
                 softWrap = false
             )
+            val packetBadge = when {
+                item.count >= 100 -> {
+                    val pkts = item.count / 100
+                    val rem = item.count % 100
+                    if (rem > 0) "$pkts Pkt + $rem Pcs" else "$pkts Pkt (${item.count})"
+                }
+                else -> "${item.count} Pcs"
+            }
             Text(
-                text = "${item.count} Pcs",
+                text = packetBadge,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = FontFamily.Monospace,

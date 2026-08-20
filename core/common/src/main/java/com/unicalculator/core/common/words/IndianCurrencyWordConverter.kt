@@ -40,48 +40,71 @@ object IndianCurrencyWordConverter {
         inHindi: Boolean = false,
         includeRupeesSuffix: Boolean = true
     ): String {
-        val longVal = amount.toLong()
-        if (longVal == 0L) {
+        val absAmount = amount.abs()
+        val rupees = absAmount.setScale(0, java.math.RoundingMode.DOWN).toLong()
+        val paise = absAmount.remainder(BigDecimal.ONE).multiply(BigDecimal("100")).setScale(0, java.math.RoundingMode.HALF_UP).toInt()
+
+        if (rupees == 0L && paise == 0) {
             return if (inHindi) {
                 if (includeRupeesSuffix) "शून्य रुपये मात्र" else "शून्य"
             } else {
                 if (includeRupeesSuffix) "Zero Rupees Only" else "Zero"
             }
         }
+
         return if (inHindi) {
-            convertToHindiWords(longVal, includeRupeesSuffix)
+            val rupeesPart = if (rupees > 0) convertToHindiWords(rupees) else ""
+            val paisePart = if (paise > 0) "${hindiNumbers[paise] ?: paise.toString()} पैसे" else ""
+            val fullText = when {
+                rupees > 0 && paise > 0 -> "$rupeesPart रुपये $paisePart"
+                rupees > 0 -> "$rupeesPart रुपये"
+                else -> paisePart
+            }
+            if (includeRupeesSuffix) "$fullText मात्र".trim() else fullText.trim()
         } else {
-            convertToEnglishWords(longVal, includeRupeesSuffix)
+            val rupeesPart = if (rupees > 0) convertToEnglishWords(rupees) else ""
+            val paisePart = if (paise > 0) "${convertEnglishLessThanThousand(paise)} Paise" else ""
+            val fullText = when {
+                rupees > 0 && paise > 0 -> "$rupeesPart Rupees and $paisePart"
+                rupees > 0 -> "$rupeesPart Rupees"
+                else -> paisePart
+            }
+            if (includeRupeesSuffix) "$fullText Only".trim() else fullText.trim()
         }
     }
 
-    private fun convertToEnglishWords(amount: Long, includeRupeesSuffix: Boolean = true): String {
+    private fun convertToEnglishWords(amount: Long): String {
         var n = amount
         val sb = StringBuilder()
 
-        if (n >= 10000000) { // Crores
-            sb.append(convertEnglishLessThanThousand((n / 10000000).toInt())).append(" Crore ")
-            n %= 10000000
+        if (n >= 100000000000L) { // Kharab (10^11)
+            sb.append(convertEnglishLessThanThousand((n / 100000000000L).toInt())).append(" Kharab ")
+            n %= 100000000000L
         }
-        if (n >= 100000) { // Lakhs
-            sb.append(convertEnglishLessThanThousand((n / 100000).toInt())).append(" Lakh ")
-            n %= 100000
+        if (n >= 1000000000L) { // Arab (10^9)
+            sb.append(convertEnglishLessThanThousand((n / 1000000000L).toInt())).append(" Arab ")
+            n %= 1000000000L
         }
-        if (n >= 1000) { // Thousands
-            sb.append(convertEnglishLessThanThousand((n / 1000).toInt())).append(" Thousand ")
-            n %= 1000
+        if (n >= 10000000L) { // Crore (10^7)
+            sb.append(convertEnglishLessThanThousand((n / 10000000L).toInt())).append(" Crore ")
+            n %= 10000000L
         }
-        if (n >= 100) { // Hundreds
-            sb.append(convertEnglishLessThanThousand((n / 100).toInt())).append(" Hundred ")
-            n %= 100
+        if (n >= 100000L) { // Lakh (10^5)
+            sb.append(convertEnglishLessThanThousand((n / 100000L).toInt())).append(" Lakh ")
+            n %= 100000L
+        }
+        if (n >= 1000L) { // Thousand (10^3)
+            sb.append(convertEnglishLessThanThousand((n / 1000L).toInt())).append(" Thousand ")
+            n %= 1000L
+        }
+        if (n >= 100L) { // Hundred (10^2)
+            sb.append(convertEnglishLessThanThousand((n / 100L).toInt())).append(" Hundred ")
+            n %= 100L
         }
         if (n > 0) {
             sb.append(convertEnglishLessThanThousand(n.toInt())).append(" ")
         }
 
-        if (includeRupeesSuffix) {
-            sb.append("Rupees Only")
-        }
         return sb.toString().trim().replace("\\s+".toRegex(), " ")
     }
 
@@ -89,7 +112,10 @@ object IndianCurrencyWordConverter {
         var num = number
         var result = ""
         if (num >= 100) {
-            result += englishUnits[num / 100] + " Hundred "
+            val h = num / 100
+            if (h in 1..19) {
+                result += englishUnits[h] + " Hundred "
+            }
             num %= 100
         }
         if (num in 1..19) {
@@ -100,38 +126,45 @@ object IndianCurrencyWordConverter {
         return result.trim()
     }
 
-    private fun convertToHindiWords(amount: Long, includeRupeesSuffix: Boolean = true): String {
+    private fun convertToHindiWords(amount: Long): String {
         var n = amount
         val sb = StringBuilder()
 
-        if (n >= 10000000) {
-            val cr = (n / 10000000).toInt()
+        if (n >= 100000000000L) { // Kharab
+            val kh = (n / 100000000000L).toInt()
+            sb.append(hindiNumbers[kh] ?: kh.toString()).append(" खरब ")
+            n %= 100000000000L
+        }
+        if (n >= 1000000000L) { // Arab
+            val ar = (n / 1000000000L).toInt()
+            sb.append(hindiNumbers[ar] ?: ar.toString()).append(" अरब ")
+            n %= 1000000000L
+        }
+        if (n >= 10000000L) { // Crore
+            val cr = (n / 10000000L).toInt()
             sb.append(hindiNumbers[cr] ?: cr.toString()).append(" करोड़ ")
-            n %= 10000000
+            n %= 10000000L
         }
-        if (n >= 100000) {
-            val lk = (n / 100000).toInt()
+        if (n >= 100000L) { // Lakh
+            val lk = (n / 100000L).toInt()
             sb.append(hindiNumbers[lk] ?: lk.toString()).append(" लाख ")
-            n %= 100000
+            n %= 100000L
         }
-        if (n >= 1000) {
-            val th = (n / 1000).toInt()
+        if (n >= 1000L) { // Thousand
+            val th = (n / 1000L).toInt()
             sb.append(hindiNumbers[th] ?: th.toString()).append(" हज़ार ")
-            n %= 1000
+            n %= 1000L
         }
-        if (n >= 100) {
-            val hd = (n / 100).toInt()
+        if (n >= 100L) { // Hundred
+            val hd = (n / 100L).toInt()
             sb.append(hindiNumbers[hd] ?: hd.toString()).append(" सौ ")
-            n %= 100
+            n %= 100L
         }
         if (n > 0) {
             val rem = n.toInt()
             sb.append(hindiNumbers[rem] ?: rem.toString()).append(" ")
         }
 
-        if (includeRupeesSuffix) {
-            sb.append("रुपये मात्र")
-        }
         return sb.toString().trim().replace("\\s+".toRegex(), " ")
     }
 }

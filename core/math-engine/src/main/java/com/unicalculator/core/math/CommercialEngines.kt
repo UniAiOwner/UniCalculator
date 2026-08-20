@@ -178,7 +178,7 @@ object ShuntingYardEvaluator {
                     "*" -> a.multiply(b)
                     "/" -> {
                         if (b.compareTo(BigDecimal.ZERO) == 0) {
-                            BigDecimal.ZERO
+                            throw ArithmeticException("Cannot divide by zero")
                         } else {
                             a.divide(b, 10, RoundingMode.HALF_EVEN)
                         }
@@ -213,6 +213,37 @@ object CommercialCalculatorEngine {
             profitMarginPercent = margin,
             markupPercent = markup
         )
+    }
+
+    /**
+     * Casio MU (Mark-Up) Key Parity: Calculate Target Selling Price from Cost Price and Desired Margin %
+     * Target SP = CP / (1 - Margin% / 100)
+     */
+    fun calculateTargetSellingPrice(costPrice: BigDecimal, desiredMarginPercent: BigDecimal): BigDecimal {
+        if (costPrice.compareTo(BigDecimal.ZERO) <= 0) return BigDecimal.ZERO
+        val marginFraction = desiredMarginPercent.divide(HUNDRED, 10, RoundingMode.HALF_EVEN)
+        val denominator = BigDecimal.ONE.subtract(marginFraction)
+        if (denominator.compareTo(BigDecimal.ZERO) <= 0) return costPrice
+        return costPrice.divide(denominator, 2, RoundingMode.HALF_UP)
+    }
+
+    /**
+     * Successive / Double Discount Solver (e.g. 50% + 20% festive sale)
+     * Returns Pair(FinalPrice, TotalDiscountAmount)
+     */
+    fun calculateSuccessiveDiscount(originalPrice: BigDecimal, discounts: List<BigDecimal>): Pair<BigDecimal, BigDecimal> {
+        if (originalPrice.compareTo(BigDecimal.ZERO) <= 0 || discounts.isEmpty()) {
+            return Pair(originalPrice, BigDecimal.ZERO)
+        }
+        var runningPrice = originalPrice
+        for (d in discounts) {
+            val discountFraction = d.divide(HUNDRED, 10, RoundingMode.HALF_EVEN)
+            val factor = BigDecimal.ONE.subtract(discountFraction).coerceAtLeast(BigDecimal.ZERO)
+            runningPrice = runningPrice.multiply(factor)
+        }
+        val finalPrice = runningPrice.setScale(2, RoundingMode.HALF_UP)
+        val savings = originalPrice.subtract(finalPrice)
+        return Pair(finalPrice, savings)
     }
 
     fun calculateLoanEmi(principal: BigDecimal, annualInterestRate: BigDecimal, tenureMonths: Int): LoanEmiResult {

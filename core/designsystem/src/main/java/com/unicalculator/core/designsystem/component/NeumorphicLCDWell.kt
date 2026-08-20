@@ -121,53 +121,46 @@ fun NeumorphicLCDWell(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End
         ) {
-            // 📜 Previous Calculation Tape Items (1 Row resting viewport, tap or slide down expands full history shade)
-            if (latestTapeItem != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            onExpandHistory?.invoke()
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+            // 📜 Google Calculator Style Inline Scrollable History (Scroll up/down to view past calculations)
+            if (tapeHistory.isNotEmpty()) {
+                tapeHistory.forEach { item ->
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                onTapeItemClick?.invoke(item)
+                            },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.KeyboardArrowDown,
-                            contentDescription = "Expand History",
-                            tint = colors.textSecondary,
-                            modifier = Modifier.size(16.dp)
-                        )
                         Text(
-                            text = latestTapeItem.expression,
+                            text = item.expression,
                             style = TextStyle(
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 13.sp,
-                                color = colors.textSecondary.copy(alpha = 0.85f)
+                                color = colors.textSecondary.copy(alpha = 0.75f)
                             ),
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "= ${item.result}",
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp,
+                                color = colors.textPrimary.copy(alpha = 0.85f)
+                            ),
+                            maxLines = 1
                         )
                     }
-                    Text(
-                        text = "= ${latestTapeItem.result}",
-                        style = TextStyle(
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 13.sp,
-                            color = colors.textPrimary.copy(alpha = 0.85f)
-                        ),
-                        maxLines = 1
-                    )
                 }
 
                 HorizontalDivider(
