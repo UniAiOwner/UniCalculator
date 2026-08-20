@@ -41,6 +41,9 @@ class UniCalculatorPreferences private constructor(context: Context) {
     private val _keepScreenAwake = MutableStateFlow(prefs.getBoolean(KEY_KEEP_SCREEN_AWAKE, false))
     val keepScreenAwake: StateFlow<Boolean> = _keepScreenAwake.asStateFlow()
 
+    private val _showCurrencySymbol = MutableStateFlow(prefs.getBoolean(KEY_SHOW_CURRENCY_SYMBOL, false))
+    val showCurrencySymbol: StateFlow<Boolean> = _showCurrencySymbol.asStateFlow()
+
     // --- GST Pro Settings State ---
     private val _defaultGstRate = MutableStateFlow(prefs.getInt(KEY_DEFAULT_GST_RATE, 18))
     val defaultGstRate: StateFlow<Int> = _defaultGstRate.asStateFlow()
@@ -104,6 +107,11 @@ class UniCalculatorPreferences private constructor(context: Context) {
     fun setKeepScreenAwake(awake: Boolean) {
         prefs.edit().putBoolean(KEY_KEEP_SCREEN_AWAKE, awake).apply()
         _keepScreenAwake.value = awake
+    }
+
+    fun setShowCurrencySymbol(show: Boolean) {
+        prefs.edit().putBoolean(KEY_SHOW_CURRENCY_SYMBOL, show).apply()
+        _showCurrencySymbol.value = show
     }
 
     fun setDefaultGstRate(rate: Int) {
@@ -173,6 +181,7 @@ class UniCalculatorPreferences private constructor(context: Context) {
         private const val KEY_HAPTIC_INTENSITY = "haptic_intensity"
         private const val KEY_SOUND_CLICK = "sound_click"
         private const val KEY_KEEP_SCREEN_AWAKE = "keep_screen_awake"
+        private const val KEY_SHOW_CURRENCY_SYMBOL = "show_currency_symbol"
         private const val KEY_DEFAULT_GST_RATE = "default_gst_rate"
         private const val KEY_IS_INTER_STATE = "is_inter_state"
         private const val KEY_BUSINESS_NAME = "business_name"

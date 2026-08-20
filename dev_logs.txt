@@ -810,4 +810,31 @@
 ---
 *Signed by: Shoeb Ahmad*
 
+## 📅 Date: 2026-08-20 — Standard Calculator Configurable Currency Symbol & Words (Default OFF)
+
+### 🚀 Major Achievements:
+- **Configurable Currency Symbol & Words (`UniCalculatorPreferences.kt`)**:
+  - Added `showCurrencySymbol` state flow and `setShowCurrencySymbol(Boolean)` defaulting to `false` (General Arithmetic mode).
+- **Settings Sheet Toggle Switch (`StandardSettingsSheet.kt`)**:
+  - Added "Show Currency Symbol (₹)" Neumorphic slide toggle plate with descriptive subtitle "Prefix results with '₹' & 'Rupees Only'".
+- **Dynamic Math & Word Converter Output (`StandardCalculatorViewModel.kt` & `IndianCurrencyWordConverter.kt`)**:
+  - When `showCurrencySymbol` is **OFF** (Default): Formats results as clean, pure mathematical numbers (e.g. `12,500` without `₹`) and pure verbal transcriptions (e.g. `Twelve Thousand Five Hundred` without `Rupees Only`).
+  - When `showCurrencySymbol` is **ON**: Dynamically attaches `₹` prefix (e.g. `₹ 12,500`) and Indian currency suffix `Rupees Only` (e.g. `Twelve Thousand Five Hundred Rupees Only`).
+- **Physical Hardware Verification**:
+  - Verified on live Realme phone (`XGQ8JFZXEITGJ7IB`), capturing screenshots `108_currency_off_default.png`, `109_calc_currency_off.png`, `110_settings_currency_toggle.png`, `111_currency_on_verified.png`, `114_currency_on_screen.png`, and `115_currency_default_clean.png`.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% tests passing).
+- Live hardware toggle and real-time formatting verified on physical device.
+
+### 📌 Current State:
+- Version: v1.0.0-standard-currency-toggle (Configurable Currency Symbol & Words, Default OFF for pure general math).
+
+### 📝 Next Steps:
+- Execute comprehensive Spec Kit-driven line-by-line codebase audit across all modules to identify missing features, loose ends, and UX polish items, then present structured fix plan for discussion.
+
+---
+*Signed by: Shoeb Ahmad*
+
+
 

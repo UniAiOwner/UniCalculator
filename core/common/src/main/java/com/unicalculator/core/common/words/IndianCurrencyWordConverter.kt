@@ -35,19 +35,27 @@ object IndianCurrencyWordConverter {
         96 to "छियानवे", 97 to "सत्तानवे", 98 to "अट्ठानवे", 99 to "निन्यानवे"
     )
 
-    fun convertToWords(amount: BigDecimal, inHindi: Boolean = false): String {
+    fun convertToWords(
+        amount: BigDecimal,
+        inHindi: Boolean = false,
+        includeRupeesSuffix: Boolean = true
+    ): String {
         val longVal = amount.toLong()
         if (longVal == 0L) {
-            return if (inHindi) "शून्य रुपये मात्र" else "Zero Rupees Only"
+            return if (inHindi) {
+                if (includeRupeesSuffix) "शून्य रुपये मात्र" else "शून्य"
+            } else {
+                if (includeRupeesSuffix) "Zero Rupees Only" else "Zero"
+            }
         }
         return if (inHindi) {
-            convertToHindiWords(longVal)
+            convertToHindiWords(longVal, includeRupeesSuffix)
         } else {
-            convertToEnglishWords(longVal)
+            convertToEnglishWords(longVal, includeRupeesSuffix)
         }
     }
 
-    private fun convertToEnglishWords(amount: Long): String {
+    private fun convertToEnglishWords(amount: Long, includeRupeesSuffix: Boolean = true): String {
         var n = amount
         val sb = StringBuilder()
 
@@ -71,7 +79,9 @@ object IndianCurrencyWordConverter {
             sb.append(convertEnglishLessThanThousand(n.toInt())).append(" ")
         }
 
-        sb.append("Rupees Only")
+        if (includeRupeesSuffix) {
+            sb.append("Rupees Only")
+        }
         return sb.toString().trim().replace("\\s+".toRegex(), " ")
     }
 
@@ -90,7 +100,7 @@ object IndianCurrencyWordConverter {
         return result.trim()
     }
 
-    private fun convertToHindiWords(amount: Long): String {
+    private fun convertToHindiWords(amount: Long, includeRupeesSuffix: Boolean = true): String {
         var n = amount
         val sb = StringBuilder()
 
@@ -119,7 +129,9 @@ object IndianCurrencyWordConverter {
             sb.append(hindiNumbers[rem] ?: rem.toString()).append(" ")
         }
 
-        sb.append("रुपये मात्र")
+        if (includeRupeesSuffix) {
+            sb.append("रुपये मात्र")
+        }
         return sb.toString().trim().replace("\\s+".toRegex(), " ")
     }
 }

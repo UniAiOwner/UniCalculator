@@ -53,6 +53,9 @@ import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.OperatorOrange
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 
+import androidx.compose.runtime.LaunchedEffect
+import com.unicalculator.core.common.prefs.UniCalculatorPreferences
+
 @Composable
 fun StandardCalculatorScreen(
     viewModel: StandardCalculatorViewModel = viewModel(),
@@ -66,10 +69,16 @@ fun StandardCalculatorScreen(
     val context = LocalContext.current
     val hapticEngine = remember { NeumorphicHapticEngine(context) }
     val historyRepo = remember { LocalCalculationHistoryRepository(context) }
+    val prefs = remember { UniCalculatorPreferences.getInstance(context) }
+    val showCurrencySymbol by prefs.showCurrencySymbol.collectAsState()
     var showSettingsSheet by remember { mutableStateOf(false) }
     var isHistoryShadeExpanded by remember { mutableStateOf(false) }
 
     viewModel.setHistoryRepository(historyRepo)
+
+    LaunchedEffect(showCurrencySymbol) {
+        viewModel.setPreferences(prefs)
+    }
 
     if (showSettingsSheet) {
         StandardSettingsSheet(onDismiss = { showSettingsSheet = false })

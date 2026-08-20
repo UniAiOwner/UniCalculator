@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 
+import com.unicalculator.core.common.prefs.UniCalculatorPreferences
+
 data class CalculationTapeItem(
     val expression: String,
     val result: String,
@@ -24,20 +26,38 @@ data class CalculatorUiState(
     val cursorPosition: Int = 0,
     val selectionStart: Int = -1,
     val selectionEnd: Int = -1,
-    val displayResult: String = "₹ 0",
-    val wordsText: String = "Zero Rupees Only",
+    val displayResult: String = "0",
+    val wordsText: String = "Zero",
     val memoryValue: BigDecimal = BigDecimal.ZERO,
     val tapeHistory: List<CalculationTapeItem> = emptyList()
 )
 
 class StandardCalculatorViewModel(
-    private var historyRepository: LocalCalculationHistoryRepository? = null
+    private var historyRepository: LocalCalculationHistoryRepository? = null,
+    private var preferences: UniCalculatorPreferences? = null
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CalculatorUiState())
     val uiState: StateFlow<CalculatorUiState> = _uiState.asStateFlow()
 
     fun setHistoryRepository(repo: LocalCalculationHistoryRepository) {
         this.historyRepository = repo
+    }
+
+    fun setPreferences(prefs: UniCalculatorPreferences) {
+        this.preferences = prefs
+        recalculateMath()
+    }
+
+    private fun getIncludeCurrency(): Boolean {
+        return preferences?.showCurrencySymbol?.value ?: false
+    }
+
+    private fun getZeroDisplayResult(): String {
+        return if (getIncludeCurrency()) "₹ 0" else "0"
+    }
+
+    private fun getZeroWords(): String {
+        return if (getIncludeCurrency()) "Zero Rupees Only" else "Zero"
     }
 
     private var currentRawInput = StringBuilder()
@@ -192,8 +212,8 @@ class StandardCalculatorViewModel(
                 cursorPosition = 0,
                 selectionStart = -1,
                 selectionEnd = -1,
-                displayResult = "₹ 0",
-                wordsText = "Zero Rupees Only"
+                displayResult = getZeroDisplayResult(),
+                wordsText = getZeroWords()
             )
         }
     }
@@ -216,9 +236,10 @@ class StandardCalculatorViewModel(
             val exprToEvaluate = rawExpr.trimEnd('+', '-', '*', '/', '×', '÷', '%', ' ')
             if (exprToEvaluate.isEmpty()) return
 
+            val showCurrency = getIncludeCurrency()
             val eval = ShuntingYardEvaluator.evaluate(exprToEvaluate)
-            val formattedResult = IndianVedicFormatter.formatCurrency(eval)
-            val inWords = IndianCurrencyWordConverter.convertToWords(eval)
+            val formattedResult = IndianVedicFormatter.formatCurrency(eval, includeSymbol = showCurrency, showDecimalsAlways = false)
+            val inWords = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
 
             val newTapeItem = CalculationTapeItem(
                 expression = exprToEvaluate,
@@ -252,9 +273,10 @@ class StandardCalculatorViewModel(
             if (currentRawInput.isEmpty()) return
             val raw = currentRawInput.toString().trim()
             val exprWithPercent = "$raw%"
+            val showCurrency = getIncludeCurrency()
             val eval = ShuntingYardEvaluator.evaluate(exprWithPercent)
-            val formattedResult = IndianVedicFormatter.formatCurrency(eval)
-            val inWords = IndianCurrencyWordConverter.convertToWords(eval)
+            val formattedResult = IndianVedicFormatter.formatCurrency(eval, includeSymbol = showCurrency, showDecimalsAlways = false)
+            val inWords = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
 
             val newTapeItem = CalculationTapeItem(
                 expression = exprWithPercent,
@@ -313,20 +335,21 @@ class StandardCalculatorViewModel(
 
     private fun recalculateMath() {
         try {
+            val showCurrency = getIncludeCurrency()
             if (currentRawInput.isEmpty()) {
                 _uiState.update {
                     it.copy(
                         expression = "",
                         cursorPosition = 0,
-                        displayResult = "₹ 0",
-                        wordsText = "Zero Rupees Only"
+                        displayResult = getZeroDisplayResult(),
+                        wordsText = getZeroWords()
                     )
                 }
                 return
             }
             val raw = currentRawInput.toString()
             val eval = ShuntingYardEvaluator.evaluate(raw)
-            var formatted = IndianVedicFormatter.formatCurrency(eval, includeSymbol = true, showDecimalsAlways = false)
+            var formatted = IndianVedicFormatter.formatCurrency(eval, includeSymbol = showCurrency, showDecimalsAlways = false)
             if (raw.endsWith(".") && !formatted.contains(".")) {
                 formatted += "."
             }
@@ -335,7 +358,7 @@ class StandardCalculatorViewModel(
                     expression = raw,
                     cursorPosition = currentCursorPos,
                     displayResult = formatted,
-                    wordsText = IndianCurrencyWordConverter.convertToWords(eval)
+                    wordsText = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
                 )
             }
         } catch (_: Exception) {

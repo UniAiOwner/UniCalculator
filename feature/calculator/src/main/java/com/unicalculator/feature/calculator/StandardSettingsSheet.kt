@@ -63,6 +63,7 @@ fun StandardSettingsSheet(
     val numberFormat by prefs.numberFormat.collectAsState()
     val hapticIntensity by prefs.hapticIntensity.collectAsState()
     val keepAwake by prefs.keepScreenAwake.collectAsState()
+    val showCurrencySymbol by prefs.showCurrencySymbol.collectAsState()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -99,6 +100,37 @@ fun StandardSettingsSheet(
                     size = 36.dp,
                     iconSize = 18.dp
                 )
+            }
+
+            // 0. Currency Symbol & Words (Default OFF)
+            NeumorphicPlate(
+                modifier = Modifier.fillMaxWidth(),
+                shape = NeumorphicShape.CONVEX,
+                cornerRadius = 16.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Show Currency Symbol (₹)",
+                            style = TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = colors.textPrimary)
+                        )
+                        Text(
+                            text = "Prefix results with '₹' & 'Rupees Only'",
+                            style = TextStyle(fontFamily = FontFamily.Default, fontSize = 12.sp, color = colors.textSecondary)
+                        )
+                    }
+                    NeumorphicSlideSwitch(
+                        leftLabel = "Off",
+                        rightLabel = "On",
+                        isRightSelected = showCurrencySymbol,
+                        onToggle = { prefs.setShowCurrencySymbol(it) },
+                        modifier = Modifier.width(100.dp)
+                    )
+                }
             }
 
             // 1. Decimal Precision
