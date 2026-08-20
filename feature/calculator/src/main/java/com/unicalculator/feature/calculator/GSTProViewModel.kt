@@ -24,6 +24,7 @@ data class GSTProUiState(
     val isInterState: Boolean = false, // false: CGST+SGST (Intra), true: IGST (Inter)
     val taxBreakdown: TaxBreakdown? = null,
     val inWordsText: String = "Zero Rupees Only",
+    val inWordsHindiText: String = "शून्य रुपये मात्र",
     val isResultEnlarged: Boolean = false
 )
 
@@ -102,6 +103,7 @@ class GSTProViewModel(
                 displayAmount = "₹ 0.00",
                 taxBreakdown = null,
                 inWordsText = "Zero Rupees Only",
+                inWordsHindiText = "शून्य रुपये मात्र",
                 isResultEnlarged = false
             )
         }
@@ -203,12 +205,16 @@ class GSTProViewModel(
                 IndianVedicFormatter.formatCurrency(evaluatedAmount, true)
             }
 
+            val inWordsEn = IndianCurrencyWordConverter.convertToWords(targetForWords, inHindi = false)
+            val inWordsHi = IndianCurrencyWordConverter.convertToWords(targetForWords, inHindi = true)
+
             _uiState.update {
                 it.copy(
                     amountInput = amountStr,
                     displayAmount = headerDisplay,
                     taxBreakdown = breakdown,
-                    inWordsText = IndianCurrencyWordConverter.convertToWords(targetForWords)
+                    inWordsText = inWordsEn,
+                    inWordsHindiText = inWordsHi
                 )
             }
         } catch (_: Exception) {}

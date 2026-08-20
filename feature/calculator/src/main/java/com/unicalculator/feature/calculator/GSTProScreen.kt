@@ -43,6 +43,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -197,14 +198,17 @@ fun GSTProScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (state.isReverseGst) "TOTAL GROSS (INCL. TAX)" else "NET BASE AMOUNT (EXCL. TAX)",
+                        text = if (state.isReverseGst) "Gross Amount: ${state.displayAmount}" else "Base Amount: ${state.displayAmount}",
                         style = TextStyle(
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
+                            fontSize = 11.sp,
                             color = colors.textSecondary,
-                            letterSpacing = 0.5.sp
-                        )
+                            letterSpacing = 0.3.sp
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
 
                     // Quick Action Icon Chips
@@ -280,11 +284,11 @@ fun GSTProScreen(
                     }
                 }
 
-                // Sunken LCD Touch Well for Active Input Amount
+                // Sunken LCD Touch Well for Live Formula & Final Answer
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(38.dp)
+                        .height(44.dp)
                         .neumorphic(
                             shape = NeumorphicShape.CONCAVE,
                             cornerRadius = 8.dp,
@@ -294,88 +298,100 @@ fun GSTProScreen(
                             backgroundColor = colors.lcdWellBackground
                         )
                         .padding(horizontal = 10.dp),
-                    contentAlignment = Alignment.CenterEnd
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = state.displayAmount,
-                        style = TextStyle(
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = colors.textPrimary
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val formulaExpr = "${state.amountInput.ifEmpty { "0" }} ${if (state.isReverseGst) "−" else "+"} ${state.selectedGstRate}% GST"
+                        Text(
+                            text = formulaExpr,
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp,
+                                color = colors.textSecondary
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        val finalAnswerStr = if (state.isReverseGst) netBaseStr else grossFinalStr
+                        Text(
+                            text = finalAnswerStr,
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Black,
+                                fontSize = 22.sp,
+                                color = colors.textPrimary
+                            ),
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
                 }
 
-                // 3-Column Statutory Tax Breakdown Grid
+                // 3-Column Statutory Tax Breakdown Grid with Vertical Dividers
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (state.isInterState) {
-                        TaxMetricCell(label = "IGST (${state.selectedGstRate}%):", value = igstStr, valueColor = SapphireBlue)
-                        TaxMetricCell(label = "Jurisdiction:", value = "Inter-State", valueColor = colors.textSecondary)
-                        TaxMetricCell(label = "Total Tax (${state.selectedGstRate}%):", value = totalTaxStr, valueColor = GstSaffronAmber, isEndAlign = true)
+                        TaxMetricCell(label = "IGST (${state.selectedGstRate}%):", value = igstStr, valueColor = SapphireBlue, modifier = Modifier.weight(1f))
+                        Box(modifier = Modifier.width(1.dp).height(24.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
+                        TaxMetricCell(label = "Jurisdiction:", value = "Inter-State", valueColor = colors.textSecondary, modifier = Modifier.weight(1f))
+                        Box(modifier = Modifier.width(1.dp).height(24.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
+                        TaxMetricCell(label = "Total Tax (${state.selectedGstRate}%):", value = totalTaxStr, valueColor = GstSaffronAmber, modifier = Modifier.weight(1f))
                     } else {
                         val halfRate = state.selectedGstRate / 2.0
-                        TaxMetricCell(label = "CGST (${halfRate}%):", value = cgstStr, valueColor = SapphireBlue)
-                        TaxMetricCell(label = "SGST (${halfRate}%):", value = sgstStr, valueColor = SapphireBlue)
-                        TaxMetricCell(label = "Total Tax (${state.selectedGstRate}%):", value = totalTaxStr, valueColor = GstSaffronAmber, isEndAlign = true)
+                        TaxMetricCell(label = "CGST (${halfRate}%):", value = cgstStr, valueColor = SapphireBlue, modifier = Modifier.weight(1f))
+                        Box(modifier = Modifier.width(1.dp).height(24.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
+                        TaxMetricCell(label = "SGST (${halfRate}%):", value = sgstStr, valueColor = SapphireBlue, modifier = Modifier.weight(1f))
+                        Box(modifier = Modifier.width(1.dp).height(24.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
+                        TaxMetricCell(label = "Total Tax (${state.selectedGstRate}%):", value = totalTaxStr, valueColor = GstSaffronAmber, modifier = Modifier.weight(1f))
                     }
                 }
 
-                // Dynamic Result Banner Strip (Payable vs Net Base)
+                // Bottom In-Words / Cheque Words Banner (100% Dedicated to Words)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                         .background(
-                            if (state.isReverseGst) GstSaffronAmber.copy(alpha = 0.12f)
-                            else RupeeEmeraldGreen.copy(alpha = 0.12f)
+                            if (state.isReverseGst) GstSaffronAmber
+                            else RupeeEmeraldGreen
                         )
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = if (state.isReverseGst) "Net Base (Excl. Tax):" else "Total Invoice (Payable):",
-                                style = TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 11.sp,
-                                    color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen
-                                ),
-                                maxLines = 1,
-                                modifier = Modifier.weight(1f, fill = false)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = if (state.isReverseGst) netBaseStr else grossFinalStr,
-                                style = TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Black,
-                                    fontSize = 15.sp,
-                                    color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen
-                                ),
-                                maxLines = 1,
-                                softWrap = false
-                            )
-                        }
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
                         Text(
                             text = state.inWordsText,
                             style = TextStyle(
                                 fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.5.sp,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = state.inWordsHindiText,
+                            style = TextStyle(
+                                fontFamily = FontFamily.SansSerif,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 10.sp,
-                                lineHeight = 13.sp,
-                                color = colors.textSecondary
+                                color = Color.White.copy(alpha = 0.92f),
+                                textAlign = TextAlign.Center
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -566,10 +582,13 @@ private fun TaxMetricCell(
     label: String,
     value: String,
     valueColor: Color,
-    isEndAlign: Boolean = false
+    modifier: Modifier = Modifier
 ) {
     val colors = LocalNeumorphicColors.current
-    Column(horizontalAlignment = if (isEndAlign) Alignment.End else Alignment.Start) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
         Text(
             text = label,
             style = TextStyle(
@@ -577,13 +596,16 @@ private fun TaxMetricCell(
                 fontSize = 9.5.sp,
                 fontWeight = FontWeight.Medium,
                 color = colors.textSecondary
-            )
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = value,
             style = TextStyle(
                 fontFamily = FontFamily.Monospace,
-                fontSize = 12.sp,
+                fontSize = 12.5.sp,
                 fontWeight = FontWeight.Bold,
                 color = valueColor
             ),
