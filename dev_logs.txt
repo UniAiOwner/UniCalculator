@@ -755,8 +755,32 @@
 ### 📌 Current State:
 - Version: v1.0.0-segregated-history-and-settings (Fully isolated per-screen history ledgers, dedicated settings sheets, 100% hardware verified).
 
+---
+*Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-20 — Standard Calculator Single-Row Resting LCD Tape with Slide-Down History
+
+### 🚀 Major Achievements:
+- **Single-Row Resting Viewport (`NeumorphicLCDWell.kt`)**:
+  - Replaced the multi-row stack in the LCD display with a compact `28.dp` single-row resting viewport.
+  - The LCD well now displays only the **most recent 1 calculation** at rest, eliminating display clutter while preserving full calculation context.
+- **Interactive Slide-Down History Gesture**:
+  - Swiping / scrolling downwards on the tape row smoothly scrolls up older session calculations into view.
+  - Automatically animates back to the latest calculation upon entering new expressions or evaluating results.
+  - Retained 1-tap recall (`onTapeItemClick`) allowing instant loading of any past calculation into the active input line.
+- **Physical Hardware Verification**:
+  - Tested on live Realme phone (`XGQ8JFZXEITGJ7IB`), capturing screenshots `98_lcd_single_row.png`, `99_lcd_multi_test.png`, and `100_lcd_swiped_down.png`.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% tests passing).
+- Live hardware gesture verification confirmed single row resting view and smooth slide-down scrolling.
+
+### 📌 Current State:
+- Version: v1.0.0-lcd-single-row (Clean 1-row resting LCD with slide-down older history, 100% hardware verified).
+
 ### 📝 Next Steps:
-- Ready for subsequent enhancements or release packaging.
+- Ready for next user requests or feature enhancements.
 
 ---
 *Signed by: Shoeb Ahmad*
+

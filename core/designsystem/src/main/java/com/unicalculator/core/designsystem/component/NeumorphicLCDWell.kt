@@ -101,48 +101,65 @@ fun NeumorphicLCDWell(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End
         ) {
-            // 📜 Previous Calculation Tape Items (Scrollable History)
+            // 📜 Previous Calculation Tape Items (1 Row resting viewport, slide down for older calculations)
             if (tapeHistory.isNotEmpty()) {
-                tapeHistory.forEach { item ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ) {
-                                onTapeItemClick?.invoke(item)
-                            }
-                            .padding(vertical = 3.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                val tapeScrollState = rememberScrollState()
+                LaunchedEffect(tapeHistory.size) {
+                    tapeScrollState.animateScrollTo(tapeScrollState.maxValue)
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(28.dp)
+                        .verticalScroll(tapeScrollState)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = item.expression,
-                            style = TextStyle(
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 13.sp,
-                                color = colors.textSecondary.copy(alpha = 0.8f)
-                            ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = "= ${item.result}",
-                            style = TextStyle(
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 13.sp,
-                                color = colors.textPrimary.copy(alpha = 0.75f)
-                            ),
-                            maxLines = 1
-                        )
+                        tapeHistory.forEach { item ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(28.dp)
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        onTapeItemClick?.invoke(item)
+                                    },
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = item.expression,
+                                    style = TextStyle(
+                                        fontFamily = FontFamily.Monospace,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 13.sp,
+                                        color = colors.textSecondary.copy(alpha = 0.85f)
+                                    ),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = "= ${item.result}",
+                                    style = TextStyle(
+                                        fontFamily = FontFamily.Monospace,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 13.sp,
+                                        color = colors.textPrimary.copy(alpha = 0.85f)
+                                    ),
+                                    maxLines = 1
+                                )
+                            }
+                        }
                     }
                 }
 
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 6.dp),
+                    modifier = Modifier.padding(vertical = 4.dp),
                     thickness = 0.8.dp,
                     color = colors.darkShadow.copy(alpha = 0.5f)
                 )

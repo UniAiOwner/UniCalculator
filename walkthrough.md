@@ -1,76 +1,31 @@
-# UniCalculator — Walkthrough: Per-Screen Segregated History, Screen-Specific Settings & Tools History Persistence
+# UniCalculator — Walkthrough: Single-Row Resting LCD Tape with Slide-Down History
 
 ## Overview
-We have implemented a segregated calculation history architecture and customized settings modal sheets across all 4 workstation screens in **UniCalculator Bharat**, along with SQLite database persistence for the entire Tools & Converters suite.
+We have refined the Standard Calculator's **Neumorphic LCD Display Well** ([`NeumorphicLCDWell.kt`](file:///media/uniai/UniAi/PROJECTS_MIGRATED/UniCalculator/core/designsystem/src/main/java/com/unicalculator/core/designsystem/component/NeumorphicLCDWell.kt)) so that it displays only **1 single row** (the most recent calculation) at rest, and smoothly reveals older session calculations when sliding down.
 
 ---
 
 ## 🚀 Key Features Implemented
 
-### 1. Per-Screen Segregated Calculation History (`HistoryTapeScreen.kt`)
-- **Multi-Tab Filter Bar**:
-  - `All History`: Master chronological audit ledger across all screens.
-  - `Standard`: Only standard mathematical calculations.
-  - `GST Pro`: Forward & reverse GST invoices with CGST/SGST/IGST tax breakdown.
-  - `Cash Tally`: Full cash denomination closing slips with note counts and grand total.
-  - `Tools & Units`: Loan EMI schedules, discount stacks, profit margins, and unit conversions.
-- **Top Bar History Routing**:
-  - Tapping the History button (`🕐`) from any screen directly routes to that screen's pre-filtered history view.
-- **Per-Screen Clearing**:
-  - Tapping the red Trash button on a filtered tab only clears that specific category from the SQLite database (`deleteByTypes(...)`), leaving the remaining data intact.
+### 1. 1-Row Resting Viewport
+- Configured a compact `28.dp` single-row container for session calculations inside the LCD well.
+- The default resting view shows only the latest calculation above the active expression and primary result, keeping the LCD well clean, spacious, and uncluttered.
 
-### 2. Dedicated Screen-Specific Settings Sheets
-Each screen now opens its own tailored Neumorphic modal bottom sheet:
-- **Standard Calculator Settings** (`StandardSettingsSheet.kt`):
-  - Decimal precision (2, 4, 6, 8 decimals)
-  - Number formatting (Indian Vedic `1,00,000` vs Western `100,000`)
-  - Haptic feedback intensity (Off / Light / Medium / Strong)
-  - Keep Screen Awake toggle
-  - Clear Standard History
-- **GST Pro Settings** (`GSTProSettingsSheet.kt`):
-  - Default Slab on Launch (3%, 5%, 12%, 18%, 28%)
-  - Default Jurisdiction (Intra-State CGST+SGST vs Inter-State IGST)
-  - Business / Store Name for receipts
-  - Banker's Rounding (`HALF_EVEN`) vs Exact Paise
-  - Clear GST Invoices
-- **Cash Tally Settings** (`CashTallySettingsSheet.kt`):
-  - Special Denomination Toggles (Show/Hide ₹2000, ₹2, ₹1 notes)
-  - Cashier / Shift Name
-  - Auto-copy closing slip to clipboard on save
-  - Clear Cash Tally Sessions
-- **Tools & Converters Settings** (`ToolsSettingsSheet.kt`):
-  - Default Base Currency (INR, USD, EUR, AED)
-  - Auto-save conversions to history
-  - Clear Tools & Units History
+### 2. Interactive Slide-Down Gesture for Older History
+- Swiping or scrolling downwards on the tape row smoothly scrolls down older calculations (e.g. 2nd previous, 3rd previous, etc.) into view.
+- When new digits are entered or a new calculation is performed, the tape automatically springs back to the latest item (`animateScrollTo(maxValue)`).
 
-### 3. SQLite Database Persistence for Tools Suite
-- Upgraded SQLite Database schema (`DB_VERSION = 2`) in `LocalCalculationHistoryRepository.kt`.
-- Thread-safe Singleton (`getInstance(context)`) with reactive `StateFlow` updates across all screens.
-- Added `💾 Save to History` buttons in all tools:
-  - Loan EMI Calculator
-  - Discount Solver
-  - Margin & Markup Solver
-  - Generic Unit Converters (Length, Mass, Area, Volume, Temperature, Speed, Data, Time)
-  - BMI Health Calculator
-  - Date & Age Calculator
+### 3. 1-Tap Tape Recall
+- Tapping any revealed calculation row instantly recalls that expression into the active input line for fast editing and recalculation.
 
 ---
 
 ## 🧪 Verification & Hardware Testing
-All features were compiled and verified on physical hardware (**Realme RMX3998**, `Android 14`, `1080x2400`):
-
-1. **Settings Sheets**:
-   - `StandardSettingsSheet` verified on device.
-   - `GSTProSettingsSheet` verified on device.
-   - `CashTallySettingsSheet` verified on device.
-   - `ToolsSettingsSheet` verified on device.
-2. **History Persistence**:
-   - Standard math (`4 -> ₹ 4`) recorded and verified.
-   - GST Pro reverse calculation (`8455822 - 5% GST -> ₹ 80,53,163.81`) recorded and verified.
-   - Cash Tally closing slip (`Total Notes: 640 -> ₹ 1,60,650`) recorded and verified.
-   - All History ledger displaying all items with real timestamps, copy, share, and individual delete buttons.
-3. **Unit Tests**:
-   - Ran `./gradlew testDebugUnitTest` ➔ **100% Passed**.
+- Verified on physical **Realme RMX3998** device via ADB.
+- Screenshots:
+  - Resting Single Row Display: [`98_lcd_single_row.png`](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/98_lcd_single_row.png), [`99_lcd_multi_test.png`](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/99_lcd_multi_test.png)
+  - Swiped-down Older Calculation View: [`100_lcd_swiped_down.png`](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/100_lcd_swiped_down.png)
+- Unit Tests: `./gradlew testDebugUnitTest` ➔ **100% Passed**.
 
 ---
 *Signed by: Shoeb Ahmad*
