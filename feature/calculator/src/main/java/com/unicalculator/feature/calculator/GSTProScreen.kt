@@ -113,7 +113,7 @@ fun GSTProScreen(
         modifier = modifier
             .fillMaxSize()
             .background(colors.background)
-            .padding(horizontal = 14.dp, vertical = 2.dp),
+            .padding(horizontal = 6.dp, vertical = 2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -121,7 +121,7 @@ fun GSTProScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 2.dp, bottom = 4.dp),
+                .padding(start = 4.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -178,17 +178,17 @@ fun GSTProScreen(
             }
         }
 
-        // 1. MASTER HERO DISPLAY CANVAS
+        // 1. BEZEL-LESS MASTER HERO DISPLAY CANVAS
         NeumorphicPlate(
             modifier = Modifier.fillMaxWidth(),
             shape = NeumorphicShape.CONCAVE,
-            cornerRadius = 16.dp,
-            elevation = 3.dp
+            cornerRadius = 18.dp,
+            elevation = 4.dp
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 // Top Row inside Card: Context Label (Left) + Quick Actions (Right)
@@ -202,7 +202,7 @@ fun GSTProScreen(
                         style = TextStyle(
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp,
+                            fontSize = 11.5.sp,
                             color = colors.textSecondary,
                             letterSpacing = 0.3.sp
                         ),
@@ -288,16 +288,16 @@ fun GSTProScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(44.dp)
+                        .height(48.dp)
                         .neumorphic(
                             shape = NeumorphicShape.CONCAVE,
-                            cornerRadius = 8.dp,
-                            elevation = 2.dp,
+                            cornerRadius = 10.dp,
+                            elevation = 2.5.dp,
                             lightShadowColor = colors.lightHighlight,
                             darkShadowColor = colors.darkShadow,
                             backgroundColor = colors.lcdWellBackground
                         )
-                        .padding(horizontal = 10.dp),
+                        .padding(horizontal = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
@@ -311,21 +311,21 @@ fun GSTProScreen(
                             style = TextStyle(
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.SemiBold,
-                                fontSize = 12.sp,
+                                fontSize = 13.sp,
                                 color = colors.textSecondary
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f, fill = false)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         val finalAnswerStr = if (state.isReverseGst) netBaseStr else grossFinalStr
                         Text(
                             text = finalAnswerStr,
                             style = TextStyle(
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Black,
-                                fontSize = 22.sp,
+                                fontSize = 24.sp,
                                 color = colors.textPrimary
                             ),
                             maxLines = 1,
@@ -360,7 +360,7 @@ fun GSTProScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(9.dp))
                         .background(
                             if (state.isReverseGst) GstSaffronAmber
                             else RupeeEmeraldGreen
@@ -377,7 +377,7 @@ fun GSTProScreen(
                             style = TextStyle(
                                 fontFamily = FontFamily.SansSerif,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 11.5.sp,
+                                fontSize = 12.sp,
                                 color = Color.White,
                                 textAlign = TextAlign.Center
                             ),
@@ -389,7 +389,7 @@ fun GSTProScreen(
                             style = TextStyle(
                                 fontFamily = FontFamily.SansSerif,
                                 fontWeight = FontWeight.Medium,
-                                fontSize = 10.sp,
+                                fontSize = 10.5.sp,
                                 color = Color.White.copy(alpha = 0.92f),
                                 textAlign = TextAlign.Center
                             ),

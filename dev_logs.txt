@@ -1097,3 +1097,33 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-20 — GST Pro Bezel-Less Edge-to-Edge Screen Upgrade
+
+### 🚀 Major Achievements:
+- **Full Screen Edge-to-Edge Expansion (`GSTProScreen.kt`)**:
+  - Reduced outer screen margins from 14dp to a slim 6dp, allowing the Master Calculation Canvas to span almost the entire physical width of the phone.
+  - Enhanced Master Card corner radius to 18dp with 4dp elevation for a modern, bezel-less workstation look.
+- **Expansive Inset LCD Well**:
+  - Expanded LCD height to 48dp with 12dp internal padding.
+  - Formula font scaled to 13sp SemiBold and Final Answer scaled to bold 24sp Monospace.
+- **Balanced 3-Column Statutory Tax Grid & In-Words Banner**:
+  - Proportional metric cells with vertical hair-line dividers.
+  - Full-width dual-language in-words cheque transcription banner with 12sp English & 10.5sp Hindi typography.
+- **Physical Phone Verification (`Realme RMX3998`)**:
+  - Forward GST mode live test ➔ `170_gst_pro_bezelless_forward_10k_live.png`.
+  - Reverse GST mode live test ➔ `171_gst_pro_bezelless_reverse_10k_live.png`.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% unit tests passed).
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment (`Realme RMX3998`): Verified on physical hardware.
+
+### 📌 Current State:
+- Version: v1.0.0-gst-pro-bezelless (Edge-to-edge calculation display, maximum screen utilization).
+
+### 📝 Next Steps:
+- Ready for next user instructions or feature tasks.
+
+---
+*Signed by: Shoeb Ahmad*
