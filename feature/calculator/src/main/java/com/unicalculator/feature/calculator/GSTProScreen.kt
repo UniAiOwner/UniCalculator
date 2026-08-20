@@ -31,9 +31,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unicalculator.core.common.format.IndianVedicFormatter
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.ui.text.TextStyle
 import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicGstPill
 import com.unicalculator.core.designsystem.component.NeumorphicHapticEngine
+import com.unicalculator.core.designsystem.component.NeumorphicIconButton
 import com.unicalculator.core.designsystem.component.NeumorphicSlideSwitch
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
@@ -46,6 +52,9 @@ import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 
 @Composable
 fun GSTProScreen(
+    onNavigateToHistory: (() -> Unit)? = null,
+    onToggleTheme: (() -> Unit)? = null,
+    onOpenSettings: (() -> Unit)? = null,
     viewModel: GSTProViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -59,10 +68,65 @@ fun GSTProScreen(
         modifier = modifier
             .fillMaxSize()
             .background(colors.background)
-            .padding(horizontal = 14.dp, vertical = 6.dp),
+            .padding(horizontal = 14.dp, vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+        // 0. Top Action Bar: Screen Title (Left) + 3 Neumorphic Action Buttons (Right)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 6.dp, top = 2.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "GST Pro",
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
+                    color = colors.textPrimary,
+                    letterSpacing = 0.5.sp
+                )
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                NeumorphicIconButton(
+                    icon = Icons.Outlined.History,
+                    contentDescription = "GST History",
+                    onClick = {
+                        hapticEngine.playOperatorTick()
+                        onNavigateToHistory?.invoke()
+                    },
+                    iconTint = colors.accentEmerald
+                )
+
+                NeumorphicIconButton(
+                    icon = Icons.Outlined.DarkMode,
+                    contentDescription = "Toggle Theme",
+                    onClick = {
+                        hapticEngine.playOperatorTick()
+                        onToggleTheme?.invoke()
+                    },
+                    iconTint = colors.textSecondary
+                )
+
+                NeumorphicIconButton(
+                    icon = Icons.Outlined.Settings,
+                    contentDescription = "Settings",
+                    onClick = {
+                        hapticEngine.playOperatorTick()
+                        onOpenSettings?.invoke()
+                    },
+                    iconTint = colors.textSecondary
+                )
+            }
+        }
+
         // 1. UNIFIED MASTER RECEIPT CARD (DISPLAY AT TOP)
         Box(
             modifier = Modifier

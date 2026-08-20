@@ -161,7 +161,13 @@ fun UniCalculatorApp(
                     },
                     onToggleTheme = onToggleTheme
                 )
-                1 -> GSTProScreen()
+                1 -> GSTProScreen(
+                    onNavigateToHistory = {
+                        historyFilter = HistoryFilter.GST_PRO
+                        selectedTab = 4
+                    },
+                    onToggleTheme = onToggleTheme
+                )
                 2 -> CashTallyScreen(
                     onNavigateToHistory = {
                         historyFilter = HistoryFilter.CASH_TALLY
@@ -170,6 +176,11 @@ fun UniCalculatorApp(
                     onToggleTheme = onToggleTheme
                 )
                 3 -> BusinessToolsScreen(
+                    onNavigateToHistory = {
+                        historyFilter = HistoryFilter.ALL
+                        selectedTab = 4
+                    },
+                    onToggleTheme = onToggleTheme,
                     onNavigateToGstPro = { selectedTab = 1 }
                 )
                 4 -> HistoryTapeScreen(initialFilter = historyFilter)

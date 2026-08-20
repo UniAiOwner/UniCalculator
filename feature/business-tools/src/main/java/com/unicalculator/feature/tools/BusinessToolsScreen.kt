@@ -40,6 +40,9 @@ import androidx.compose.material.icons.outlined.LocalMall
 import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Scale
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Thermostat
 import androidx.compose.material.icons.outlined.TrendingUp
@@ -97,6 +100,9 @@ data class ToolItem(
 
 @Composable
 fun BusinessToolsScreen(
+    onNavigateToHistory: (() -> Unit)? = null,
+    onToggleTheme: (() -> Unit)? = null,
+    onOpenSettings: (() -> Unit)? = null,
     onNavigateToGstPro: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -143,21 +149,55 @@ fun BusinessToolsScreen(
             modifier = modifier
                 .fillMaxSize()
                 .background(colors.background)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 6.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = "Converters & Tools",
-                style = TextStyle(
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = colors.textPrimary,
-                    letterSpacing = 0.5.sp
-                ),
-                modifier = Modifier.padding(bottom = 16.dp, top = 4.dp)
-            )
+            // 0. Top Action Bar: Title (Left) + 3 Neumorphic Buttons (Right)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp, top = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Converters & Tools",
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp,
+                        color = colors.textPrimary,
+                        letterSpacing = 0.5.sp
+                    )
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    NeumorphicIconButton(
+                        icon = Icons.Outlined.History,
+                        contentDescription = "History",
+                        onClick = { onNavigateToHistory?.invoke() },
+                        iconTint = colors.accentEmerald
+                    )
+
+                    NeumorphicIconButton(
+                        icon = Icons.Outlined.DarkMode,
+                        contentDescription = "Toggle Theme",
+                        onClick = { onToggleTheme?.invoke() },
+                        iconTint = colors.textSecondary
+                    )
+
+                    NeumorphicIconButton(
+                        icon = Icons.Outlined.Settings,
+                        contentDescription = "Settings",
+                        onClick = { onOpenSettings?.invoke() },
+                        iconTint = colors.textSecondary
+                    )
+                }
+            }
 
             // --- SECTION 1: DAILY UTILITY & HEALTH ---
             SectionHeader(title = "⚡ Daily Utilities & Health", count = 6)
