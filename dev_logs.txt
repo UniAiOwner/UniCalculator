@@ -653,3 +653,35 @@
 
 
 
+
+## 📅 Date: 2026-08-20 — Universal In-Place Cursor Editing & 16-Tool Categorized Converter Super Suite
+
+### 🚀 Major Achievements:
+- **Universal In-Place Cursor Editing (`:core:designsystem`, `:feature:calculator`)**:
+  - Engineered character-boundary precision cursor editing inside `NeumorphicLCDWell.kt` with `BasicTextField` and `InterceptPlatformTextInput` to suppress intrusive Android soft keyboards while maintaining full touch cursor positioning, selection, and teardrop handles.
+  - Upgraded `StandardCalculatorViewModel` with `cursorPosition`, `selectionStart`, and `selectionEnd`, enabling mid-expression digit/operator insertions and backspace deletions (e.g. changing `12005` to `12003` in-place).
+  - Integrated in-place cursor support into `GSTProViewModel` and `GSTProScreen`.
+- **16-Tool Categorized Converters & Utilities Super Suite (`:core:math-engine`, `:feature:business-tools`)**:
+  - Implemented `UnitConversionEngine.kt` with high-precision `BigDecimal` conversions.
+  - Built 3-Category Neumorphic Super Hub in `BusinessToolsScreen.kt`:
+    1. ⚡ **Daily Utilities & Health** (Date & Age, Time, Data, Numeral System, BMI Health Calculator, Speed).
+    2. 📏 **Unit Converters** (Length, Mass & Weight with Tola/Ratti, Area with Bigha/Guntha, Volume, Temperature, Currency).
+    3. 📊 **Financial & Business** (Loan EMI Calculator, Discount Solver, Margin & Markup, GST Pro shortcut).
+- **Unit Test Suite & Verification**:
+  - Added unit test suite in `StandardCalculatorViewModelTest.kt` verifying sequential typing, middle edits, middle operator insertions, and range replacements.
+  - 100% test passing across all modules (`./gradlew testDebugUnitTest` -> `BUILD SUCCESSFUL`).
+- **Physical Hardware Verification**:
+  - Deployed APK to physical Realme device (`XGQ8JFZXEITGJ7IB`), verified live in-place cursor editing (`12005` -> `12003`), categorized Hub grid, Length converter, BMI calculator, and Loan EMI views.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ `BUILD SUCCESSFUL in 26s` (100% passing tests).
+- Hardware screenshots captured: `43_cursor_between_0_and_5.png`, `45_cursor_precise_test.png`, `49_tools_tab_view.png`, `51_length_view.png`, `53_bmi_view.png`, `55_finance_emi_opened.png`.
+
+### 📌 Current State:
+- Version: v1.0.0-tools-converter-suite (Universal in-place cursor active, full 16-tool suite operational).
+
+### 📝 Next Steps:
+- Continue adding any specialized conversion units or currency rate APIs as requested by user.
+
+---
+*Signed by: Shoeb Ahmad*

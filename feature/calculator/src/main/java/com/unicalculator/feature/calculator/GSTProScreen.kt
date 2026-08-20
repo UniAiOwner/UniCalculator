@@ -97,17 +97,51 @@ fun GSTProScreen(
                         )
                     )
 
-                    Text(
-                        text = state.displayAmount,
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 17.sp,
-                            color = colors.textSecondary
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val input = state.amountInput
+                        val curPos = state.cursorPosition.coerceIn(0, input.length)
+                        if (input.isNotEmpty()) {
+                            Text(
+                                text = input.substring(0, curPos),
+                                style = androidx.compose.ui.text.TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 17.sp,
+                                    color = colors.textPrimary
+                                )
+                            )
+                            // Blinking cursor
+                            Box(
+                                modifier = Modifier
+                                    .width(2.dp)
+                                    .height(18.dp)
+                                    .background(colors.accentEmerald)
+                            )
+                            Text(
+                                text = input.substring(curPos),
+                                style = androidx.compose.ui.text.TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 17.sp,
+                                    color = colors.textPrimary
+                                )
+                            )
+                        } else {
+                            Text(
+                                text = state.displayAmount,
+                                style = androidx.compose.ui.text.TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 17.sp,
+                                    color = colors.textSecondary
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

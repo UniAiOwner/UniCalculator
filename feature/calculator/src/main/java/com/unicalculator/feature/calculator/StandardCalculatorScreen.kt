@@ -117,11 +117,18 @@ fun StandardCalculatorScreen(
             }
         }
 
-        // 2. Inset Recessed Neumorphic LCD Well with Scrollable Calculation Tape
+        // 2. Inset Recessed Neumorphic LCD Well with Scrollable Calculation Tape & Cursor Editing
         NeumorphicLCDWell(
             expressionText = state.expression,
             resultText = state.displayResult,
             wordsText = state.wordsText,
+            cursorPosition = state.cursorPosition,
+            selectionStart = state.selectionStart,
+            selectionEnd = state.selectionEnd,
+            onSetCursorPosition = { pos ->
+                hapticEngine.playOperatorTick()
+                viewModel.onSetCursorPosition(pos)
+            },
             tapeHistory = state.tapeHistory.map { LCDTapeItem(it.expression, it.result) },
             onTapeItemClick = { item ->
                 hapticEngine.playKeyClick()

@@ -1,52 +1,64 @@
-# 🚀 Walkthrough: Spec Kit Integration, SQLite Persistence & Interactive Business Tools
+# 📱 UniCalculator Walkthrough: Universal In-Place Cursor & 16-Tool Converter Suite
 
-## 🎯 Overview
-In this session, we integrated **GitHub Spec Kit (`spec-kit`)** into Antigravity CLI and **UniCalculator**, conducted an end-to-end Spec-Driven architecture audit, implemented a persistent SQLite database for calculation history, and upgraded Business Tools (Margin/Markup & Loan EMI) into an interactive, live-calculating Neumorphic workstation.
-
----
-
-## 🛠️ Changes Made
-
-### 1. Spec Kit (SDD) Framework Integration
-- Installed `uv` and `specify-cli` v0.16.6.
-- Initialized `.specify/` configuration, templates, and constitution in UniCalculator.
-- Registered all 10 Spec Kit skills globally in `~/.agents/skills/` (`speckit-constitution`, `speckit-specify`, `speckit-clarify`, `speckit-plan`, `speckit-tasks`, `speckit-taskstoissues`, `speckit-analyze`, `speckit-checklist`, `speckit-implement`, `speckit-converge`).
-
-### 2. Persistent SQLite Database Layer (`:core:database`)
-- Replaced in-memory mock with a thread-safe `SQLiteOpenHelper` with SQLite WAL mode enabled.
-- Implemented `LocalCalculationHistoryRepository.kt` with coroutines IO asynchronous write/read and live StateFlow broadcasting.
-- Schema: stores timestamps, calculation types (`STANDARD_MATH`, `GST_FORWARD`, `GST_REVERSE`, `CASH_TALLY`, etc.), formulas, primary results, tax breakdowns, and memo notes.
-
-### 3. Interactive Business Tools (`:feature:business-tools`)
-- Upgraded `BusinessToolsScreen.kt` with editable Neumorphic concave input fields:
-  - **Margin & Markup Solver**: Editable Cost Price (CP) & Selling Price (SP) with real-time Gross Profit, Profit Margin (%), and Markup (%) recalculation.
-  - **Loan EMI Calculator**: Editable Principal Amount, Annual Interest Rate (%), Tenure Months with quick tenure preset chips (`1 Yr`, `2 Yrs`, `3 Yrs`, `5 Yrs`), calculating Monthly EMI, Total Interest, and Total Payable.
-
-### 4. Comprehensive Unit Test Suite (`:core:math-engine`)
-- Added tests in `IndianGSTCalculationEngineTest.kt` covering:
-  - Forward & Reverse GST calculation (with half-paisa statutory split).
-  - Shunting Yard mathematical evaluations & commercial percentages (`100 - 10% = 90`, `100 + 10% = 110`, etc.).
-  - Commercial Margin & Markup computations.
-  - Loan EMI calculations.
-  - Indian Vedic currency grouping formatting (`₹ 12,34,56,789.50`).
-  - Bilingual Currency In-Words conversions (English & Hindi).
+## 🌟 Executive Summary
+We successfully implemented **Universal In-Place Cursor Editing** with per-digit precision across UniCalculator, suppressed intrusive Android soft keyboards, and engineered a **16-Tool Categorized Converter & Utility Suite** organized under the 3 requested category headings.
 
 ---
 
-## 🧪 Verification & Hardware Results
+## 🚀 Key Achievements
 
-### 1. Automated Tests
-```bash
-./gradlew testDebugUnitTest
-```
-**Result**: `BUILD SUCCESSFUL` (100% test pass rate across all modules).
+### 1. 🎯 Universal In-Place Cursor Engine
+- **Per-Digit Precision**: Tap anywhere inside a typed expression (e.g. `12005 × 5`) to place the cursor between specific digits.
+- **In-Place Insertions & Deletions**: Pressing `⌫` or typing a new digit (e.g. `3`) edits the exact character at that cursor boundary without retyping the entire number.
+- **Zero Software Keyboard Intrusion**: Utilizes `InterceptPlatformTextInput` to keep the custom Neumorphic 3D keypad 100% visible and interactive.
 
-### 2. Physical Device Verification (`Realme RMX3998`)
-- Installed APK via ADB stream install.
-- Verified interactive Margin/Markup solver live on device:
+![Cursor Verification](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/45_cursor_precise_test.png)
 
-![Interactive Margin Markup](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/33_tools_interactive_verify.png)
+---
 
-- Verified interactive Loan EMI calculator live on device:
+### 2. 🛠️ 16-Tool Categorized Converter & Utility Suite
+Organized in `BusinessToolsScreen.kt` with high-precision `UnitConversionEngine.kt`:
 
-![Interactive Loan EMI](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/36_loan_emi_refined_view.png)
+1. ⚡ **Daily Utilities & Health** (Top):
+   - **Date & Age**: Exact age in Years, Months, and Days.
+   - **Time**: Seconds, Minutes, Hours, Days, Weeks, Months, Years.
+   - **Data**: Bytes, KB, MB, GB, TB, PB.
+   - **Numeral System**: Decimal (DEC), Binary (BIN), Octal (OCT), Hexadecimal (HEX).
+   - **BMI Health Calculator**: Height & Weight input with real-time WHO classification.
+   - **Speed**: km/h, mph, m/s, knots.
+
+2. 📏 **Unit Converters** (Middle):
+   - **Length**: Meters, km, cm, mm, ft, in, yd, miles with instant 2-way conversion.
+   - **Mass & Weight**: kg, g, mg, lb, oz, tonnes, plus Indian **Tola** & **Ratti**.
+   - **Area**: sq ft, sq m, acres, hectares, plus Indian **Bigha** & **Guntha**.
+   - **Volume**: Liters, mL, gallons, m³, ft³.
+   - **Temperature**: Celsius (°C), Fahrenheit (°F), Kelvin (K).
+   - **Currency**: INR (₹), USD ($), EUR (€), GBP (£), AED, SAR, JPY.
+
+3. 📊 **Financial & Business** (Bottom):
+   - **Loan EMI Calculator**: Principal, Rate %, and Tenure with Monthly EMI, Total Interest, and Total Payable.
+   - **Discount Solver**: Original price, Discount %, Final bill, and Total savings.
+   - **Margin & Markup Solver**: Cost Price, Selling Price, Gross Profit, Profit Margin %, Markup %.
+   - **GST Pro Shortcut**: Direct link to GST tax invoice breakdown.
+
+---
+
+## 📸 Live Hardware Verification Gallery
+
+````carousel
+![Tools Super Hub](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/49_tools_tab_view.png)
+<!-- slide -->
+![Length Converter Screen](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/51_length_view.png)
+<!-- slide -->
+![BMI Health Calculator](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/53_bmi_view.png)
+<!-- slide -->
+![Loan EMI Calculator](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/55_finance_emi_opened.png)
+<!-- slide -->
+![In-Place Cursor Edited 12003](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/39_edited_12003.png)
+````
+
+---
+
+## 🧪 Automated Testing
+- `StandardCalculatorViewModelTest.kt`: Sequential typing, middle edits (`12005` ➔ `12003`), middle operator insertion, and range replacement.
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL in 26s** (100% tests passed).

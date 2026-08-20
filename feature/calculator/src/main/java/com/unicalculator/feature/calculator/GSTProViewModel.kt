@@ -13,6 +13,7 @@ import java.math.BigDecimal
 
 data class GSTProUiState(
     val amountInput: String = "",
+    val cursorPosition: Int = 0,
     val displayAmount: String = "₹ 0.00",
     val selectedGstRate: Int = 18,
     val isCustomRate: Boolean = false,
@@ -29,32 +30,60 @@ class GSTProViewModel : ViewModel() {
     val uiState: StateFlow<GSTProUiState> = _uiState.asStateFlow()
 
     private var rawAmount = StringBuilder()
+    private var currentCursorPos = 0
+
+    fun onSetCursorPosition(pos: Int) {
+        val clamped = pos.coerceIn(0, rawAmount.length)
+        currentCursorPos = clamped
+        _uiState.update { it.copy(cursorPosition = clamped) }
+    }
 
     fun onDigit(digit: String) {
         _uiState.update { it.copy(isResultEnlarged = false) }
-        if (rawAmount.isEmpty() && digit == ".") {
-            rawAmount.append("0.")
-        } else if (digit == "." && rawAmount.contains(".")) {
-            return
-        } else {
-            rawAmount.append(digit)
+        val insertIndex = currentCursorPos.coerceIn(0, rawAmount.length)
+        if (digit == ".") {
+            val text = rawAmount.toString()
+            val before = text.substring(0, insertIndex)
+            val after = text.substring(insertIndex)
+            val tokenBefore = before.split(Regex("""[×÷+\-\s]""")).lastOrNull() ?: ""
+            val tokenAfter = after.split(Regex("""[×÷+\-\s]""")).firstOrNull() ?: ""
+            if (tokenBefore.contains(".") || tokenAfter.contains(".")) {
+                return
+            }
+            if (rawAmount.isEmpty() || insertIndex == 0 || before.endsWith(" ")) {
+                rawAmount.insert(insertIndex, "0.")
+                currentCursorPos += 2
+                recalculateGST()
+                return
+            }
         }
+
+        if (rawAmount.toString() == "0" && digit != ".") {
+            rawAmount.clear()
+            currentCursorPos = 0
+        }
+
+        rawAmount.insert(insertIndex, digit)
+        currentCursorPos = insertIndex + digit.length
         recalculateGST()
     }
 
     fun onDelete() {
         _uiState.update { it.copy(isResultEnlarged = false) }
-        if (rawAmount.isNotEmpty()) {
-            rawAmount.deleteCharAt(rawAmount.length - 1)
+        if (currentCursorPos > 0 && rawAmount.isNotEmpty()) {
+            rawAmount.deleteCharAt(currentCursorPos - 1)
+            currentCursorPos--
             recalculateGST()
         }
     }
 
     fun onClear() {
         rawAmount.clear()
+        currentCursorPos = 0
         _uiState.update {
             it.copy(
                 amountInput = "",
+                cursorPosition = 0,
                 displayAmount = "₹ 0.00",
                 taxBreakdown = null,
                 inWordsText = "Zero Rupees Only",

@@ -1,50 +1,42 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# UniCalculator Constitution (Bharat Pro Neumorphic Edition)
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Mathematical Precision & Pure BigDecimal (NON-NEGOTIABLE)
+- All financial, GST, percentage, and commercial calculations MUST use `java.math.BigDecimal` exclusively. Never use binary floating-point (`Double` or `Float`) for monetary values.
+- Rounding mode must strictly adhere to Banker's Rounding (`RoundingMode.HALF_EVEN`) to eliminate cumulative financial bias.
+- Statutory GST splits must prevent half-paisa leakage (`cgst = total / 2`, `sgst = total - cgst`).
+- Formatting must strictly follow the Indian Vedic Lakh/Crore grouping system (`₹ 12,34,56,789.00`).
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Pure Neumorphic 3D Design System
+- All interactive components (Buttons, Plates, LCD Wells, Sliders, Slabs) must adhere to the authentic $-45^\circ$ dual-directional lighting canvas model.
+- Raised tactile surfaces (`CONVEX`) for clickable buttons; sunken dark cavities (`CONCAVE`) for numeric readouts and input wells.
+- Active states must use dual-pass neon glow border shaders with instant low-latency tactile haptics (`PRIMITIVE_CLICK` 0.6f / `PRIMITIVE_TICK` 0.8f).
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Zero-Shortcut & Enterprise Clean Architecture
+- `@Suppress` annotations to bypass Detekt, Spotless, or static code analysis are strictly forbidden.
+- Clean 10-module hierarchy (`:app`, `:core:*`, `:feature:*`) with strictly acyclic dependency flow.
+- Derived business metrics must be calculated dynamically via domain calculators, never hardcoded in static storage.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Spec-Driven & Test-First Development (TDD)
+- No feature is built without a ratified specification (`spec.md`), technical plan (`plan.md`), and dependency-ordered tasks (`tasks.md`).
+- Every calculation engine and formatting utility must have 100% passing automated unit tests before production deployment.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Mandatory Physical Hardware Verification & Dev Log Protocol
+- Every release must build cleanly (`./gradlew assembleDebug`), install on target hardware via ADB, and undergo visual verification.
+- Every completed milestone must append a dated entry to `dev_logs.txt` and synchronize `walkthrough.md`.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Technology Stack & Constraints
+- **Platform**: Android 14+ (MinSdk 26, TargetSdk 35, CompileSdk 35)
+- **UI Toolkit**: Jetpack Compose with Material3 & custom Neumorphic canvas shaders
+- **Language**: Kotlin 2.0.21 on Java 21 JVM
+- **Database**: Persistent SQLite with WAL mode and Coroutines IO dispatching
+- **Build System**: Gradle 8.7.2 with Version Catalogs (`libs.versions.toml`)
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+- This constitution supersedes all ad-hoc implementation suggestions.
+- All code changes, refactors, and feature additions must comply with these laws.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+**Version**: 1.0.0 | **Ratified**: 2026-08-19 | **Last Amended**: 2026-08-19
+<!-- Signed by: Shoeb Ahmad -->
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->

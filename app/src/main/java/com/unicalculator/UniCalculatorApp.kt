@@ -169,7 +169,9 @@ fun UniCalculatorApp(
                     },
                     onToggleTheme = onToggleTheme
                 )
-                3 -> BusinessToolsScreen()
+                3 -> BusinessToolsScreen(
+                    onNavigateToGstPro = { selectedTab = 1 }
+                )
                 4 -> HistoryTapeScreen(initialFilter = historyFilter)
             }
         }
