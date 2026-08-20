@@ -143,25 +143,31 @@ class NeumorphicHapticEngine(private val context: Context) {
     fun playKeyClick(intensity: com.unicalculator.core.common.prefs.HapticIntensity = com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM) {
         if (intensity == com.unicalculator.core.common.prefs.HapticIntensity.OFF) return
         try {
-            val scale = when (intensity) {
+            val (durationMs, amplitude) = when (intensity) {
                 com.unicalculator.core.common.prefs.HapticIntensity.OFF -> return
-                com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 0.25f
-                com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 0.6f
-                com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 1.0f
+                com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 18L to 130
+                com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 30L to 200
+                com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 48L to 255
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val effect = VibrationEffect.startComposition()
-                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, scale)
-                    .compose()
-                vibrator?.vibrate(effect)
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val amp = when (intensity) {
-                    com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 60
-                    com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 150
-                    com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 255
-                    else -> 150
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect = VibrationEffect.createOneShot(durationMs, amplitude)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val attrs = android.os.VibrationAttributes.Builder()
+                        .setUsage(android.os.VibrationAttributes.USAGE_TOUCH)
+                        .build()
+                    vibrator?.vibrate(effect, attrs)
+                } else {
+                    @Suppress("DEPRECATION")
+                    val attrs = android.media.AudioAttributes.Builder()
+                        .setUsage(android.media.AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
+                    @Suppress("DEPRECATION")
+                    vibrator?.vibrate(effect, attrs)
                 }
-                vibrator?.vibrate(VibrationEffect.createOneShot(10, amp))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator?.vibrate(durationMs)
             }
         } catch (_: Exception) {}
     }
@@ -169,25 +175,31 @@ class NeumorphicHapticEngine(private val context: Context) {
     fun playOperatorTick(intensity: com.unicalculator.core.common.prefs.HapticIntensity = com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM) {
         if (intensity == com.unicalculator.core.common.prefs.HapticIntensity.OFF) return
         try {
-            val scale = when (intensity) {
+            val (durationMs, amplitude) = when (intensity) {
                 com.unicalculator.core.common.prefs.HapticIntensity.OFF -> return
-                com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 0.35f
-                com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 0.8f
-                com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 1.0f
+                com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 22L to 150
+                com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 38L to 220
+                com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 60L to 255
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val effect = VibrationEffect.startComposition()
-                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, scale)
-                    .compose()
-                vibrator?.vibrate(effect)
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val amp = when (intensity) {
-                    com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 80
-                    com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 180
-                    com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 255
-                    else -> 180
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect = VibrationEffect.createOneShot(durationMs, amplitude)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val attrs = android.os.VibrationAttributes.Builder()
+                        .setUsage(android.os.VibrationAttributes.USAGE_TOUCH)
+                        .build()
+                    vibrator?.vibrate(effect, attrs)
+                } else {
+                    @Suppress("DEPRECATION")
+                    val attrs = android.media.AudioAttributes.Builder()
+                        .setUsage(android.media.AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
+                    @Suppress("DEPRECATION")
+                    vibrator?.vibrate(effect, attrs)
                 }
-                vibrator?.vibrate(VibrationEffect.createOneShot(15, amp))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator?.vibrate(durationMs)
             }
         } catch (_: Exception) {}
     }

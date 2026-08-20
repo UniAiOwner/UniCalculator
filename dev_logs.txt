@@ -933,3 +933,30 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-20 — Standard Calculator State Machine & Auto History Preservation
+
+### 🚀 Major Achievements:
+- **Calculator State Machine (`StandardCalculatorViewModel.kt`)**:
+  - Implemented `isJustCalculated` lifecycle flag to differentiate between intermediate typing and evaluated final results.
+  - When a user presses `=` (Equals) or `%` (Percentage), the result is evaluated and saved into both local Paper Roll Tape and persistent Room SQLite Database History.
+  - If the user immediately types a new digit (`0-9` or `.`), the calculator automatically resets the display and begins the new calculation fresh (e.g. `12 - 5 = 7`) rather than appending to the previous answer (e.g. `120012`).
+  - If the user immediately presses an operator (`+`, `−`, `×`, `÷`, `%`), calculation chaining is preserved to allow continuous mathematical operations on the result.
+- **Auto History Preservation**:
+  - Every calculation completed via `=` is automatically recorded with timestamp, formatted expression, and Vedic currency in words to the Unified History Tape ledger.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% tests passing).
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment (`Realme RMX3998`):
+  - Verified evaluation of `1200`, followed by fresh typing `12 - 5 = 7` (`140_calculator_state_machine_verified.png`).
+  - Verified both entries safely recorded in Room SQLite History (`141_history_preservation_verified.png`).
+
+### 📌 Current State:
+- Version: v1.0.0-calc-statemachine-verified (Full industrial calculator ergonomics with auto-reset & history persistence).
+
+### 📝 Next Steps:
+- Ready for next user prompts or features.
+
+---
+*Signed by: Shoeb Ahmad*

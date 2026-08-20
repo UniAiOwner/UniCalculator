@@ -71,6 +71,7 @@ class StandardCalculatorViewModel(
 
     private var currentRawInput = StringBuilder()
     private var currentCursorPos = 0
+    private var isJustCalculated = false
 
     fun onSetCursorPosition(pos: Int) {
         val clamped = pos.coerceIn(0, currentRawInput.length)
@@ -102,6 +103,21 @@ class StandardCalculatorViewModel(
     }
 
     fun onDigit(digit: String) {
+        if (isJustCalculated) {
+            isJustCalculated = false
+            currentRawInput.clear()
+            currentCursorPos = 0
+            if (digit == ".") {
+                currentRawInput.append("0.")
+                currentCursorPos = 2
+            } else {
+                currentRawInput.append(digit)
+                currentCursorPos = digit.length
+            }
+            recalculateMath()
+            return
+        }
+
         val state = _uiState.value
         if (state.selectionStart != -1 && state.selectionEnd > state.selectionStart) {
             // Replace selected slice
@@ -141,6 +157,7 @@ class StandardCalculatorViewModel(
 
     fun onOperator(op: String) {
         if (currentRawInput.isEmpty()) return
+        isJustCalculated = false
         val state = _uiState.value
         if (state.selectionStart != -1 && state.selectionEnd > state.selectionStart) {
             currentRawInput.delete(state.selectionStart, state.selectionEnd)
@@ -177,6 +194,12 @@ class StandardCalculatorViewModel(
     }
 
     fun onDelete() {
+        if (isJustCalculated) {
+            isJustCalculated = false
+            onClear()
+            return
+        }
+
         val state = _uiState.value
         if (state.selectionStart != -1 && state.selectionEnd > state.selectionStart) {
             currentRawInput.delete(state.selectionStart, state.selectionEnd)
@@ -213,6 +236,7 @@ class StandardCalculatorViewModel(
     }
 
     fun onClear() {
+        isJustCalculated = false
         currentRawInput.clear()
         currentCursorPos = 0
         _uiState.update {
@@ -232,6 +256,7 @@ class StandardCalculatorViewModel(
     }
 
     fun onTapeRecall(item: CalculationTapeItem) {
+        isJustCalculated = false
         val cleanNumber = item.result.replace("₹", "").replace(",", "").trim()
         currentRawInput = StringBuilder(cleanNumber)
         currentCursorPos = currentRawInput.length
@@ -273,6 +298,7 @@ class StandardCalculatorViewModel(
 
             currentRawInput = StringBuilder(eval.stripTrailingZeros().toPlainString())
             currentCursorPos = currentRawInput.length
+            isJustCalculated = true
             _uiState.update {
                 it.copy(
                     expression = currentRawInput.toString(),
@@ -318,6 +344,7 @@ class StandardCalculatorViewModel(
 
             currentRawInput = StringBuilder(eval.stripTrailingZeros().toPlainString())
             currentCursorPos = currentRawInput.length
+            isJustCalculated = true
             _uiState.update {
                 it.copy(
                     expression = currentRawInput.toString(),
