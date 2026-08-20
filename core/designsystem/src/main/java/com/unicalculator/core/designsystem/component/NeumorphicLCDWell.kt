@@ -1,5 +1,6 @@
 package com.unicalculator.core.designsystem.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -11,11 +12,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -44,6 +51,9 @@ import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.ui.input.pointer.pointerInput
+
 data class LCDTapeItem(
     val expression: String,
     val result: String
@@ -61,6 +71,7 @@ fun NeumorphicLCDWell(
     onSetCursorPosition: ((Int) -> Unit)? = null,
     tapeHistory: List<LCDTapeItem> = emptyList(),
     onTapeItemClick: ((LCDTapeItem) -> Unit)? = null,
+    onExpandHistory: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 24.dp,
     resultColor: Color? = null
@@ -80,10 +91,12 @@ fun NeumorphicLCDWell(
         else -> 42.sp
     }
 
+    val latestTapeItem = tapeHistory.lastOrNull()
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 180.dp, max = 220.dp)
+            .heightIn(min = 180.dp, max = 225.dp)
             .neumorphic(
                 shape = NeumorphicShape.CONCAVE,
                 cornerRadius = cornerRadius,
@@ -92,7 +105,14 @@ fun NeumorphicLCDWell(
                 darkShadowColor = colors.darkShadow,
                 backgroundColor = colors.lcdWellBackground
             )
-            .padding(horizontal = 18.dp, vertical = 14.dp)
+            .pointerInput(Unit) {
+                detectVerticalDragGestures { _, dragAmount ->
+                    if (dragAmount > 15) {
+                        onExpandHistory?.invoke()
+                    }
+                }
+            }
+            .padding(horizontal = 18.dp, vertical = 12.dp)
     ) {
         Column(
             modifier = Modifier
@@ -101,67 +121,59 @@ fun NeumorphicLCDWell(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End
         ) {
-            // 📜 Previous Calculation Tape Items (1 Row resting viewport, slide down for older calculations)
-            if (tapeHistory.isNotEmpty()) {
-                val tapeScrollState = rememberScrollState()
-                LaunchedEffect(tapeHistory.size) {
-                    tapeScrollState.animateScrollTo(tapeScrollState.maxValue)
-                }
-
-                Box(
+            // 📜 Previous Calculation Tape Items (1 Row resting viewport, tap or slide down expands full history shade)
+            if (latestTapeItem != null) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(28.dp)
-                        .verticalScroll(tapeScrollState)
+                        .height(30.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            onExpandHistory?.invoke()
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        tapeHistory.forEach { item ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(28.dp)
-                                    .clickable(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        indication = null
-                                    ) {
-                                        onTapeItemClick?.invoke(item)
-                                    },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = item.expression,
-                                    style = TextStyle(
-                                        fontFamily = FontFamily.Monospace,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 13.sp,
-                                        color = colors.textSecondary.copy(alpha = 0.85f)
-                                    ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    text = "= ${item.result}",
-                                    style = TextStyle(
-                                        fontFamily = FontFamily.Monospace,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 13.sp,
-                                        color = colors.textPrimary.copy(alpha = 0.85f)
-                                    ),
-                                    maxLines = 1
-                                )
-                            }
-                        }
+                        Icon(
+                            imageVector = Icons.Outlined.KeyboardArrowDown,
+                            contentDescription = "Expand History",
+                            tint = colors.textSecondary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = latestTapeItem.expression,
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 13.sp,
+                                color = colors.textSecondary.copy(alpha = 0.85f)
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
+                    Text(
+                        text = "= ${latestTapeItem.result}",
+                        style = TextStyle(
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp,
+                            color = colors.textPrimary.copy(alpha = 0.85f)
+                        ),
+                        maxLines = 1
+                    )
                 }
 
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 4.dp),
                     thickness = 0.8.dp,
-                    color = colors.darkShadow.copy(alpha = 0.5f)
+                    color = colors.darkShadow.copy(alpha = 0.3f)
                 )
             }
 

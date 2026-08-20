@@ -778,9 +778,36 @@
 ### 📌 Current State:
 - Version: v1.0.0-lcd-single-row (Clean 1-row resting LCD with slide-down older history, 100% hardware verified).
 
+---
+*Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-20 — Full-Screen Expandable History Tape Shade with 1-Tap Recall & Slide Gestures
+
+### 🚀 Major Achievements:
+- **Full-Screen Expandable History Tape Shade (`StandardCalculatorScreen.kt`)**:
+  - Replaced inline 1-line scroll with a full-screen expandable Neumorphic history shade (`isHistoryShadeExpanded`).
+  - Swiping down on the LCD Well or tapping the downward arrow `⌄` on the latest calculation row smoothly expands the full session calculation ledger across the screen.
+  - Multi-row scrollable ledger displaying all past session expressions and formatted results in recessed Neumorphic concave plates.
+- **1-Tap Calculation Recall & Instant Collapse**:
+  - Tapping any historical calculation plate immediately recalls its result/expression into the active input line, recalculates Indian currency formatting and in-words transcription, and smoothly collapses the shade back to the 5-row keypad.
+- **Session Actions & Navigation**:
+  - Added Session History Counter badge `📜 Session Tape (N)`.
+  - Added Quick Clear Session History button (`DeleteSweep` red icon) to reset session tape.
+  - Added `✕` close button and `▲ Slide up or tap to return to Keypad` collapse handle.
+- **Physical Hardware Verification**:
+  - Verified on live Realme phone (`XGQ8JFZXEITGJ7IB`), capturing screenshots `105_history_shade_open_live.png`, `106_history_shade_tapped.png`, and `107_history_recalled_real.png`.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% tests passing).
+- Live hardware gesture, tap expansion, 1-tap recall, and collapse animations verified on device.
+
+### 📌 Current State:
+- Version: v1.0.0-expandable-history-shade (Full-screen sliding history tape shade with 1-tap recall, 100% hardware verified).
+
 ### 📝 Next Steps:
 - Ready for next user requests or feature enhancements.
 
 ---
 *Signed by: Shoeb Ahmad*
+
 
