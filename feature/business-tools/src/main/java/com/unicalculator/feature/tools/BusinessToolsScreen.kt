@@ -68,6 +68,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unicalculator.core.common.format.IndianVedicFormatter
@@ -166,11 +167,16 @@ fun BusinessToolsScreen(
                     style = TextStyle(
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 17.sp,
+                        fontSize = 14.5.sp,
                         color = colors.textPrimary,
-                        letterSpacing = 0.5.sp
-                    )
+                        letterSpacing = 0.2.sp
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
                 )
+
+                Spacer(modifier = Modifier.width(10.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -180,6 +186,8 @@ fun BusinessToolsScreen(
                         icon = Icons.Outlined.History,
                         contentDescription = "History",
                         onClick = { onNavigateToHistory?.invoke() },
+                        size = 38.dp,
+                        iconSize = 18.dp,
                         iconTint = colors.accentEmerald
                     )
 
@@ -187,6 +195,8 @@ fun BusinessToolsScreen(
                         icon = Icons.Outlined.DarkMode,
                         contentDescription = "Toggle Theme",
                         onClick = { onToggleTheme?.invoke() },
+                        size = 38.dp,
+                        iconSize = 18.dp,
                         iconTint = colors.textSecondary
                     )
 
@@ -194,6 +204,8 @@ fun BusinessToolsScreen(
                         icon = Icons.Outlined.Settings,
                         contentDescription = "Settings",
                         onClick = { onOpenSettings?.invoke() },
+                        size = 38.dp,
+                        iconSize = 18.dp,
                         iconTint = colors.textSecondary
                     )
                 }
