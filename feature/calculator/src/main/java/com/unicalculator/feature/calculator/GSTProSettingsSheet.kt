@@ -61,12 +61,7 @@ fun GSTProSettingsSheet(
 
     val defaultGstRate by prefs.defaultGstRate.collectAsState()
     val isInterStateDefault by prefs.isInterStateDefault.collectAsState()
-    val businessName by prefs.businessName.collectAsState()
-    val businessGstin by prefs.businessGstin.collectAsState()
     val isBankersRounding by prefs.isBankersRounding.collectAsState()
-
-    var tempShopName by remember { mutableStateOf(businessName) }
-    var tempGstin by remember { mutableStateOf(businessGstin) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -99,11 +94,7 @@ fun GSTProSettingsSheet(
                 NeumorphicIconButton(
                     icon = Icons.Default.Close,
                     contentDescription = "Close",
-                    onClick = {
-                        prefs.setBusinessName(tempShopName)
-                        prefs.setBusinessGstin(tempGstin)
-                        onDismiss()
-                    },
+                    onClick = onDismiss,
                     size = 36.dp,
                     iconSize = 18.dp
                 )
@@ -161,54 +152,7 @@ fun GSTProSettingsSheet(
                 }
             }
 
-            // 3. Business / Shop Name Header on Slips
-            NeumorphicPlate(
-                modifier = Modifier.fillMaxWidth(),
-                shape = NeumorphicShape.CONVEX,
-                cornerRadius = 16.dp
-            ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Text(
-                        text = "BUSINESS / STORE NAME (ON INVOICES)",
-                        style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = colors.textSecondary)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .neumorphic(
-                                shape = NeumorphicShape.CONCAVE,
-                                cornerRadius = 12.dp,
-                                elevation = 3.dp,
-                                lightShadowColor = colors.lightHighlight,
-                                darkShadowColor = colors.darkShadow,
-                                backgroundColor = colors.lcdWellBackground
-                            )
-                            .padding(horizontal = 12.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        BasicTextField(
-                            value = tempShopName,
-                            onValueChange = {
-                                tempShopName = it
-                                prefs.setBusinessName(it)
-                            },
-                            textStyle = TextStyle(
-                                fontFamily = FontFamily.Default,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 15.sp,
-                                color = colors.textPrimary
-                            ),
-                            cursorBrush = SolidColor(colors.accentEmerald),
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-            }
-
-            // 4. Tax Rounding Rule
+            // 3. Tax Rounding Rule
             NeumorphicPlate(
                 modifier = Modifier.fillMaxWidth(),
                 shape = NeumorphicShape.CONVEX,
@@ -229,12 +173,12 @@ fun GSTProSettingsSheet(
                 }
             }
 
-            // 5. Clear GST History Only
+            // 4. Clear GST History Only
             NeumorphicButton(
-                text = "🗑️ Clear GST Invoices Only",
+                text = "🗑️ Clear GST History Only",
                 onClick = {
                     historyRepo.deleteByTypes(listOf(CalculationType.GST_FORWARD, CalculationType.GST_REVERSE))
-                    Toast.makeText(context, "GST Invoices history cleared", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "GST calculation history cleared", Toast.LENGTH_SHORT).show()
                     onDismiss()
                 },
                 accentColor = DeleteRed,

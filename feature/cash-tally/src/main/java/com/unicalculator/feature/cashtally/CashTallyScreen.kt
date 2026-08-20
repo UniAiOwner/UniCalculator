@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -72,7 +73,7 @@ fun CashTallyScreen(
     val state by viewModel.uiState.collectAsState()
     val colors = LocalNeumorphicColors.current
     val context = LocalContext.current
-    val hapticEngine = NeumorphicHapticEngine(context)
+    val hapticEngine = remember { NeumorphicHapticEngine(context) }
     val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     val prefs = remember { UniCalculatorPreferences.getInstance(context) }
     var showSettingsSheet by remember { mutableStateOf(false) }
@@ -80,6 +81,11 @@ fun CashTallyScreen(
     val show2000Note by prefs.show2000Note.collectAsState()
     val show2Note by prefs.show2Note.collectAsState()
     val show1Note by prefs.show1Note.collectAsState()
+    val hapticIntensity by prefs.hapticIntensity.collectAsState()
+    val autoCopySlip by prefs.autoCopySlip.collectAsState()
+
+    fun click() = hapticEngine.playKeyClick(hapticIntensity)
+    fun tick() = hapticEngine.playOperatorTick(hapticIntensity)
 
     val filteredDenominations = remember(state.state.denominations, show2000Note, show2Note, show1Note) {
         state.state.denominations.filter { item ->
@@ -100,6 +106,7 @@ fun CashTallyScreen(
         modifier = modifier
             .fillMaxSize()
             .background(colors.background)
+            .imePadding()
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -128,7 +135,7 @@ fun CashTallyScreen(
                     icon = Icons.Outlined.History,
                     contentDescription = "Cash Tally History",
                     onClick = {
-                        hapticEngine.playKeyClick()
+                        tick()
                         onNavigateToHistory?.invoke()
                     },
                     size = 42.dp,
@@ -141,23 +148,25 @@ fun CashTallyScreen(
                     icon = Icons.Outlined.DarkMode,
                     contentDescription = "Toggle Theme",
                     onClick = {
-                        hapticEngine.playKeyClick()
+                        tick()
                         onToggleTheme?.invoke()
                     },
                     size = 42.dp,
-                    cornerRadius = 14.dp
+                    cornerRadius = 14.dp,
+                    iconTint = colors.textSecondary
                 )
 
-                // Settings Button
+                // Settings Sheet Button
                 NeumorphicIconButton(
                     icon = Icons.Outlined.Settings,
-                    contentDescription = "Settings",
+                    contentDescription = "Cash Tally Settings",
                     onClick = {
-                        hapticEngine.playKeyClick()
+                        tick()
                         if (onOpenSettings != null) onOpenSettings.invoke() else showSettingsSheet = true
                     },
                     size = 42.dp,
-                    cornerRadius = 14.dp
+                    cornerRadius = 14.dp,
+                    iconTint = colors.textSecondary
                 )
             }
         }
@@ -305,7 +314,7 @@ fun CashTallyScreen(
                         backgroundColor = RupeeEmeraldGreen
                     )
                     .clickable {
-                        hapticEngine.playKeyClick()
+                        click()
                         val slip = viewModel.generateWhatsAppSlipText()
                         val sendIntent = Intent().apply {
                             action = Intent.ACTION_SEND
@@ -339,7 +348,7 @@ fun CashTallyScreen(
                         backgroundColor = colors.background
                     )
                     .clickable {
-                        hapticEngine.playKeyClick()
+                        click()
                         val slip = viewModel.generateWhatsAppSlipText()
                         val activeSummary = state.state.denominations.filter { it.count > 0 }
                             .joinToString(", ") { "₹${it.faceValue}×${it.count}" }
@@ -351,7 +360,14 @@ fun CashTallyScreen(
                                 memoNote = slip
                             )
                         )
-                        Toast.makeText(context, "Cash Tally Session Saved to History", Toast.LENGTH_SHORT).show()
+                        if (autoCopySlip) {
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clip = ClipData.newPlainText("Cash Tally Breakdown", slip)
+                            clipboard.setPrimaryClip(clip)
+                            Toast.makeText(context, "Saved & Breakdown Copied to Clipboard", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Cash Tally Session Saved to History", Toast.LENGTH_SHORT).show()
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -378,7 +394,7 @@ fun CashTallyScreen(
                         backgroundColor = colors.background
                     )
                     .clickable {
-                        hapticEngine.playKeyClick()
+                        click()
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clip = ClipData.newPlainText("Cash Tally Breakdown", viewModel.generateWhatsAppSlipText())
                         clipboard.setPrimaryClip(clip)
@@ -409,7 +425,7 @@ fun CashTallyScreen(
                         backgroundColor = DeleteRed
                     )
                     .clickable {
-                        hapticEngine.playOperatorTick()
+                        tick()
                         viewModel.resetAll()
                     },
                 contentAlignment = Alignment.Center

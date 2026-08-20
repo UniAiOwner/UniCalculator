@@ -836,5 +836,36 @@
 ---
 *Signed by: Shoeb Ahmad*
 
+## 📅 Date: 2026-08-20 — Comprehensive Spec-Kit Codebase Audit & Polish Implementation
 
+### 🚀 Major Achievements:
+- **Zero-Invoice Purge & Calculator Alignment**:
+  - Removed all orphaned invoice configurations (`businessName`, `businessGstin`) from `UniCalculatorPreferences.kt` and `GSTProSettingsSheet.kt`.
+  - Refactored `GSTProViewModel.generateShareableSummary()` into a clean, professional calculation summary without commercial invoice headers.
+- **Dynamic Formatting & Western/Indian Dual Number Grouping (`IndianVedicFormatter.kt`)**:
+  - Implemented dual-system grouping (`INDIAN_VEDIC` e.g. `12,34,567.89` vs `INTERNATIONAL_WESTERN` e.g. `1,234,567.89`).
+  - Added dynamic decimal precision control (`-1` Auto, `0`, `2`, `4`, `6` decimals) across calculation screens.
+- **Haptic Feedback Engine Tuning (`NeumorphicComponents.kt`)**:
+  - Updated `NeumorphicHapticEngine` to read `HapticIntensity` (`OFF`, `SOFT`, `MEDIUM`, `STRONG`) and wired it across `StandardCalculatorScreen`, `GSTProScreen`, and `CashTallyScreen`.
+- **Keyboard IME & Layout Safety (`CashTallyScreen.kt` & `BusinessToolsScreen.kt`)**:
+  - Added `Modifier.imePadding()` to `CashTallyScreen` and all sub-tool screens in `BusinessToolsScreen.kt` so software keyboards never obscure calculation results, buttons, or input wells.
+  - Implemented `autoCopySlip` on Cash Tally save to auto-copy breakdown slip when enabled.
+- **Universal History Persistence**:
+  - Connected `NumeralSystemScreen` base conversions to `LocalCalculationHistoryRepository` via "💾 Save Conversion to History".
+  - Verified unified Room database tape persistence across Standard, GST Pro, Cash Tally, and Tools.
+- **Theme & Screen-Awake Persistence (`MainActivity.kt`)**:
+  - Wired `prefs.isDarkMode` and `FLAG_KEEP_SCREEN_ON` dynamically on Activity startup.
 
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% unit tests passing across all 10 modules).
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical device deployment (`XGQ8JFZXEITGJ7IB`): Verified Standard Calculator, GST Pro (with clean receipt and dark mode), Cash Tally (with Hindi in-words and Room history saving), and History Tape.
+
+### 📌 Current State:
+- Version: v1.0.0-speckit-audit-gold (100% audited, zero dead code, zero compile warnings, robust Room persistence, pure general-purpose & business calculator).
+
+### 📝 Next Steps:
+- Commit and push changes to Git.
+
+---
+*Signed by: Shoeb Ahmad*

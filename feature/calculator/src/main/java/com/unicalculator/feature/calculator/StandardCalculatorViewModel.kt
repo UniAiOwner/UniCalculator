@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 
+import com.unicalculator.core.common.prefs.NumberFormatStyle
 import com.unicalculator.core.common.prefs.UniCalculatorPreferences
 
 data class CalculationTapeItem(
@@ -50,6 +51,14 @@ class StandardCalculatorViewModel(
 
     private fun getIncludeCurrency(): Boolean {
         return preferences?.showCurrencySymbol?.value ?: false
+    }
+
+    private fun getNumberFormat(): NumberFormatStyle {
+        return preferences?.numberFormat?.value ?: NumberFormatStyle.INDIAN_VEDIC
+    }
+
+    private fun getDecimalPrecision(): Int {
+        return preferences?.decimalPrecision?.value ?: -1
     }
 
     private fun getZeroDisplayResult(): String {
@@ -237,8 +246,16 @@ class StandardCalculatorViewModel(
             if (exprToEvaluate.isEmpty()) return
 
             val showCurrency = getIncludeCurrency()
+            val formatStyle = getNumberFormat()
+            val precision = getDecimalPrecision()
             val eval = ShuntingYardEvaluator.evaluate(exprToEvaluate)
-            val formattedResult = IndianVedicFormatter.formatCurrency(eval, includeSymbol = showCurrency, showDecimalsAlways = false)
+            val formattedResult = IndianVedicFormatter.formatCurrency(
+                amount = eval,
+                includeSymbol = showCurrency,
+                showDecimalsAlways = false,
+                formatStyle = formatStyle,
+                decimalPrecision = precision
+            )
             val inWords = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
 
             val newTapeItem = CalculationTapeItem(
@@ -274,8 +291,16 @@ class StandardCalculatorViewModel(
             val raw = currentRawInput.toString().trim()
             val exprWithPercent = "$raw%"
             val showCurrency = getIncludeCurrency()
+            val formatStyle = getNumberFormat()
+            val precision = getDecimalPrecision()
             val eval = ShuntingYardEvaluator.evaluate(exprWithPercent)
-            val formattedResult = IndianVedicFormatter.formatCurrency(eval, includeSymbol = showCurrency, showDecimalsAlways = false)
+            val formattedResult = IndianVedicFormatter.formatCurrency(
+                amount = eval,
+                includeSymbol = showCurrency,
+                showDecimalsAlways = false,
+                formatStyle = formatStyle,
+                decimalPrecision = precision
+            )
             val inWords = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
 
             val newTapeItem = CalculationTapeItem(
@@ -336,6 +361,8 @@ class StandardCalculatorViewModel(
     private fun recalculateMath() {
         try {
             val showCurrency = getIncludeCurrency()
+            val formatStyle = getNumberFormat()
+            val precision = getDecimalPrecision()
             if (currentRawInput.isEmpty()) {
                 _uiState.update {
                     it.copy(
@@ -349,7 +376,13 @@ class StandardCalculatorViewModel(
             }
             val raw = currentRawInput.toString()
             val eval = ShuntingYardEvaluator.evaluate(raw)
-            var formatted = IndianVedicFormatter.formatCurrency(eval, includeSymbol = showCurrency, showDecimalsAlways = false)
+            var formatted = IndianVedicFormatter.formatCurrency(
+                amount = eval,
+                includeSymbol = showCurrency,
+                showDecimalsAlways = false,
+                formatStyle = formatStyle,
+                decimalPrecision = precision
+            )
             if (raw.endsWith(".") && !formatted.contains(".")) {
                 formatted += "."
             }

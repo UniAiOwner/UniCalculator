@@ -44,18 +44,15 @@ class UniCalculatorPreferences private constructor(context: Context) {
     private val _showCurrencySymbol = MutableStateFlow(prefs.getBoolean(KEY_SHOW_CURRENCY_SYMBOL, false))
     val showCurrencySymbol: StateFlow<Boolean> = _showCurrencySymbol.asStateFlow()
 
+    private val _isDarkMode = MutableStateFlow(prefs.getBoolean(KEY_IS_DARK_MODE, false))
+    val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
+
     // --- GST Pro Settings State ---
     private val _defaultGstRate = MutableStateFlow(prefs.getInt(KEY_DEFAULT_GST_RATE, 18))
     val defaultGstRate: StateFlow<Int> = _defaultGstRate.asStateFlow()
 
     private val _isInterStateDefault = MutableStateFlow(prefs.getBoolean(KEY_IS_INTER_STATE, false))
     val isInterStateDefault: StateFlow<Boolean> = _isInterStateDefault.asStateFlow()
-
-    private val _businessName = MutableStateFlow(prefs.getString(KEY_BUSINESS_NAME, "My Store") ?: "My Store")
-    val businessName: StateFlow<String> = _businessName.asStateFlow()
-
-    private val _businessGstin = MutableStateFlow(prefs.getString(KEY_BUSINESS_GSTIN, "") ?: "")
-    val businessGstin: StateFlow<String> = _businessGstin.asStateFlow()
 
     private val _isBankersRounding = MutableStateFlow(prefs.getBoolean(KEY_BANKERS_ROUNDING, true))
     val isBankersRounding: StateFlow<Boolean> = _isBankersRounding.asStateFlow()
@@ -84,6 +81,11 @@ class UniCalculatorPreferences private constructor(context: Context) {
     val defaultCurrency: StateFlow<String> = _defaultCurrency.asStateFlow()
 
     // Setters
+    fun setIsDarkMode(darkMode: Boolean) {
+        prefs.edit().putBoolean(KEY_IS_DARK_MODE, darkMode).apply()
+        _isDarkMode.value = darkMode
+    }
+
     fun setDecimalPrecision(precision: Int) {
         prefs.edit().putInt(KEY_DECIMAL_PRECISION, precision).apply()
         _decimalPrecision.value = precision
@@ -122,16 +124,6 @@ class UniCalculatorPreferences private constructor(context: Context) {
     fun setIsInterStateDefault(interState: Boolean) {
         prefs.edit().putBoolean(KEY_IS_INTER_STATE, interState).apply()
         _isInterStateDefault.value = interState
-    }
-
-    fun setBusinessName(name: String) {
-        prefs.edit().putString(KEY_BUSINESS_NAME, name).apply()
-        _businessName.value = name
-    }
-
-    fun setBusinessGstin(gstin: String) {
-        prefs.edit().putString(KEY_BUSINESS_GSTIN, gstin).apply()
-        _businessGstin.value = gstin
     }
 
     fun setIsBankersRounding(bankers: Boolean) {
@@ -176,6 +168,7 @@ class UniCalculatorPreferences private constructor(context: Context) {
 
     companion object {
         private const val PREFS_NAME = "unicalculator_user_prefs"
+        private const val KEY_IS_DARK_MODE = "is_dark_mode"
         private const val KEY_DECIMAL_PRECISION = "decimal_precision"
         private const val KEY_NUMBER_FORMAT = "number_format"
         private const val KEY_HAPTIC_INTENSITY = "haptic_intensity"
@@ -184,8 +177,6 @@ class UniCalculatorPreferences private constructor(context: Context) {
         private const val KEY_SHOW_CURRENCY_SYMBOL = "show_currency_symbol"
         private const val KEY_DEFAULT_GST_RATE = "default_gst_rate"
         private const val KEY_IS_INTER_STATE = "is_inter_state"
-        private const val KEY_BUSINESS_NAME = "business_name"
-        private const val KEY_BUSINESS_GSTIN = "business_gstin"
         private const val KEY_BANKERS_ROUNDING = "bankers_rounding"
         private const val KEY_SHOW_2000_NOTE = "show_2000_note"
         private const val KEY_SHOW_2_NOTE = "show_2_note"

@@ -808,6 +808,8 @@ fun DiscountSolverScreen() {
 @Composable
 fun NumeralSystemScreen() {
     val colors = LocalNeumorphicColors.current
+    val context = LocalContext.current
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     var decimalInput by remember { mutableStateOf("255") }
 
     val bin = UnitConversionEngine.convertNumeral(decimalInput, 10, 2)
@@ -831,6 +833,23 @@ fun NumeralSystemScreen() {
                 ResultRow(label = "Hexadecimal (HEX - Base 16)", value = hex, isHighlight = true)
             }
         }
+
+        NeumorphicButton(
+            text = "💾 Save Conversion to History",
+            onClick = {
+                historyRepo.insert(
+                    CalculationHistoryItem(
+                        type = CalculationType.TOOLS_CONVERTER,
+                        formulaExpression = "Base 10 ($decimalInput) → BIN: $bin | OCT: $oct | HEX: $hex",
+                        primaryResult = "HEX: $hex"
+                    )
+                )
+                Toast.makeText(context, "Conversion Saved to History", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            textColor = RupeeEmeraldGreen,
+            fontSize = 13
+        )
     }
 }
 

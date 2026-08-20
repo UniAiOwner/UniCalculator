@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 
+import com.unicalculator.core.common.prefs.UniCalculatorPreferences
+
 data class GSTProUiState(
     val amountInput: String = "",
     val cursorPosition: Int = 0,
@@ -25,9 +27,22 @@ data class GSTProUiState(
     val isResultEnlarged: Boolean = false
 )
 
-class GSTProViewModel : ViewModel() {
+class GSTProViewModel(
+    private var preferences: UniCalculatorPreferences? = null
+) : ViewModel() {
     private val _uiState = MutableStateFlow(GSTProUiState())
     val uiState: StateFlow<GSTProUiState> = _uiState.asStateFlow()
+
+    fun setPreferences(prefs: UniCalculatorPreferences) {
+        this.preferences = prefs
+        _uiState.update {
+            it.copy(
+                selectedGstRate = prefs.defaultGstRate.value,
+                isInterState = prefs.isInterStateDefault.value
+            )
+        }
+        recalculateGST()
+    }
 
     private var rawAmount = StringBuilder()
     private var currentCursorPos = 0
@@ -227,7 +242,7 @@ class GSTProViewModel : ViewModel() {
         val jur = if (state.isInterState) "Inter-State (IGST)" else "Intra-State (CGST + SGST)"
 
         return buildString {
-            appendLine("🧾 *UniCalculator GST Tax Invoice Summary*")
+            appendLine("📊 *UniCalculator GST Calculation Summary*")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("⚙️ Mode: $mode")
             appendLine("🏛️ Jurisdiction: $jur")
@@ -245,7 +260,7 @@ class GSTProViewModel : ViewModel() {
             appendLine("💰 *Gross Total Amount: ${IndianVedicFormatter.formatCurrency(breakdown.grossFinalAmount)}*")
             appendLine("✍️ In Words: ${state.inWordsText}")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("Generated via UniCalculator PRO")
+            appendLine("Calculated via UniCalculator")
         }
     }
 }

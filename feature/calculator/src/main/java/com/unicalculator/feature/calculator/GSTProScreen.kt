@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unicalculator.core.common.format.IndianVedicFormatter
+import com.unicalculator.core.common.prefs.UniCalculatorPreferences
 import com.unicalculator.core.database.LocalCalculationHistoryRepository
 import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicGstPill
@@ -71,9 +73,20 @@ fun GSTProScreen(
     val colors = LocalNeumorphicColors.current
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
-    val hapticEngine = NeumorphicHapticEngine(context)
+    val hapticEngine = remember { NeumorphicHapticEngine(context) }
     val historyRepo = remember { LocalCalculationHistoryRepository(context) }
+    val prefs = remember { UniCalculatorPreferences.getInstance(context) }
+    val defaultGstRate by prefs.defaultGstRate.collectAsState()
+    val isInterStateDefault by prefs.isInterStateDefault.collectAsState()
+    val hapticIntensity by prefs.hapticIntensity.collectAsState()
     var showSettingsSheet by remember { mutableStateOf(false) }
+
+    fun click() = hapticEngine.playKeyClick(hapticIntensity)
+    fun tick() = hapticEngine.playOperatorTick(hapticIntensity)
+
+    LaunchedEffect(defaultGstRate, isInterStateDefault) {
+        viewModel.setPreferences(prefs)
+    }
 
     val breakdown = state.taxBreakdown
     val netBaseStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.netBaseAmount) } ?: "₹ 0.00"
@@ -122,7 +135,7 @@ fun GSTProScreen(
                     icon = Icons.Outlined.History,
                     contentDescription = "GST History",
                     onClick = {
-                        hapticEngine.playOperatorTick()
+                        tick()
                         onNavigateToHistory?.invoke()
                     },
                     iconTint = colors.accentEmerald
@@ -132,7 +145,7 @@ fun GSTProScreen(
                     icon = Icons.Outlined.DarkMode,
                     contentDescription = "Toggle Theme",
                     onClick = {
-                        hapticEngine.playOperatorTick()
+                        tick()
                         onToggleTheme?.invoke()
                     },
                     iconTint = colors.textSecondary
@@ -142,7 +155,7 @@ fun GSTProScreen(
                     icon = Icons.Outlined.Settings,
                     contentDescription = "Settings",
                     onClick = {
-                        hapticEngine.playOperatorTick()
+                        tick()
                         if (onOpenSettings != null) onOpenSettings.invoke() else showSettingsSheet = true
                     },
                     iconTint = colors.textSecondary
@@ -342,28 +355,98 @@ fun GSTProScreen(
             }
         }
 
-        // 2. DUAL NEUMORPHIC SLIDABLE SWITCHES (Mode & Jurisdiction)
+        Spacer(modifier = Modifier.height(2.dp))
+
+        // 1.5. TAX BREAKDOWN HUD
+        NeumorphicPlate(
+            modifier = Modifier.fillMaxWidth(),
+            shape = NeumorphicShape.CONCAVE,
+            cornerRadius = 16.dp,
+            elevation = 3.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (state.isInterState) {
+                    Column {
+                        Text(
+                            text = "IGST (${state.selectedGstRate}%)",
+                            style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = colors.textSecondary)
+                        )
+                        Text(
+                            text = igstStr,
+                            style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = SapphireBlue)
+                        )
+                    }
+                } else {
+                    val halfRate = state.selectedGstRate / 2.0
+                    Column {
+                        Text(
+                            text = "CGST (${halfRate}%)",
+                            style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = colors.textSecondary)
+                        )
+                        Text(
+                            text = cgstStr,
+                            style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = SapphireBlue)
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "SGST (${halfRate}%)",
+                            style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = colors.textSecondary)
+                        )
+                        Text(
+                            text = sgstStr,
+                            style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = SapphireBlue)
+                        )
+                    }
+                }
+
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = "TOTAL TAX",
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = colors.textSecondary)
+                    )
+                    Text(
+                        text = totalTaxStr,
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Black, fontSize = 13.sp, color = GstSaffronAmber)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        // 2. TOGGLES ROW (Mode Switch + Jurisdiction Switch)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Left Switch: +GST vs −GST
             NeumorphicSlideSwitch(
-                leftLabel = "+GST",
-                rightLabel = "−GST",
+                leftLabel = "+GST (Add)",
+                rightLabel = "−GST (Extract)",
                 isRightSelected = state.isReverseGst,
-                onToggle = { viewModel.onSetReverseMode(it) },
+                onToggle = { isRev ->
+                    tick()
+                    viewModel.onSetReverseMode(isRev)
+                },
                 modifier = Modifier.weight(1f),
                 activeColor = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen,
                 height = 38.dp
             )
 
-            // Right Switch: CGST+SGST vs IGST
             NeumorphicSlideSwitch(
                 leftLabel = "CGST+SGST",
                 rightLabel = "IGST",
                 isRightSelected = state.isInterState,
-                onToggle = { viewModel.onSetJurisdiction(it) },
+                onToggle = { isInter ->
+                    tick()
+                    viewModel.onSetJurisdiction(isInter)
+                },
                 modifier = Modifier.weight(1f),
                 activeColor = SapphireBlue,
                 height = 38.dp
@@ -381,7 +464,7 @@ fun GSTProScreen(
                     text = "$sign$rate%",
                     isSelected = state.selectedGstRate == rate,
                     onClick = {
-                        hapticEngine.playOperatorTick()
+                        tick()
                         viewModel.onSelectSlab(rate)
                     },
                     modifier = Modifier.weight(1f).height(40.dp),
@@ -395,7 +478,7 @@ fun GSTProScreen(
             }
         }
 
-        // 4. ACTION BAR (WhatsApp Share | Save | Copy | Clear)
+        // 4. ACTION BAR (Share | Save | Copy | Clear)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -403,14 +486,14 @@ fun GSTProScreen(
             NeumorphicButton(
                 text = "📤 Share",
                 onClick = {
-                    hapticEngine.playKeyClick()
+                    click()
                     val summary = viewModel.generateShareableSummary()
                     val sendIntent = Intent().apply {
                         action = Intent.ACTION_SEND
                         putExtra(Intent.EXTRA_TEXT, summary)
                         type = "text/plain"
                     }
-                    context.startActivity(Intent.createChooser(sendIntent, "Share GST Invoice"))
+                    context.startActivity(Intent.createChooser(sendIntent, "Share GST Calculation"))
                 },
                 modifier = Modifier.weight(1.1f).height(42.dp),
                 textColor = RupeeEmeraldGreen,
@@ -420,7 +503,7 @@ fun GSTProScreen(
             NeumorphicButton(
                 text = "💾 Save",
                 onClick = {
-                    hapticEngine.playKeyClick()
+                    click()
                     val resultVal = if (state.isReverseGst) netBaseStr else grossFinalStr
                     val expr = "${state.amountInput} ${if (state.isReverseGst) "−" else "+"} ${state.selectedGstRate}% GST"
                     historyRepo.insert(
@@ -435,7 +518,7 @@ fun GSTProScreen(
                             igstAmount = igstStr
                         )
                     )
-                    Toast.makeText(context, "GST Invoice Saved to History", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.weight(1f).height(42.dp),
                 textColor = colors.textPrimary,
@@ -445,9 +528,9 @@ fun GSTProScreen(
             NeumorphicButton(
                 text = "📋 Copy",
                 onClick = {
-                    hapticEngine.playKeyClick()
+                    click()
                     clipboardManager.setText(AnnotatedString(viewModel.generateShareableSummary()))
-                    Toast.makeText(context, "Invoice Summary Copied", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.weight(1f).height(42.dp),
                 textColor = colors.textPrimary,
@@ -457,7 +540,7 @@ fun GSTProScreen(
             NeumorphicButton(
                 text = "C",
                 onClick = {
-                    hapticEngine.playOperatorTick()
+                    tick()
                     viewModel.onClear()
                 },
                 modifier = Modifier.width(48.dp).height(42.dp),
@@ -476,12 +559,12 @@ fun GSTProScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NeumorphicButton(text = "7", onClick = { viewModel.onDigit("7") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
-                NeumorphicButton(text = "8", onClick = { viewModel.onDigit("8") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
-                NeumorphicButton(text = "9", onClick = { viewModel.onDigit("9") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "7", onClick = { click(); viewModel.onDigit("7") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "8", onClick = { click(); viewModel.onDigit("8") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "9", onClick = { click(); viewModel.onDigit("9") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
                 NeumorphicButton(
                     text = "⌫",
-                    onClick = { viewModel.onDelete() },
+                    onClick = { click(); viewModel.onDelete() },
                     modifier = Modifier.weight(1f).height(52.dp),
                     textColor = OperatorOrange,
                     fontSize = 20
@@ -493,12 +576,12 @@ fun GSTProScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NeumorphicButton(text = "4", onClick = { viewModel.onDigit("4") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
-                NeumorphicButton(text = "5", onClick = { viewModel.onDigit("5") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
-                NeumorphicButton(text = "6", onClick = { viewModel.onDigit("6") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "4", onClick = { click(); viewModel.onDigit("4") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "5", onClick = { click(); viewModel.onDigit("5") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "6", onClick = { click(); viewModel.onDigit("6") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
                 NeumorphicButton(
                     text = "+",
-                    onClick = { viewModel.onSetReverseMode(false) },
+                    onClick = { tick(); viewModel.onSetReverseMode(false) },
                     modifier = Modifier.weight(1f).height(52.dp),
                     textColor = if (!state.isReverseGst) RupeeEmeraldGreen else MemoryGrey,
                     fontSize = 22
@@ -510,12 +593,12 @@ fun GSTProScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NeumorphicButton(text = "1", onClick = { viewModel.onDigit("1") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
-                NeumorphicButton(text = "2", onClick = { viewModel.onDigit("2") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
-                NeumorphicButton(text = "3", onClick = { viewModel.onDigit("3") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "1", onClick = { click(); viewModel.onDigit("1") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "2", onClick = { click(); viewModel.onDigit("2") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "3", onClick = { click(); viewModel.onDigit("3") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
                 NeumorphicButton(
                     text = "−",
-                    onClick = { viewModel.onSetReverseMode(true) },
+                    onClick = { tick(); viewModel.onSetReverseMode(true) },
                     modifier = Modifier.weight(1f).height(52.dp),
                     textColor = if (state.isReverseGst) GstSaffronAmber else MemoryGrey,
                     fontSize = 22
@@ -527,21 +610,24 @@ fun GSTProScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NeumorphicButton(text = "00", onClick = { viewModel.onDigit("00") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 20)
-                NeumorphicButton(text = "0", onClick = { viewModel.onDigit("0") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
-                NeumorphicButton(text = ".", onClick = { viewModel.onDigit(".") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 22)
+                NeumorphicButton(text = "00", onClick = { click(); viewModel.onDigit("00") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 20)
+                NeumorphicButton(text = "0", onClick = { click(); viewModel.onDigit("0") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = ".", onClick = { click(); viewModel.onDigit(".") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 22)
                 NeumorphicButton(
                     text = "=",
                     onClick = {
-                        hapticEngine.playKeyClick()
+                        tick()
                         viewModel.onEquals()
                     },
                     modifier = Modifier.weight(1f).height(52.dp),
-                    textColor = colors.accentEmerald,
-                    fontSize = 22
+                    isSolidAccent = true,
+                    backgroundColor = RupeeEmeraldGreen,
+                    textColor = Color.White,
+                    fontSize = 24
                 )
             }
         }
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 

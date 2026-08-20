@@ -140,26 +140,54 @@ class NeumorphicHapticEngine(private val context: Context) {
         null
     }
 
-    fun playKeyClick() {
+    fun playKeyClick(intensity: com.unicalculator.core.common.prefs.HapticIntensity = com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM) {
+        if (intensity == com.unicalculator.core.common.prefs.HapticIntensity.OFF) return
         try {
+            val scale = when (intensity) {
+                com.unicalculator.core.common.prefs.HapticIntensity.OFF -> return
+                com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 0.25f
+                com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 0.6f
+                com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 1.0f
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val effect = VibrationEffect.startComposition()
-                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 0.6f)
+                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, scale)
                     .compose()
                 vibrator?.vibrate(effect)
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator?.vibrate(VibrationEffect.createOneShot(10, VibrationEffect.DEFAULT_AMPLITUDE))
+                val amp = when (intensity) {
+                    com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 60
+                    com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 150
+                    com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 255
+                    else -> 150
+                }
+                vibrator?.vibrate(VibrationEffect.createOneShot(10, amp))
             }
         } catch (_: Exception) {}
     }
 
-    fun playOperatorTick() {
+    fun playOperatorTick(intensity: com.unicalculator.core.common.prefs.HapticIntensity = com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM) {
+        if (intensity == com.unicalculator.core.common.prefs.HapticIntensity.OFF) return
         try {
+            val scale = when (intensity) {
+                com.unicalculator.core.common.prefs.HapticIntensity.OFF -> return
+                com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 0.35f
+                com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 0.8f
+                com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 1.0f
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val effect = VibrationEffect.startComposition()
-                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 0.8f)
+                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, scale)
                     .compose()
                 vibrator?.vibrate(effect)
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val amp = when (intensity) {
+                    com.unicalculator.core.common.prefs.HapticIntensity.SOFT -> 80
+                    com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM -> 180
+                    com.unicalculator.core.common.prefs.HapticIntensity.STRONG -> 255
+                    else -> 180
+                }
+                vibrator?.vibrate(VibrationEffect.createOneShot(15, amp))
             }
         } catch (_: Exception) {}
     }
