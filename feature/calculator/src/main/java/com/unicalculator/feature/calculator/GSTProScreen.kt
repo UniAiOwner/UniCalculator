@@ -14,16 +14,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,15 +39,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unicalculator.core.common.format.IndianVedicFormatter
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.ui.text.TextStyle
+import com.unicalculator.core.database.LocalCalculationHistoryRepository
 import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicGstPill
 import com.unicalculator.core.designsystem.component.NeumorphicHapticEngine
 import com.unicalculator.core.designsystem.component.NeumorphicIconButton
+import com.unicalculator.core.designsystem.component.NeumorphicPlate
 import com.unicalculator.core.designsystem.component.NeumorphicSlideSwitch
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
@@ -49,6 +54,10 @@ import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.MemoryGrey
 import com.unicalculator.core.designsystem.theme.OperatorOrange
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
+import com.unicalculator.core.model.CalculationHistoryItem
+import com.unicalculator.core.model.CalculationType
+
+private val SapphireBlue = Color(0xFF2980B9)
 
 @Composable
 fun GSTProScreen(
@@ -63,6 +72,20 @@ fun GSTProScreen(
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     val hapticEngine = NeumorphicHapticEngine(context)
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
+    var showSettingsSheet by remember { mutableStateOf(false) }
+
+    val breakdown = state.taxBreakdown
+    val netBaseStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.netBaseAmount) } ?: "₹ 0.00"
+    val cgstStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.cgstAmount) } ?: "₹ 0.00"
+    val sgstStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.sgstAmount) } ?: "₹ 0.00"
+    val igstStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.igstAmount) } ?: "₹ 0.00"
+    val totalTaxStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.totalGstAmount) } ?: "₹ 0.00"
+    val grossFinalStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.grossFinalAmount) } ?: "₹ 0.00"
+
+    if (showSettingsSheet) {
+        GSTProSettingsSheet(onDismiss = { showSettingsSheet = false })
+    }
 
     Column(
         modifier = modifier
@@ -120,91 +143,73 @@ fun GSTProScreen(
                     contentDescription = "Settings",
                     onClick = {
                         hapticEngine.playOperatorTick()
-                        onOpenSettings?.invoke()
+                        if (onOpenSettings != null) onOpenSettings.invoke() else showSettingsSheet = true
                     },
                     iconTint = colors.textSecondary
                 )
             }
         }
 
-        // 1. UNIFIED MASTER RECEIPT CARD (DISPLAY AT TOP)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .neumorphic(
-                    shape = NeumorphicShape.CONVEX,
-                    cornerRadius = 18.dp,
-                    elevation = 5.dp,
-                    lightShadowColor = colors.lightHighlight,
-                    darkShadowColor = colors.darkShadow,
-                    backgroundColor = colors.background
-                )
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+        // 1. DUAL-DISPLAY NEUMORPHIC WELL & COMMERCIAL TAX BREAKDOWN
+        NeumorphicPlate(
+            modifier = Modifier.fillMaxWidth(),
+            shape = NeumorphicShape.CONCAVE,
+            cornerRadius = 16.dp,
+            elevation = 3.dp
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
-                // Header: Input Label & Entered Big Amount
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = if (state.isReverseGst) "GROSS / MRP" else "BASE AMOUNT",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp,
-                            color = colors.textSecondary,
-                            letterSpacing = 0.5.sp
-                        )
-                    )
-
+                // Top Row: Interactive Amount Input Well
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val input = state.amountInput
-                        val curPos = state.cursorPosition.coerceIn(0, input.length)
-                        if (input.isNotEmpty()) {
-                            Text(
-                                text = input.substring(0, curPos),
-                                style = androidx.compose.ui.text.TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 17.sp,
-                                    color = colors.textPrimary
-                                )
+                        Text(
+                            text = if (state.isReverseGst) "TOTAL GROSS AMOUNT (INCL. TAX):" else "NET BASE AMOUNT (EXCL. TAX):",
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.5.sp,
+                                color = colors.textSecondary,
+                                letterSpacing = 0.5.sp
                             )
-                            // Blinking cursor
-                            Box(
-                                modifier = Modifier
-                                    .width(2.dp)
-                                    .height(18.dp)
-                                    .background(colors.accentEmerald)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    // Sunken LCD Touch Well
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(44.dp)
+                            .neumorphic(
+                                shape = NeumorphicShape.CONCAVE,
+                                cornerRadius = 8.dp,
+                                elevation = 2.dp,
+                                lightShadowColor = colors.lightHighlight,
+                                darkShadowColor = colors.darkShadow,
+                                backgroundColor = colors.lcdWellBackground
                             )
-                            Text(
-                                text = input.substring(curPos),
-                                style = androidx.compose.ui.text.TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 17.sp,
-                                    color = colors.textPrimary
-                                )
-                            )
-                        } else {
-                            Text(
-                                text = state.displayAmount,
-                                style = androidx.compose.ui.text.TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 17.sp,
-                                    color = colors.textSecondary
-                                ),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Text(
+                            text = state.displayAmount,
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = colors.textPrimary
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
 
@@ -221,14 +226,6 @@ fun GSTProScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // 2-Column Tax Breakdown Grid
-                val breakdown = state.taxBreakdown
-                val netBaseStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.netBaseAmount) } ?: "₹ 0.00"
-                val cgstStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.cgstAmount) } ?: "₹ 0.00"
-                val sgstStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.sgstAmount) } ?: "₹ 0.00"
-                val igstStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.igstAmount) } ?: "₹ 0.00"
-                val totalTaxStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.totalGstAmount) } ?: "₹ 0.00"
-                val grossFinalStr = breakdown?.let { IndianVedicFormatter.formatCurrency(it.grossFinalAmount) } ?: "₹ 0.00"
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -292,7 +289,7 @@ fun GSTProScreen(
                                 isRightAlign = true,
                                 isHighlight = true,
                                 isEnlarged = state.isResultEnlarged,
-                                highlightColor = ElectricSapphireBlue
+                                highlightColor = SapphireBlue
                             )
                         }
                     }
@@ -320,7 +317,7 @@ fun GSTProScreen(
                     ) {
                         Text(
                             text = "IN WORDS: ",
-                            style = androidx.compose.ui.text.TextStyle(
+                            style = TextStyle(
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 10.5.sp,
@@ -330,7 +327,7 @@ fun GSTProScreen(
                         )
                         Text(
                             text = state.inWordsText,
-                            style = androidx.compose.ui.text.TextStyle(
+                            style = TextStyle(
                                 fontFamily = FontFamily.SansSerif,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 11.sp,
@@ -368,7 +365,7 @@ fun GSTProScreen(
                 isRightSelected = state.isInterState,
                 onToggle = { viewModel.onSetJurisdiction(it) },
                 modifier = Modifier.weight(1f),
-                activeColor = ElectricSapphireBlue,
+                activeColor = SapphireBlue,
                 height = 38.dp
             )
         }
@@ -424,6 +421,20 @@ fun GSTProScreen(
                 text = "💾 Save",
                 onClick = {
                     hapticEngine.playKeyClick()
+                    val resultVal = if (state.isReverseGst) netBaseStr else grossFinalStr
+                    val expr = "${state.amountInput} ${if (state.isReverseGst) "−" else "+"} ${state.selectedGstRate}% GST"
+                    historyRepo.insert(
+                        CalculationHistoryItem(
+                            type = if (state.isReverseGst) CalculationType.GST_REVERSE else CalculationType.GST_FORWARD,
+                            formulaExpression = expr,
+                            primaryResult = resultVal,
+                            netBaseAmount = netBaseStr,
+                            totalTaxAmount = totalTaxStr,
+                            cgstAmount = cgstStr,
+                            sgstAmount = sgstStr,
+                            igstAmount = igstStr
+                        )
+                    )
                     Toast.makeText(context, "GST Invoice Saved to History", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.weight(1f).height(42.dp),
@@ -460,55 +471,73 @@ fun GSTProScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Row 1: 7, 8, 9, ⌫
+            // Row 1: 7 | 8 | 9 | ⌫
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NeumorphicButton(text = "7", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("7") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "8", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("8") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "9", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("9") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "⌫", onClick = { hapticEngine.playOperatorTick(); viewModel.onDelete() }, modifier = Modifier.weight(1f).height(54.dp), textColor = OperatorOrange, fontSize = 18)
+                NeumorphicButton(text = "7", onClick = { viewModel.onDigit("7") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "8", onClick = { viewModel.onDigit("8") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "9", onClick = { viewModel.onDigit("9") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(
+                    text = "⌫",
+                    onClick = { viewModel.onDelete() },
+                    modifier = Modifier.weight(1f).height(52.dp),
+                    textColor = OperatorOrange,
+                    fontSize = 20
+                )
             }
 
-            // Row 2: 4, 5, 6, ÷
+            // Row 2: 4 | 5 | 6 | +
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NeumorphicButton(text = "4", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("4") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "5", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("5") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "6", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("6") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "÷", onClick = { hapticEngine.playOperatorTick(); viewModel.onOperator("÷") }, modifier = Modifier.weight(1f).height(54.dp), textColor = OperatorOrange, fontSize = 22)
+                NeumorphicButton(text = "4", onClick = { viewModel.onDigit("4") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "5", onClick = { viewModel.onDigit("5") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "6", onClick = { viewModel.onDigit("6") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(
+                    text = "+",
+                    onClick = { viewModel.onSetReverseMode(false) },
+                    modifier = Modifier.weight(1f).height(52.dp),
+                    textColor = if (!state.isReverseGst) RupeeEmeraldGreen else MemoryGrey,
+                    fontSize = 22
+                )
             }
 
-            // Row 3: 1, 2, 3, ×
+            // Row 3: 1 | 2 | 3 | −
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NeumorphicButton(text = "1", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("1") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "2", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("2") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "3", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("3") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = "×", onClick = { hapticEngine.playOperatorTick(); viewModel.onOperator("×") }, modifier = Modifier.weight(1f).height(54.dp), textColor = OperatorOrange, fontSize = 22)
+                NeumorphicButton(text = "1", onClick = { viewModel.onDigit("1") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "2", onClick = { viewModel.onDigit("2") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = "3", onClick = { viewModel.onDigit("3") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(
+                    text = "−",
+                    onClick = { viewModel.onSetReverseMode(true) },
+                    modifier = Modifier.weight(1f).height(52.dp),
+                    textColor = if (state.isReverseGst) GstSaffronAmber else MemoryGrey,
+                    fontSize = 22
+                )
             }
 
-            // Row 4: 00, 0, ., =
+            // Row 4: 00 | 0 | . | =
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NeumorphicButton(text = "00", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("00") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 18)
-                NeumorphicButton(text = "0", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit("0") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
-                NeumorphicButton(text = ".", onClick = { hapticEngine.playKeyClick(); viewModel.onDigit(".") }, modifier = Modifier.weight(1f).height(54.dp), fontSize = 20)
+                NeumorphicButton(text = "00", onClick = { viewModel.onDigit("00") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 20)
+                NeumorphicButton(text = "0", onClick = { viewModel.onDigit("0") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 21)
+                NeumorphicButton(text = ".", onClick = { viewModel.onDigit(".") }, modifier = Modifier.weight(1f).height(52.dp), fontSize = 22)
                 NeumorphicButton(
                     text = "=",
                     onClick = {
-                        hapticEngine.playOperatorTick()
+                        hapticEngine.playKeyClick()
                         viewModel.onEquals()
                     },
-                    modifier = Modifier.weight(1f).height(54.dp),
-                    textColor = ElectricSapphireBlue,
+                    modifier = Modifier.weight(1f).height(52.dp),
+                    textColor = colors.accentEmerald,
                     fontSize = 22
                 )
             }
@@ -516,47 +545,32 @@ fun GSTProScreen(
     }
 }
 
-private val ElectricSapphireBlue = Color(0xFF2563EB)
-
 @Composable
 private fun ReceiptItem(
     label: String,
     value: String,
-    modifier: Modifier = Modifier,
     isRightAlign: Boolean = false,
     isHighlight: Boolean = false,
     isEnlarged: Boolean = false,
-    highlightColor: androidx.compose.ui.graphics.Color = RupeeEmeraldGreen
+    highlightColor: Color = Color.Unspecified
 ) {
     val colors = LocalNeumorphicColors.current
-    Column(
-        modifier = modifier,
-        horizontalAlignment = if (isRightAlign) Alignment.End else Alignment.Start
-    ) {
+    Column(horizontalAlignment = if (isRightAlign) Alignment.End else Alignment.Start) {
         Text(
             text = label,
-            style = androidx.compose.ui.text.TextStyle(
-                fontSize = 11.sp,
+            style = TextStyle(
+                fontFamily = FontFamily.Monospace,
+                fontSize = 10.5.sp,
                 fontWeight = FontWeight.Medium,
                 color = colors.textSecondary
-            ),
-            maxLines = 1
+            )
         )
-        val dynamicFontSize = when {
-            isHighlight && isEnlarged && value.length > 15 -> 15.5.sp
-            isHighlight && isEnlarged && value.length > 12 -> 17.5.sp
-            isHighlight && isEnlarged -> 19.5.sp
-            isHighlight && value.length > 15 -> 13.sp
-            isHighlight -> 15.sp
-            value.length > 15 -> 10.5.sp
-            else -> 12.sp
-        }
         Text(
             text = value,
-            style = androidx.compose.ui.text.TextStyle(
+            style = TextStyle(
                 fontFamily = FontFamily.Monospace,
-                fontSize = dynamicFontSize,
-                fontWeight = if (isHighlight && isEnlarged) FontWeight.Black else if (isHighlight) FontWeight.Bold else FontWeight.SemiBold,
+                fontSize = if (isEnlarged && isHighlight) 17.5.sp else if (isHighlight) 14.5.sp else 12.5.sp,
+                fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.SemiBold,
                 color = if (isHighlight) highlightColor else colors.textPrimary
             ),
             maxLines = 1,
@@ -564,4 +578,3 @@ private fun ReceiptItem(
         )
     }
 }
-

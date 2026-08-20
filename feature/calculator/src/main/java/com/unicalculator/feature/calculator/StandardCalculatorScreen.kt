@@ -17,11 +17,16 @@ import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.unicalculator.core.database.LocalCalculationHistoryRepository
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +55,14 @@ fun StandardCalculatorScreen(
     val colors = LocalNeumorphicColors.current
     val context = LocalContext.current
     val hapticEngine = NeumorphicHapticEngine(context)
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
+    var showSettingsSheet by remember { mutableStateOf(false) }
+
+    viewModel.setHistoryRepository(historyRepo)
+
+    if (showSettingsSheet) {
+        StandardSettingsSheet(onDismiss = { showSettingsSheet = false })
+    }
 
     Column(
         modifier = modifier
@@ -110,7 +123,7 @@ fun StandardCalculatorScreen(
                     contentDescription = "Settings",
                     onClick = {
                         hapticEngine.playOperatorTick()
-                        onOpenSettings?.invoke()
+                        if (onOpenSettings != null) onOpenSettings.invoke() else showSettingsSheet = true
                     },
                     iconTint = colors.textSecondary
                 )

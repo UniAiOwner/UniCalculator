@@ -31,10 +31,14 @@ data class CalculatorUiState(
 )
 
 class StandardCalculatorViewModel(
-    private val historyRepository: LocalCalculationHistoryRepository? = null
+    private var historyRepository: LocalCalculationHistoryRepository? = null
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CalculatorUiState())
     val uiState: StateFlow<CalculatorUiState> = _uiState.asStateFlow()
+
+    fun setHistoryRepository(repo: LocalCalculationHistoryRepository) {
+        this.historyRepository = repo
+    }
 
     private var currentRawInput = StringBuilder()
     private var currentCursorPos = 0
@@ -207,7 +211,9 @@ class StandardCalculatorViewModel(
 
     fun onEquals() {
         try {
-            val exprToEvaluate = currentRawInput.toString().trim()
+            val rawExpr = currentRawInput.toString().trim()
+            if (rawExpr.isEmpty()) return
+            val exprToEvaluate = rawExpr.trimEnd('+', '-', '*', '/', '×', '÷', '%', ' ')
             if (exprToEvaluate.isEmpty()) return
 
             val eval = ShuntingYardEvaluator.evaluate(exprToEvaluate)

@@ -177,7 +177,7 @@ fun UniCalculatorApp(
                 )
                 3 -> BusinessToolsScreen(
                     onNavigateToHistory = {
-                        historyFilter = HistoryFilter.ALL
+                        historyFilter = HistoryFilter.TOOLS
                         selectedTab = 4
                     },
                     onToggleTheme = onToggleTheme,

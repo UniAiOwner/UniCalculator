@@ -727,3 +727,36 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-20 — Per-Screen Segregated History, Custom Settings Sheets & Tools History Persistence
+
+### 🚀 Major Achievements:
+- **Per-Screen Segregated History Architecture**:
+  - Implemented multi-tab history filtering in `HistoryTapeScreen.kt`: `All History`, `Standard`, `GST Pro`, `Cash Tally`, and `Tools & Units`.
+  - Configured top bar History action button on each screen to navigate directly to that specific screen's filtered ledger (Standard ➔ Standard, GST Pro ➔ GST Pro, Cash Tally ➔ Cash Tally, Tools ➔ Tools).
+- **Screen-Specific Custom Settings Sheets**:
+  - `StandardSettingsSheet.kt`: Decimal Precision, Number Grouping Format (Indian Vedic vs Western), Haptic Feedback intensity, Keep Screen Awake, Clear Standard History.
+  - `GSTProSettingsSheet.kt`: Default Slab (3%, 5%, 12%, 18%, 28%), Default Jurisdiction (Intra-State vs Inter-State), Business/Store Name, Rounding Mode, Clear GST Invoices.
+  - `CashTallySettingsSheet.kt`: Special Denomination visibility toggles (₹2000, ₹2, ₹1 notes), Cashier/Shift Name, Auto-copy closing slip on save, Clear Cash Tally Sessions.
+  - `ToolsSettingsSheet.kt`: Default Base Currency (INR, USD, EUR, AED), Auto-save to history switch, Clear Tools & Units History.
+- **Tools & Converter Suite History Persistence**:
+  - Added SQLite database persistence (`LocalCalculationHistoryRepository.kt`) across all sub-tools (Loan EMI, Discount, Margin & Markup, Unit Converters, BMI, Date & Age).
+  - Upgraded SQLite Database schema (`DB_VERSION = 2`) and refactored repository into a thread-safe Singleton with reactive `StateFlow`.
+  - Added per-screen isolated deletion (`deleteByTypes(...)`) allowing users to clear one screen's history without affecting other screens.
+- **Physical Hardware Verification**:
+  - Verified on live physical Realme device (`XGQ8JFZXEITGJ7IB`) with real calculation logging across Standard Math, GST Invoicing, Cash Tally sessions, and Tools.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% tests passing).
+- Live on-device screenshots captured:
+  - Settings Modal Sheets: `65_std_settings_opened.png`, `71_gst_settings_sheet_live.png`, `73_cashtally_settings_opened.png`, `80_tools_settings_sheet_hit.png`.
+  - History Persistence & Segregation: `92_history_recorded_success.png`, `94_history_all_active.png`, `96_history_tools_segregated.png`, `97_history_all_multi_screen.png`.
+
+### 📌 Current State:
+- Version: v1.0.0-segregated-history-and-settings (Fully isolated per-screen history ledgers, dedicated settings sheets, 100% hardware verified).
+
+### 📝 Next Steps:
+- Ready for subsequent enhancements or release packaging.
+
+---
+*Signed by: Shoeb Ahmad*

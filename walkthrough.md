@@ -1,64 +1,76 @@
-# 📱 UniCalculator Walkthrough: Universal In-Place Cursor & 16-Tool Converter Suite
+# UniCalculator — Walkthrough: Per-Screen Segregated History, Screen-Specific Settings & Tools History Persistence
 
-## 🌟 Executive Summary
-We successfully implemented **Universal In-Place Cursor Editing** with per-digit precision across UniCalculator, suppressed intrusive Android soft keyboards, and engineered a **16-Tool Categorized Converter & Utility Suite** organized under the 3 requested category headings.
-
----
-
-## 🚀 Key Achievements
-
-### 1. 🎯 Universal In-Place Cursor Engine
-- **Per-Digit Precision**: Tap anywhere inside a typed expression (e.g. `12005 × 5`) to place the cursor between specific digits.
-- **In-Place Insertions & Deletions**: Pressing `⌫` or typing a new digit (e.g. `3`) edits the exact character at that cursor boundary without retyping the entire number.
-- **Zero Software Keyboard Intrusion**: Utilizes `InterceptPlatformTextInput` to keep the custom Neumorphic 3D keypad 100% visible and interactive.
-
-![Cursor Verification](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/45_cursor_precise_test.png)
+## Overview
+We have implemented a segregated calculation history architecture and customized settings modal sheets across all 4 workstation screens in **UniCalculator Bharat**, along with SQLite database persistence for the entire Tools & Converters suite.
 
 ---
 
-### 2. 🛠️ 16-Tool Categorized Converter & Utility Suite
-Organized in `BusinessToolsScreen.kt` with high-precision `UnitConversionEngine.kt`:
+## 🚀 Key Features Implemented
 
-1. ⚡ **Daily Utilities & Health** (Top):
-   - **Date & Age**: Exact age in Years, Months, and Days.
-   - **Time**: Seconds, Minutes, Hours, Days, Weeks, Months, Years.
-   - **Data**: Bytes, KB, MB, GB, TB, PB.
-   - **Numeral System**: Decimal (DEC), Binary (BIN), Octal (OCT), Hexadecimal (HEX).
-   - **BMI Health Calculator**: Height & Weight input with real-time WHO classification.
-   - **Speed**: km/h, mph, m/s, knots.
+### 1. Per-Screen Segregated Calculation History (`HistoryTapeScreen.kt`)
+- **Multi-Tab Filter Bar**:
+  - `All History`: Master chronological audit ledger across all screens.
+  - `Standard`: Only standard mathematical calculations.
+  - `GST Pro`: Forward & reverse GST invoices with CGST/SGST/IGST tax breakdown.
+  - `Cash Tally`: Full cash denomination closing slips with note counts and grand total.
+  - `Tools & Units`: Loan EMI schedules, discount stacks, profit margins, and unit conversions.
+- **Top Bar History Routing**:
+  - Tapping the History button (`🕐`) from any screen directly routes to that screen's pre-filtered history view.
+- **Per-Screen Clearing**:
+  - Tapping the red Trash button on a filtered tab only clears that specific category from the SQLite database (`deleteByTypes(...)`), leaving the remaining data intact.
 
-2. 📏 **Unit Converters** (Middle):
-   - **Length**: Meters, km, cm, mm, ft, in, yd, miles with instant 2-way conversion.
-   - **Mass & Weight**: kg, g, mg, lb, oz, tonnes, plus Indian **Tola** & **Ratti**.
-   - **Area**: sq ft, sq m, acres, hectares, plus Indian **Bigha** & **Guntha**.
-   - **Volume**: Liters, mL, gallons, m³, ft³.
-   - **Temperature**: Celsius (°C), Fahrenheit (°F), Kelvin (K).
-   - **Currency**: INR (₹), USD ($), EUR (€), GBP (£), AED, SAR, JPY.
+### 2. Dedicated Screen-Specific Settings Sheets
+Each screen now opens its own tailored Neumorphic modal bottom sheet:
+- **Standard Calculator Settings** (`StandardSettingsSheet.kt`):
+  - Decimal precision (2, 4, 6, 8 decimals)
+  - Number formatting (Indian Vedic `1,00,000` vs Western `100,000`)
+  - Haptic feedback intensity (Off / Light / Medium / Strong)
+  - Keep Screen Awake toggle
+  - Clear Standard History
+- **GST Pro Settings** (`GSTProSettingsSheet.kt`):
+  - Default Slab on Launch (3%, 5%, 12%, 18%, 28%)
+  - Default Jurisdiction (Intra-State CGST+SGST vs Inter-State IGST)
+  - Business / Store Name for receipts
+  - Banker's Rounding (`HALF_EVEN`) vs Exact Paise
+  - Clear GST Invoices
+- **Cash Tally Settings** (`CashTallySettingsSheet.kt`):
+  - Special Denomination Toggles (Show/Hide ₹2000, ₹2, ₹1 notes)
+  - Cashier / Shift Name
+  - Auto-copy closing slip to clipboard on save
+  - Clear Cash Tally Sessions
+- **Tools & Converters Settings** (`ToolsSettingsSheet.kt`):
+  - Default Base Currency (INR, USD, EUR, AED)
+  - Auto-save conversions to history
+  - Clear Tools & Units History
 
-3. 📊 **Financial & Business** (Bottom):
-   - **Loan EMI Calculator**: Principal, Rate %, and Tenure with Monthly EMI, Total Interest, and Total Payable.
-   - **Discount Solver**: Original price, Discount %, Final bill, and Total savings.
-   - **Margin & Markup Solver**: Cost Price, Selling Price, Gross Profit, Profit Margin %, Markup %.
-   - **GST Pro Shortcut**: Direct link to GST tax invoice breakdown.
+### 3. SQLite Database Persistence for Tools Suite
+- Upgraded SQLite Database schema (`DB_VERSION = 2`) in `LocalCalculationHistoryRepository.kt`.
+- Thread-safe Singleton (`getInstance(context)`) with reactive `StateFlow` updates across all screens.
+- Added `💾 Save to History` buttons in all tools:
+  - Loan EMI Calculator
+  - Discount Solver
+  - Margin & Markup Solver
+  - Generic Unit Converters (Length, Mass, Area, Volume, Temperature, Speed, Data, Time)
+  - BMI Health Calculator
+  - Date & Age Calculator
 
 ---
 
-## 📸 Live Hardware Verification Gallery
+## 🧪 Verification & Hardware Testing
+All features were compiled and verified on physical hardware (**Realme RMX3998**, `Android 14`, `1080x2400`):
 
-````carousel
-![Tools Super Hub](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/49_tools_tab_view.png)
-<!-- slide -->
-![Length Converter Screen](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/51_length_view.png)
-<!-- slide -->
-![BMI Health Calculator](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/53_bmi_view.png)
-<!-- slide -->
-![Loan EMI Calculator](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/55_finance_emi_opened.png)
-<!-- slide -->
-![In-Place Cursor Edited 12003](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/39_edited_12003.png)
-````
+1. **Settings Sheets**:
+   - `StandardSettingsSheet` verified on device.
+   - `GSTProSettingsSheet` verified on device.
+   - `CashTallySettingsSheet` verified on device.
+   - `ToolsSettingsSheet` verified on device.
+2. **History Persistence**:
+   - Standard math (`4 -> ₹ 4`) recorded and verified.
+   - GST Pro reverse calculation (`8455822 - 5% GST -> ₹ 80,53,163.81`) recorded and verified.
+   - Cash Tally closing slip (`Total Notes: 640 -> ₹ 1,60,650`) recorded and verified.
+   - All History ledger displaying all items with real timestamps, copy, share, and individual delete buttons.
+3. **Unit Tests**:
+   - Ran `./gradlew testDebugUnitTest` ➔ **100% Passed**.
 
 ---
-
-## 🧪 Automated Testing
-- `StandardCalculatorViewModelTest.kt`: Sequential typing, middle edits (`12005` ➔ `12003`), middle operator insertion, and range replacement.
-- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL in 26s** (100% tests passed).
+*Signed by: Shoeb Ahmad*

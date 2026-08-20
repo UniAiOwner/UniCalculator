@@ -12,15 +12,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class LocalCalculationHistoryRepository(context: Context) {
+class LocalCalculationHistoryRepository private constructor(context: Context) {
     private val dbHelper = DatabaseHelper(context.applicationContext)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val _historyList = MutableStateFlow<List<CalculationHistoryItem>>(emptyList())
-    val historyList: Flow<List<CalculationHistoryItem>> = _historyList.asStateFlow()
+    val historyList: StateFlow<List<CalculationHistoryItem>> = _historyList.asStateFlow()
 
     init {
         scope.launch {
@@ -65,9 +66,11 @@ class LocalCalculationHistoryRepository(context: Context) {
             }
         }
         _historyList.value = items
+        android.util.Log.d("UniCalcHistory", "Loaded ${items.size} history items from DB: $items")
     }
 
     fun insert(item: CalculationHistoryItem) {
+        android.util.Log.d("UniCalcHistory", "Inserting history item: $item")
         scope.launch {
             withContext(Dispatchers.IO) {
                 val db = dbHelper.writableDatabase
@@ -84,7 +87,8 @@ class LocalCalculationHistoryRepository(context: Context) {
                     put(COLUMN_MEMO, item.memoNote)
                     put(COLUMN_PINNED, if (item.isPinned) 1 else 0)
                 }
-                db.insert(TABLE_NAME, null, values)
+                val rowId = db.insert(TABLE_NAME, null, values)
+                android.util.Log.d("UniCalcHistory", "Inserted rowId: $rowId")
             }
             loadAllFromDb()
         }
@@ -100,29 +104,78 @@ class LocalCalculationHistoryRepository(context: Context) {
         }
     }
 
+    fun deleteByTypes(types: List<CalculationType>) {
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                val db = dbHelper.writableDatabase
+                if (types.isEmpty()) {
+                    db.delete(TABLE_NAME, null, null)
+                } else {
+                    val placeholders = types.joinToString(",") { "?" }
+                    val args = types.map { it.name }.toTypedArray()
+                    db.delete(TABLE_NAME, "$COLUMN_TYPE IN ($placeholders)", args)
+                }
+            }
+            loadAllFromDb()
+        }
+    }
+
+    fun togglePin(id: Long, currentPinStatus: Boolean) {
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                val db = dbHelper.writableDatabase
+                val values = ContentValues().apply {
+                    put(COLUMN_PINNED, if (!currentPinStatus) 1 else 0)
+                }
+                db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(id.toString()))
+            }
+            loadAllFromDb()
+        }
+    }
+
     fun clearAll() {
         scope.launch {
             withContext(Dispatchers.IO) {
                 val db = dbHelper.writableDatabase
                 db.delete(TABLE_NAME, null, null)
             }
-            _historyList.value = emptyList()
+            loadAllFromDb()
         }
     }
 
-    private fun Cursor.getStringOrNull(index: Int): String? {
-        return if (isNull(index)) null else getString(index)
-    }
+    companion object {
+        private const val DB_NAME = "unicalculator_history.db"
+        private const val DB_VERSION = 2
+        private const val TABLE_NAME = "calculation_history"
 
-    private class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-        override fun onConfigure(db: SQLiteDatabase) {
-            super.onConfigure(db)
-            db.enableWriteAheadLogging()
+        private const val COLUMN_ID = "id"
+        private const val COLUMN_TIMESTAMP = "timestamp"
+        private const val COLUMN_TYPE = "calculation_type"
+        private const val COLUMN_FORMULA = "formula_expression"
+        private const val COLUMN_RESULT = "primary_result"
+        private const val COLUMN_NET_BASE = "net_base_amount"
+        private const val COLUMN_TOTAL_TAX = "total_tax_amount"
+        private const val COLUMN_CGST = "cgst_amount"
+        private const val COLUMN_SGST = "sgst_amount"
+        private const val COLUMN_IGST = "igst_amount"
+        private const val COLUMN_MEMO = "memo_note"
+        private const val COLUMN_PINNED = "is_pinned"
+
+        @Volatile
+        private var INSTANCE: LocalCalculationHistoryRepository? = null
+
+        fun getInstance(context: Context): LocalCalculationHistoryRepository {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: LocalCalculationHistoryRepository(context.applicationContext).also { INSTANCE = it }
+            }
         }
 
+        operator fun invoke(context: Context): LocalCalculationHistoryRepository = getInstance(context)
+    }
+
+    private class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
         override fun onCreate(db: SQLiteDatabase) {
-            db.execSQL(
-                """
+            val sql = """
                 CREATE TABLE $TABLE_NAME (
                     $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                     $COLUMN_TIMESTAMP INTEGER NOT NULL,
@@ -137,10 +190,8 @@ class LocalCalculationHistoryRepository(context: Context) {
                     $COLUMN_MEMO TEXT,
                     $COLUMN_PINNED INTEGER NOT NULL DEFAULT 0
                 )
-                """.trimIndent()
-            )
-            db.execSQL("CREATE INDEX idx_calc_timestamp ON $TABLE_NAME($COLUMN_TIMESTAMP DESC)")
-            db.execSQL("CREATE INDEX idx_calc_type ON $TABLE_NAME($COLUMN_TYPE)")
+            """.trimIndent()
+            db.execSQL(sql)
         }
 
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -148,24 +199,8 @@ class LocalCalculationHistoryRepository(context: Context) {
             onCreate(db)
         }
     }
-
-    companion object {
-        private const val DATABASE_NAME = "unicalculator_history.db"
-        private const val DATABASE_VERSION = 1
-        private const val TABLE_NAME = "calculation_history"
-
-        private const val COLUMN_ID = "id"
-        private const val COLUMN_TIMESTAMP = "timestamp"
-        private const val COLUMN_TYPE = "type"
-        private const val COLUMN_FORMULA = "formula"
-        private const val COLUMN_RESULT = "result"
-        private const val COLUMN_NET_BASE = "net_base"
-        private const val COLUMN_TOTAL_TAX = "total_tax"
-        private const val COLUMN_CGST = "cgst"
-        private const val COLUMN_SGST = "sgst"
-        private const val COLUMN_IGST = "igst"
-        private const val COLUMN_MEMO = "memo"
-        private const val COLUMN_PINNED = "is_pinned"
-    }
 }
 
+private fun Cursor.getStringOrNull(columnIndex: Int): String? {
+    return if (isNull(columnIndex)) null else getString(columnIndex)
+}

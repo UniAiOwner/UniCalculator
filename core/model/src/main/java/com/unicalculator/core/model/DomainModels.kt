@@ -22,7 +22,10 @@ enum class CalculationType {
     CASH_TALLY,
     MARGIN_MARKUP,
     DISCOUNT_STACK,
-    LOAN_EMI
+    LOAN_EMI,
+    TOOLS_CONVERTER,
+    BMI_CALCULATOR,
+    DATE_AGE
 }
 
 data class DenominationItem(

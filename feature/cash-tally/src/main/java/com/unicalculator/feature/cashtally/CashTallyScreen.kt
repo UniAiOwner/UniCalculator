@@ -30,6 +30,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unicalculator.core.common.format.IndianVedicFormatter
+import com.unicalculator.core.common.prefs.UniCalculatorPreferences
+import com.unicalculator.core.database.LocalCalculationHistoryRepository
 import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicHapticEngine
 import com.unicalculator.core.designsystem.component.NeumorphicIconButton
@@ -53,6 +58,8 @@ import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.DeleteRed
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
+import com.unicalculator.core.model.CalculationHistoryItem
+import com.unicalculator.core.model.CalculationType
 
 @Composable
 fun CashTallyScreen(
@@ -64,8 +71,30 @@ fun CashTallyScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val colors = LocalNeumorphicColors.current
-    val hapticEngine = NeumorphicHapticEngine(LocalContext.current)
     val context = LocalContext.current
+    val hapticEngine = NeumorphicHapticEngine(context)
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
+    val prefs = remember { UniCalculatorPreferences.getInstance(context) }
+    var showSettingsSheet by remember { mutableStateOf(false) }
+
+    val show2000Note by prefs.show2000Note.collectAsState()
+    val show2Note by prefs.show2Note.collectAsState()
+    val show1Note by prefs.show1Note.collectAsState()
+
+    val filteredDenominations = remember(state.state.denominations, show2000Note, show2Note, show1Note) {
+        state.state.denominations.filter { item ->
+            when (item.faceValue) {
+                2000 -> show2000Note
+                2 -> show2Note
+                1 -> show1Note
+                else -> true
+            }
+        }
+    }
+
+    if (showSettingsSheet) {
+        CashTallySettingsSheet(onDismiss = { showSettingsSheet = false })
+    }
 
     Column(
         modifier = modifier
@@ -125,7 +154,7 @@ fun CashTallyScreen(
                     contentDescription = "Settings",
                     onClick = {
                         hapticEngine.playKeyClick()
-                        onOpenSettings?.invoke()
+                        if (onOpenSettings != null) onOpenSettings.invoke() else showSettingsSheet = true
                     },
                     size = 42.dp,
                     cornerRadius = 14.dp
@@ -311,7 +340,18 @@ fun CashTallyScreen(
                     )
                     .clickable {
                         hapticEngine.playKeyClick()
-                        Toast.makeText(context, "Cash Tally Saved to History", Toast.LENGTH_SHORT).show()
+                        val slip = viewModel.generateWhatsAppSlipText()
+                        val activeSummary = state.state.denominations.filter { it.count > 0 }
+                            .joinToString(", ") { "₹${it.faceValue}×${it.count}" }
+                        historyRepo.insert(
+                            CalculationHistoryItem(
+                                type = CalculationType.CASH_TALLY,
+                                formulaExpression = "Total Notes: ${state.totalNotesCount} ($activeSummary)",
+                                primaryResult = IndianVedicFormatter.formatCurrency(state.state.grandTotal),
+                                memoNote = slip
+                            )
+                        )
+                        Toast.makeText(context, "Cash Tally Session Saved to History", Toast.LENGTH_SHORT).show()
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -489,7 +529,7 @@ fun CashTallyScreen(
         Spacer(modifier = Modifier.height(4.dp))
 
         // 5. Denomination Note Counter Rows (₹500 down to ₹1) - Direct Surface Ledger
-        state.state.denominations.forEach { item ->
+        filteredDenominations.forEach { item ->
             val noteBadgeColor = when (item.faceValue) {
                 500 -> Color(0xFFA3E4D7)
                 200 -> Color(0xFFF9E79F)

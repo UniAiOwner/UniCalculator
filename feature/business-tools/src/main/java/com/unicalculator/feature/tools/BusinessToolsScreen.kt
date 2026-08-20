@@ -1,15 +1,12 @@
 package com.unicalculator.feature.tools
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,34 +15,29 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.CropSquare
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.Discount
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.Height
-import androidx.compose.material.icons.outlined.LocalMall
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Scale
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Thermostat
-import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.ViewInAr
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.DropdownMenu
@@ -59,10 +51,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -72,17 +64,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unicalculator.core.common.format.IndianVedicFormatter
+import com.unicalculator.core.database.LocalCalculationHistoryRepository
 import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicIconButton
 import com.unicalculator.core.designsystem.component.NeumorphicPlate
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
-import com.unicalculator.core.designsystem.theme.DeleteRed
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
-import com.unicalculator.core.designsystem.theme.OperatorOrange
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 import com.unicalculator.core.math.CommercialCalculatorEngine
 import com.unicalculator.core.math.UnitConversionEngine
+import com.unicalculator.core.model.CalculationHistoryItem
+import com.unicalculator.core.model.CalculationType
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -108,7 +101,13 @@ fun BusinessToolsScreen(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalNeumorphicColors.current
+    val context = LocalContext.current
     var activeToolId by remember { mutableStateOf<String?>(null) }
+    var showSettingsSheet by remember { mutableStateOf(false) }
+
+    if (showSettingsSheet) {
+        ToolsSettingsSheet(onDismiss = { showSettingsSheet = false })
+    }
 
     val allTools = remember {
         listOf(
@@ -131,7 +130,7 @@ fun BusinessToolsScreen(
             // 3. Financial & Business (BOTTOM)
             ToolItem("loan_emi", "Finance / EMI", Icons.Outlined.AccountBalance, ToolCategory.FINANCIAL_BUSINESS),
             ToolItem("discount", "Discount", Icons.Outlined.Discount, ToolCategory.FINANCIAL_BUSINESS),
-            ToolItem("margin", "Margin & Markup", Icons.Outlined.TrendingUp, ToolCategory.FINANCIAL_BUSINESS),
+            ToolItem("margin", "Margin & Markup", Icons.AutoMirrored.Outlined.TrendingUp, ToolCategory.FINANCIAL_BUSINESS),
             ToolItem("gst_pro", "GST Pro", Icons.Outlined.Receipt, ToolCategory.FINANCIAL_BUSINESS)
         )
     }
@@ -203,7 +202,9 @@ fun BusinessToolsScreen(
                     NeumorphicIconButton(
                         icon = Icons.Outlined.Settings,
                         contentDescription = "Settings",
-                        onClick = { onOpenSettings?.invoke() },
+                        onClick = {
+                            if (onOpenSettings != null) onOpenSettings.invoke() else showSettingsSheet = true
+                        },
                         size = 38.dp,
                         iconSize = 18.dp,
                         iconTint = colors.textSecondary
@@ -270,10 +271,9 @@ fun SectionHeader(title: String, count: Int) {
         Text(
             text = "$count tools",
             style = TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 12.sp,
-                color = colors.textSecondary.copy(alpha = 0.7f)
+                fontFamily = FontFamily.Monospace,
+                fontSize = 11.sp,
+                color = colors.textSecondary
             )
         )
     }
@@ -282,13 +282,15 @@ fun SectionHeader(title: String, count: Int) {
 @Composable
 fun ToolGrid(
     items: List<ToolItem>,
-    onItemClick: (ToolItem) -> Unit
+    onItemClick: (ToolItem) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        items.chunked(3).forEach { rowItems ->
+        val chunked = items.chunked(3)
+        chunked.forEach { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -421,56 +423,72 @@ fun ToolDetailHost(
 
         when (toolId) {
             "length" -> GenericUnitConverterScreen(
+                toolName = "Length Converter",
                 units = listOf("Meter (m)", "Kilometer (km)", "Centimeter (cm)", "Millimeter (mm)", "Foot (ft)", "Inch (in)", "Yard (yd)", "Mile (mi)"),
                 convertFn = { v, f, t -> UnitConversionEngine.convertLength(v, f, t) }
             )
             "mass" -> GenericUnitConverterScreen(
+                toolName = "Mass Converter",
                 units = listOf("Kilogram (kg)", "Gram (g)", "Milligram (mg)", "Pound (lb)", "Ounce (oz)", "Tonne (t)", "Tola (Gold)", "Ratti"),
                 convertFn = { v, f, t -> UnitConversionEngine.convertMass(v, f, t) }
             )
             "area" -> GenericUnitConverterScreen(
+                toolName = "Area Converter",
                 units = listOf("Square Foot (sq ft)", "Square Meter (sq m)", "Square Yard (sq yd)", "Acre", "Hectare", "Bigha (Standard)", "Guntha"),
                 convertFn = { v, f, t -> UnitConversionEngine.convertArea(v, f, t) }
             )
             "volume" -> GenericUnitConverterScreen(
+                toolName = "Volume Converter",
                 units = listOf("Liter (L)", "Milliliter (mL)", "Gallon (US gal)", "Cubic Meter (m³)", "Cubic Foot (ft³)"),
                 convertFn = { v, f, t -> UnitConversionEngine.convertVolume(v, f, t) }
             )
             "temp" -> GenericUnitConverterScreen(
+                toolName = "Temperature Converter",
                 units = listOf("Celsius (°C)", "Fahrenheit (°F)", "Kelvin (K)"),
                 convertFn = { v, f, t -> UnitConversionEngine.convertTemperature(v, f, t) }
             )
             "speed" -> GenericUnitConverterScreen(
+                toolName = "Speed Converter",
                 units = listOf("Kilometer/hour (km/h)", "Mile/hour (mph)", "Meter/second (m/s)", "Knot (kn)"),
                 convertFn = { v, f, t -> UnitConversionEngine.convertSpeed(v, f, t) }
             )
             "time" -> GenericUnitConverterScreen(
+                toolName = "Time Converter",
                 units = listOf("Seconds (s)", "Minutes (min)", "Hours (hr)", "Days (d)", "Weeks (wk)", "Months (~30d)", "Years (365d)"),
                 convertFn = { v, f, t -> UnitConversionEngine.convertTime(v, f, t) }
             )
             "data" -> GenericUnitConverterScreen(
-                units = listOf("Megabyte (MB)", "Gigabyte (GB)", "Terabyte (TB)", "Kilobyte (KB)", "Byte (B)", "Petabyte (PB)"),
+                toolName = "Data Storage Converter",
+                units = listOf("Byte (B)", "Kilobyte (KB)", "Megabyte (MB)", "Gigabyte (GB)", "Terabyte (TB)", "Petabyte (PB)"),
                 convertFn = { v, f, t -> UnitConversionEngine.convertData(v, f, t) }
             )
-            "numeral" -> NumeralSystemScreen()
             "bmi" -> BmiCalculatorScreen()
             "discount" -> DiscountSolverScreen()
+            "numeral" -> NumeralSystemScreen()
             "margin" -> MarginMarkupScreen()
             "loan_emi" -> LoanEmiScreen()
             "date_age" -> DateAgeScreen()
             "currency" -> CurrencyConverterScreen()
-            else -> Text("Tool coming soon...")
+            else -> {
+                Text(
+                    text = "Tool Coming Soon!",
+                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 16.sp, color = colors.textSecondary)
+                )
+            }
         }
     }
 }
 
-// --- 1. GENERIC DUAL UNIT CONVERTER SCREEN ---
+// --- 1. GENERIC UNIT CONVERTER SCREEN ---
 @Composable
 fun GenericUnitConverterScreen(
+    toolName: String = "Unit Converter",
     units: List<String>,
     convertFn: (BigDecimal, String, String) -> BigDecimal
 ) {
     val colors = LocalNeumorphicColors.current
+    val context = LocalContext.current
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     var fromUnit by remember { mutableStateOf(units[0]) }
     var toUnit by remember { mutableStateOf(units.getOrElse(1) { units[0] }) }
     var inputValueText by remember { mutableStateOf("1") }
@@ -523,6 +541,28 @@ fun GenericUnitConverterScreen(
             valueText = convertedVal.toPlainString(),
             onValueChange = {},
             isEditable = false
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        // Save to History Button
+        NeumorphicButton(
+            text = "💾 Save Conversion to History",
+            onClick = {
+                val expr = "$inputValueText $fromUnit → $toUnit"
+                val res = "${convertedVal.stripTrailingZeros().toPlainString()} $toUnit"
+                historyRepo.insert(
+                    CalculationHistoryItem(
+                        type = CalculationType.TOOLS_CONVERTER,
+                        formulaExpression = expr,
+                        primaryResult = res
+                    )
+                )
+                Toast.makeText(context, "Conversion Saved to History", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            textColor = RupeeEmeraldGreen,
+            fontSize = 13
         )
     }
 }
@@ -648,6 +688,8 @@ fun UnitCard(
 @Composable
 fun BmiCalculatorScreen() {
     val colors = LocalNeumorphicColors.current
+    val context = LocalContext.current
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     var weightText by remember { mutableStateOf("70") }
     var heightText by remember { mutableStateOf("175") }
 
@@ -692,6 +734,23 @@ fun BmiCalculatorScreen() {
                 )
             }
         }
+
+        NeumorphicButton(
+            text = "💾 Save BMI Score to History",
+            onClick = {
+                historyRepo.insert(
+                    CalculationHistoryItem(
+                        type = CalculationType.BMI_CALCULATOR,
+                        formulaExpression = "Weight: ${weightText}kg | Height: ${heightText}cm",
+                        primaryResult = "BMI ${bmiResult.bmiScore} (${bmiResult.category})"
+                    )
+                )
+                Toast.makeText(context, "BMI Score Saved to History", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            textColor = RupeeEmeraldGreen,
+            fontSize = 13
+        )
     }
 }
 
@@ -699,6 +758,8 @@ fun BmiCalculatorScreen() {
 @Composable
 fun DiscountSolverScreen() {
     val colors = LocalNeumorphicColors.current
+    val context = LocalContext.current
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     var originalPriceText by remember { mutableStateOf("1999") }
     var discountPercentText by remember { mutableStateOf("25") }
 
@@ -723,6 +784,23 @@ fun DiscountSolverScreen() {
                 ResultRow(label = "You Save (Total Discount)", value = IndianVedicFormatter.formatCurrency(result.totalSavings))
             }
         }
+
+        NeumorphicButton(
+            text = "💾 Save Discount to History",
+            onClick = {
+                historyRepo.insert(
+                    CalculationHistoryItem(
+                        type = CalculationType.DISCOUNT_STACK,
+                        formulaExpression = "₹$originalPriceText − $discountPercentText% Discount",
+                        primaryResult = IndianVedicFormatter.formatCurrency(result.finalPrice)
+                    )
+                )
+                Toast.makeText(context, "Discount Saved to History", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            textColor = RupeeEmeraldGreen,
+            fontSize = 13
+        )
     }
 }
 
@@ -760,6 +838,8 @@ fun NumeralSystemScreen() {
 @Composable
 fun MarginMarkupScreen() {
     val colors = LocalNeumorphicColors.current
+    val context = LocalContext.current
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     var costPriceText by remember { mutableStateOf("1200") }
     var sellingPriceText by remember { mutableStateOf("1600") }
 
@@ -785,6 +865,23 @@ fun MarginMarkupScreen() {
                 ResultRow(label = "Markup on Cost (%)", value = "${marginResult.markupPercent}%")
             }
         }
+
+        NeumorphicButton(
+            text = "💾 Save Margin to History",
+            onClick = {
+                historyRepo.insert(
+                    CalculationHistoryItem(
+                        type = CalculationType.MARGIN_MARKUP,
+                        formulaExpression = "CP: ₹$costPriceText | SP: ₹$sellingPriceText",
+                        primaryResult = "Profit: ${IndianVedicFormatter.formatCurrency(marginResult.grossProfit)} (${marginResult.profitMarginPercent}%)"
+                    )
+                )
+                Toast.makeText(context, "Margin Calculation Saved to History", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            textColor = RupeeEmeraldGreen,
+            fontSize = 13
+        )
     }
 }
 
@@ -792,6 +889,8 @@ fun MarginMarkupScreen() {
 @Composable
 fun LoanEmiScreen() {
     val colors = LocalNeumorphicColors.current
+    val context = LocalContext.current
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     var principalText by remember { mutableStateOf("500000") }
     var interestRateText by remember { mutableStateOf("8.5") }
     var tenureMonthsText by remember { mutableStateOf("36") }
@@ -820,6 +919,23 @@ fun LoanEmiScreen() {
                 ResultRow(label = "Total Amount Payable", value = IndianVedicFormatter.formatCurrency(emiResult.totalPayment))
             }
         }
+
+        NeumorphicButton(
+            text = "💾 Save Loan EMI to History",
+            onClick = {
+                historyRepo.insert(
+                    CalculationHistoryItem(
+                        type = CalculationType.LOAN_EMI,
+                        formulaExpression = "Loan: ₹$principalText @ $interestRateText% for $tenureMonthsText mos",
+                        primaryResult = "EMI: ${IndianVedicFormatter.formatCurrency(emiResult.monthlyEmi)}"
+                    )
+                )
+                Toast.makeText(context, "Loan EMI Saved to History", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            textColor = RupeeEmeraldGreen,
+            fontSize = 13
+        )
     }
 }
 
@@ -827,6 +943,8 @@ fun LoanEmiScreen() {
 @Composable
 fun DateAgeScreen() {
     val colors = LocalNeumorphicColors.current
+    val context = LocalContext.current
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     var birthYearText by remember { mutableStateOf("1998") }
     var birthMonthText by remember { mutableStateOf("8") }
     var birthDayText by remember { mutableStateOf("15") }
@@ -851,6 +969,8 @@ fun DateAgeScreen() {
         ageYears--
         ageMonths += 12
     }
+
+    val ageResultStr = "$ageYears Years, $ageMonths Months, $ageDays Days"
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -887,62 +1007,111 @@ fun DateAgeScreen() {
                 Text(text = "EXACT AGE", style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = colors.textSecondary))
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "$ageYears Years, $ageMonths Months, $ageDays Days",
+                    text = ageResultStr,
                     style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = colors.accentEmerald, textAlign = TextAlign.Center)
                 )
             }
         }
+
+        NeumorphicButton(
+            text = "💾 Save Age to History",
+            onClick = {
+                historyRepo.insert(
+                    CalculationHistoryItem(
+                        type = CalculationType.DATE_AGE,
+                        formulaExpression = "DOB: $birthDayText/$birthMonthText/$birthYearText",
+                        primaryResult = ageResultStr
+                    )
+                )
+                Toast.makeText(context, "Age Saved to History", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            textColor = RupeeEmeraldGreen,
+            fontSize = 13
+        )
     }
 }
 
 // --- 8. CURRENCY CONVERTER SCREEN ---
 @Composable
 fun CurrencyConverterScreen() {
-    val currencies = listOf("INR (₹)", "USD ($)", "EUR (€)", "GBP (£)", "AED (د.إ)", "SAR (﷼)", "JPY (¥)")
-    // Approximate reference rates against USD
-    val rateAgainstInr = mapOf(
-        "INR (₹)" to BigDecimal("1.0"),
-        "USD ($)" to BigDecimal("87.50"),
-        "EUR (€)" to BigDecimal("92.30"),
-        "GBP (£)" to BigDecimal("110.40"),
-        "AED (د.إ)" to BigDecimal("23.82"),
-        "SAR (﷼)" to BigDecimal("23.33"),
-        "JPY (¥)" to BigDecimal("0.58")
-    )
+    val colors = LocalNeumorphicColors.current
+    val context = LocalContext.current
+    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
+    var inrAmountText by remember { mutableStateOf("1000") }
 
-    GenericUnitConverterScreen(
-        units = currencies,
-        convertFn = { value, from, to ->
-            val fromRate = rateAgainstInr[from] ?: BigDecimal.ONE
-            val toRate = rateAgainstInr[to] ?: BigDecimal.ONE
-            val inInr = value.multiply(fromRate)
-            inInr.divide(toRate, 2, RoundingMode.HALF_EVEN)
+    val inr = inrAmountText.toBigDecimalOrNull() ?: BigDecimal.ZERO
+    val usd = inr.divide(BigDecimal("87.50"), 4, RoundingMode.HALF_UP)
+    val eur = inr.divide(BigDecimal("95.20"), 4, RoundingMode.HALF_UP)
+    val aed = inr.divide(BigDecimal("23.82"), 4, RoundingMode.HALF_UP)
+    val gbp = inr.divide(BigDecimal("111.40"), 4, RoundingMode.HALF_UP)
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        NeumorphicInput(label = "Amount in Indian Rupees (INR ₹)", value = inrAmountText, onValueChange = { inrAmountText = it }, prefix = "₹")
+
+        NeumorphicPlate(
+            modifier = Modifier.fillMaxWidth(),
+            shape = NeumorphicShape.CONVEX,
+            cornerRadius = 20.dp
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+                ResultRow(label = "US Dollar (USD)", value = "$ ${usd.stripTrailingZeros().toPlainString()}", isHighlight = true)
+                ResultRow(label = "Euro (EUR)", value = "€ ${eur.stripTrailingZeros().toPlainString()}")
+                ResultRow(label = "UAE Dirham (AED)", value = "AED ${aed.stripTrailingZeros().toPlainString()}")
+                ResultRow(label = "British Pound (GBP)", value = "£ ${gbp.stripTrailingZeros().toPlainString()}")
+            }
         }
-    )
+
+        NeumorphicButton(
+            text = "💾 Save Currency to History",
+            onClick = {
+                historyRepo.insert(
+                    CalculationHistoryItem(
+                        type = CalculationType.TOOLS_CONVERTER,
+                        formulaExpression = "₹$inrAmountText INR to Forex",
+                        primaryResult = "$${usd.stripTrailingZeros().toPlainString()} USD | €${eur.stripTrailingZeros().toPlainString()} EUR"
+                    )
+                )
+                Toast.makeText(context, "Currency Conversion Saved to History", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            textColor = RupeeEmeraldGreen,
+            fontSize = 13
+        )
+    }
 }
 
-// --- COMMON NEUMORPHIC INPUT & RESULT ROW HELPER ---
+// --- HELPER COMPONENTS ---
 @Composable
 fun NeumorphicInput(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    prefix: String? = null
+    prefix: String? = null,
+    modifier: Modifier = Modifier
 ) {
     val colors = LocalNeumorphicColors.current
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = label,
-            style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Medium, fontSize = 13.sp, color = colors.textSecondary),
-            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
+            style = TextStyle(
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                color = colors.textSecondary
+            )
         )
+        Spacer(modifier = Modifier.height(6.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .height(48.dp)
                 .neumorphic(
                     shape = NeumorphicShape.CONCAVE,
-                    cornerRadius = 14.dp,
+                    cornerRadius = 12.dp,
                     elevation = 3.dp,
                     lightShadowColor = colors.lightHighlight,
                     darkShadowColor = colors.darkShadow,
@@ -952,13 +1121,19 @@ fun NeumorphicInput(
             contentAlignment = Alignment.CenterStart
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth()
             ) {
                 if (prefix != null) {
-                    Text(text = prefix, style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = colors.accentEmerald))
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "$prefix ",
+                        style = TextStyle(
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = colors.accentEmerald
+                        )
+                    )
                 }
                 BasicTextField(
                     value = value,
@@ -966,14 +1141,13 @@ fun NeumorphicInput(
                     textStyle = TextStyle(
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = colors.textPrimary,
-                        textAlign = TextAlign.End
+                        fontSize = 16.sp,
+                        color = colors.textPrimary
                     ),
                     cursorBrush = SolidColor(colors.accentEmerald),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -981,25 +1155,33 @@ fun NeumorphicInput(
 }
 
 @Composable
-fun ResultRow(label: String, value: String, isHighlight: Boolean = false) {
+fun ResultRow(
+    label: String,
+    value: String,
+    isHighlight: Boolean = false
+) {
     val colors = LocalNeumorphicColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 5.dp),
+            .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
-            style = TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 13.sp, color = colors.textSecondary)
+            style = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontSize = 13.sp,
+                color = colors.textSecondary
+            )
         )
         Text(
             text = value,
             style = TextStyle(
                 fontFamily = FontFamily.Monospace,
-                fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.SemiBold,
-                fontSize = if (isHighlight) 18.sp else 15.sp,
+                fontWeight = FontWeight.Bold,
+                fontSize = if (isHighlight) 16.sp else 14.sp,
                 color = if (isHighlight) colors.accentEmerald else colors.textPrimary
             )
         )
