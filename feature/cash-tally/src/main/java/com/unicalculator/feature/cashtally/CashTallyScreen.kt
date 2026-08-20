@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,8 +29,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.DarkMode
@@ -40,14 +37,10 @@ import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.Speed
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -103,7 +96,6 @@ fun CashTallyScreen(
     val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     val prefs = remember { UniCalculatorPreferences.getInstance(context) }
     var showSettingsSheet by remember { mutableStateOf(false) }
-    var showAddCustomDialog by remember { mutableStateOf(false) }
 
     val show2000Note by prefs.show2000Note.collectAsState()
     val show2Note by prefs.show2Note.collectAsState()
@@ -137,21 +129,10 @@ fun CashTallyScreen(
         CashTallySettingsSheet(onDismiss = { showSettingsSheet = false })
     }
 
-    if (showAddCustomDialog) {
-        AddCustomDenominationDialog(
-            onDismiss = { showAddCustomDialog = false },
-            onAdd = { value ->
-                viewModel.addCustomDenomination(value)
-                showAddCustomDialog = false
-            }
-        )
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(colors.background)
-            .imePadding()
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -540,121 +521,7 @@ fun CashTallyScreen(
             }
         }
 
-        // 6. Add Custom Denomination Button
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp)
-                .neumorphic(
-                    shape = NeumorphicShape.CONVEX,
-                    cornerRadius = 22.dp,
-                    elevation = 2.5.dp,
-                    lightShadowColor = colors.lightHighlight,
-                    darkShadowColor = colors.darkShadow,
-                    backgroundColor = colors.background
-                )
-                .border(
-                    width = 1.dp,
-                    color = RupeeEmeraldGreen.copy(alpha = 0.35f),
-                    shape = RoundedCornerShape(22.dp)
-                )
-                .clickable {
-                    click()
-                    showAddCustomDialog = true
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(22.dp)
-                        .clip(CircleShape)
-                        .background(RupeeEmeraldGreen.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add Denomination",
-                        tint = RupeeEmeraldGreen,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-                Text(
-                    text = "Add Custom Denomination",
-                    fontSize = 12.5.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace,
-                    color = RupeeEmeraldGreen
-                )
-            }
-        }
-
-        // 7. Bottom 4-Metric Statistics Card
-        NeumorphicPlate(
-            modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 20.dp,
-            elevation = 4.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp, horizontal = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                StatColumn(
-                    icon = Icons.Outlined.Payments,
-                    value = "${state.totalNotesCount}",
-                    label = "Total Notes",
-                    iconTint = RupeeEmeraldGreen,
-                    modifier = Modifier.weight(1f)
-                )
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(30.dp)
-                        .background(colors.textSecondary.copy(alpha = 0.2f))
-                )
-                StatColumn(
-                    icon = Icons.Outlined.AccountBalance,
-                    value = IndianVedicFormatter.formatCurrency(state.state.grandTotal, includeSymbol = false, decimalPrecision = 0),
-                    label = "Total Cash",
-                    iconTint = Color(0xFF2563EB),
-                    modifier = Modifier.weight(1f)
-                )
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(30.dp)
-                        .background(colors.textSecondary.copy(alpha = 0.2f))
-                )
-                StatColumn(
-                    icon = Icons.Outlined.Speed,
-                    value = if (state.highestDenom > 0) "${state.highestDenom}" else "—",
-                    label = "Highest Denom",
-                    iconTint = Color(0xFF7C3AED),
-                    modifier = Modifier.weight(1f)
-                )
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(30.dp)
-                        .background(colors.textSecondary.copy(alpha = 0.2f))
-                )
-                StatColumn(
-                    icon = Icons.Outlined.ArrowDownward,
-                    value = if (state.lowestDenom > 0) "${state.lowestDenom}" else "—",
-                    label = "Lowest Denom",
-                    iconTint = Color(0xFFD97706),
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -894,90 +761,4 @@ private fun DenominationRow(
             }
         }
     }
-}
-
-@Composable
-private fun StatColumn(
-    icon: ImageVector,
-    value: String,
-    label: String,
-    iconTint: Color,
-    modifier: Modifier = Modifier
-) {
-    val colors = LocalNeumorphicColors.current
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = iconTint,
-                modifier = Modifier.size(14.dp)
-            )
-            Text(
-                text = value,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Monospace,
-                color = colors.textPrimary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = label,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.Medium,
-            fontFamily = FontFamily.Monospace,
-            color = colors.textSecondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@Composable
-private fun AddCustomDenominationDialog(
-    onDismiss: () -> Unit,
-    onAdd: (Int) -> Unit
-) {
-    var textValue by remember { mutableStateOf("") }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Add Custom Denomination") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Enter face value in ₹ (e.g. 5000, 2000, 25):", fontSize = 13.sp)
-                OutlinedTextField(
-                    value = textValue,
-                    onValueChange = { textValue = it.filter { ch -> ch.isDigit() } },
-                    label = { Text("Face Value (₹)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val value = textValue.toIntOrNull() ?: 0
-                    if (value > 0) onAdd(value)
-                }
-            ) {
-                Text("Add")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
 }

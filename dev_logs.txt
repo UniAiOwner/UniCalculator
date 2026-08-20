@@ -907,3 +907,29 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-20 — Cash Tally Clutter Cleanup (Custom Denomination & Bottom HUD Removal)
+
+### 🚀 Major Achievements:
+- **Clean Streamlined Ledger (`CashTallyScreen.kt`)**:
+  - Removed "Add Custom Denomination" outlined plate and custom face value input dialog.
+  - Removed bottom 4-metric statistics HUD plate (`Total Notes`, `Total Cash`, `Highest Denom`, `Lowest Denom`), eliminating redundant metrics already prominently displayed in the top Master Hero Card.
+- **Zero Scroll Ergonomics**:
+  - The entire 8-note denomination ledger (`₹500` down to `₹1`) sits cleanly on the viewport without unnecessary scroll overhead.
+- **Zero Double-Padding on Keyboard**:
+  - Cleaned redundant `imePadding()` so numeric soft keyboards sit flush against the ledger without any blank gap.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% tests passing).
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment (`Realme RMX3998`):
+  - Verified clean, uncluttered layout and flush keyboard opening (`138_keyboard_open_real.png` and `139_cash_tally_clean_without_custom_and_bottom.png`).
+
+### 📌 Current State:
+- Version: v1.0.0-cashtally-clean (Optimized, focused 8-note Indian currency cash tally workstation).
+
+### 📝 Next Steps:
+- Ready for next user requests or testing.
+
+---
+*Signed by: Shoeb Ahmad*
