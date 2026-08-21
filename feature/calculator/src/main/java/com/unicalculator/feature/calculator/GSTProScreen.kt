@@ -65,6 +65,7 @@ import com.unicalculator.core.designsystem.theme.GstSaffronAmber
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.OperatorOrange
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
+import com.unicalculator.core.designsystem.theme.withNeonGlow
 import com.unicalculator.core.model.CalculationHistoryItem
 import com.unicalculator.core.model.CalculationType
 
@@ -236,16 +237,21 @@ fun GSTProScreen(
                     color = colors.textSecondary.copy(alpha = 0.15f)
                 )
 
-                // Row 2: Massive Headline Calculated Result (34sp / 36sp)
+                // Row 2: Massive Headline Calculated Result (34sp / 36sp) with Neon LED Glow
                 val finalAnswerStr = if (state.isReverseGst) netBaseStr else grossFinalStr
+                val coreResultColor = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen
                 Text(
                     text = finalAnswerStr,
                     style = TextStyle(
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Black,
                         fontSize = if (finalAnswerStr.length > 14) 28.sp else if (finalAnswerStr.length > 10) 32.sp else 36.sp,
-                        color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen,
+                        color = coreResultColor,
                         textAlign = TextAlign.End
+                    ).withNeonGlow(
+                        glowColor = coreResultColor,
+                        blurRadius = if (colors.isDark) 20f else 12f,
+                        glowAlpha = if (colors.isDark) 0.85f else 0.45f
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
@@ -590,6 +596,10 @@ private fun TaxMetricCell(
                 fontSize = 12.5.sp,
                 fontWeight = FontWeight.Bold,
                 color = valueColor
+            ).withNeonGlow(
+                glowColor = valueColor,
+                blurRadius = if (colors.isDark) 14f else 8f,
+                glowAlpha = if (colors.isDark) 0.80f else 0.40f
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

@@ -77,6 +77,7 @@ import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
+import com.unicalculator.core.designsystem.theme.withNeonGlow
 import com.unicalculator.core.math.CommercialCalculatorEngine
 import com.unicalculator.core.math.UnitConversionEngine
 import com.unicalculator.core.model.CalculationHistoryItem
@@ -801,8 +802,13 @@ fun UnitCard(
                             fontSize = 20.sp,
                             color = colors.accentEmerald,
                             textAlign = TextAlign.End
+                        ).withNeonGlow(
+                            glowColor = colors.accentEmerald,
+                            blurRadius = if (colors.isDark) 16f else 10f,
+                            glowAlpha = if (colors.isDark) 0.85f else 0.45f
                         ),
-                        maxLines = 1
+                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -846,7 +852,16 @@ fun BmiCalculatorScreen() {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = bmiResult.bmiScore.toPlainString(),
-                    style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 38.sp, color = colors.accentEmerald)
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 38.sp,
+                        color = colors.accentEmerald
+                    ).withNeonGlow(
+                        glowColor = colors.accentEmerald,
+                        blurRadius = if (colors.isDark) 20f else 12f,
+                        glowAlpha = if (colors.isDark) 0.85f else 0.45f
+                    )
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
@@ -1269,14 +1284,25 @@ fun ResultRow(
                 color = colors.textSecondary
             )
         )
+        val valueColor = if (isHighlight) colors.accentEmerald else colors.textPrimary
+        val baseStyle = TextStyle(
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.Bold,
+            fontSize = if (isHighlight) 16.sp else 14.sp,
+            color = valueColor
+        )
+        val finalStyle = if (isHighlight) {
+            baseStyle.withNeonGlow(
+                glowColor = valueColor,
+                blurRadius = if (colors.isDark) 16f else 10f,
+                glowAlpha = if (colors.isDark) 0.85f else 0.45f
+            )
+        } else {
+            baseStyle
+        }
         Text(
             text = value,
-            style = TextStyle(
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold,
-                fontSize = if (isHighlight) 16.sp else 14.sp,
-                color = if (isHighlight) colors.accentEmerald else colors.textPrimary
-            )
+            style = finalStyle
         )
     }
 }

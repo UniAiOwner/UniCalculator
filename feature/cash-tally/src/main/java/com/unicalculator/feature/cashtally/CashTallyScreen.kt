@@ -76,6 +76,7 @@ import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.DeleteRed
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
+import com.unicalculator.core.designsystem.theme.withNeonGlow
 import com.unicalculator.core.model.CalculationHistoryItem
 import com.unicalculator.core.model.CalculationType
 import com.unicalculator.core.model.DenominationItem
@@ -307,6 +308,10 @@ fun CashTallyScreen(
                                 fontWeight = FontWeight.Black,
                                 fontSize = 26.sp,
                                 color = RupeeEmeraldGreen
+                            ).withNeonGlow(
+                                glowColor = RupeeEmeraldGreen,
+                                blurRadius = if (colors.isDark) 20f else 12f,
+                                glowAlpha = if (colors.isDark) 0.85f else 0.45f
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis

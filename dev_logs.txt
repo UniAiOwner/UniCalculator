@@ -1371,3 +1371,43 @@
 
 
 
+
+## 📅 Date: 2026-08-21 — Neon LED Glow Typography System Across All Calculation Displays
+
+### 🚀 Major Achievements:
+- **Universal Neon Glow Typography Engine (`:core:designsystem/theme/NeonGlow.kt`)**:
+  - Architected `TextStyle.withNeonGlow(...)` extension leveraging Skia GPU text-blur pipeline with zero spatial displacement (`Offset.Zero`) and high-radius photon bloom (`blurRadius = 12f - 20f`).
+  - Added theme-aware presets (`NeonGlowStyles.emerald`, `saffronAmber`, `cyanSapphire`) with automatic light/dark contrast and luminance compensation.
+- **Standard Calculator LCD Well Glow (`NeumorphicLCDWell.kt`)**:
+  - Applied Emerald Neon Glow to the primary calculation result digits, delivering authentic VFD/LED matrix aesthetic on recessed Neumorphic LCD screens.
+- **GST Pro Master LCD Glow Integration (`GSTProScreen.kt`)**:
+  - Wired Emerald Neon Glow for `+GST` headline totals and Amber Neon Glow for `−GST` reverse extracted base amounts.
+  - Added Cyan Sapphire Neon Glow to `TaxMetricCell` for CGST and SGST statutory breakdowns, and Saffron Amber glow to Total Tax.
+- **Cash Tally Master HUD Glow (`CashTallyScreen.kt`)**:
+  - Integrated Emerald Neon Glow into `TOTAL CASH` master counter and note counter badges.
+- **Business Tools & Currency Converter Glow (`BusinessToolsScreen.kt`)**:
+  - Integrated Neon Glow into `ResultRow` highlighted values, Unit/Currency converter output wells, and BMI health score displays.
+- **Live Hardware Verification**:
+  - Verified on physical `Realme RMX3998` (`XGQ8JFZXEITGJ7IB`), capturing live screenshots:
+    - `221_standard_calc_neon_glow_verified_live.png`: Standard calc default state with neon glow.
+    - `222_standard_calc_5000_neon_glow_live.png`: Standard calc `400` calculation with emerald neon aura.
+    - `223_gst_pro_neon_glow_live.png`: GST Pro `+18% GST` with emerald headline and cyan/amber breakdown glows.
+    - `226_gst_pro_reverse_amber_verified.png`: GST Pro `−18% GST` with warm saffron amber neon glow.
+    - `230_standard_dark_mode_neon_live.png`: Dark mode Obsidian OLED with glowing emerald digits.
+    - `231_gst_pro_dark_mode_neon_live.png`: GST Pro dark mode multi-color neon display.
+    - `232_cash_tally_neon_dark_live.png`: Cash Tally dark mode with glowing `TOTAL CASH` digits.
+    - `233_tools_discount_neon_live.png`: Unit converter output in neon emerald.
+
+### 🧪 Verification:
+- Unit Tests: `./gradlew testDebugUnitTest` -> **BUILD SUCCESSFUL** (100% tests passing).
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Hardware Deployment: Deployed to `Realme RMX3998` via ADB stream install with 0 errors.
+
+### 📌 Current State:
+- Version: v1.0.0-neon-glow-typography (High-contrast, luminous photon glow active across all screens in Light and Dark themes).
+
+### 📝 Next Steps:
+- Step 3: Unified History Tape & Khata Statement Export (`:feature:history-tape`).
+
+---
+*Signed by: Shoeb Ahmad*

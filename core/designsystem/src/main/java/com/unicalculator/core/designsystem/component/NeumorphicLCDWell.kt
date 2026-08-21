@@ -49,7 +49,9 @@ import androidx.compose.ui.unit.sp
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
+import com.unicalculator.core.designsystem.theme.NeonGlowStyles
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
+import com.unicalculator.core.designsystem.theme.withNeonGlow
 
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.ui.input.pointer.pointerInput
@@ -226,14 +228,19 @@ fun NeumorphicLCDWell(
                 }
             }
 
-            // Primary Result Line
+            // Primary Result Line with Neon LED Glow
+            val coreColor = resultColor ?: colors.accentEmerald
             Text(
                 text = resultText,
                 style = TextStyle(
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                     fontSize = dynamicFontSize,
-                    color = resultColor ?: colors.accentEmerald
+                    color = coreColor
+                ).withNeonGlow(
+                    glowColor = coreColor,
+                    blurRadius = if (colors.isDark) 20f else 12f,
+                    glowAlpha = if (colors.isDark) 0.85f else 0.45f
                 ),
                 maxLines = 1,
                 textAlign = TextAlign.End,
