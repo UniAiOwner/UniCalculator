@@ -1187,6 +1187,23 @@
 ### 📌 Current State:
 - Version: v1.0.0-cashtally-clean-pieces (Clean piece counts, zero clutter, grand hero display).
 
+## 📅 Date: 2026-08-21 — Cash Tally Top-Right Corner Note Badge Repositioning
+
+### 🚀 Major Achievements:
+- **Top-Right Corner Badge Alignment (`CashTallyScreen.kt`)**:
+  - Repositioned `[ 💳 640 Notes ]` 3D Neumorphic pill to the top-right corner of the Master Display card.
+  - Paired `TOTAL CASH` at the top-left with large `26sp` bold Monospace numerals.
+  - Granted `In Words` full-width unobstructed space across the lower deck of the card.
+- **Physical Device Verification (`Realme RMX3998`)**:
+  - Verified live on hardware in Light & Dark modes ➔ `184_cash_tally_top_corner_notes_verified_live.png`, `185_cash_tally_top_corner_notes_dark_verified.png`.
+
+### 🧪 Verification:
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment: Stream install succeeded and verified live on Realme RMX3998.
+
+### 📌 Current State:
+- Version: v1.0.0-cashtally-top-corner-badge (Corner aligned note counter, max readability).
+
 ### 📝 Next Steps:
 - Ready for Step 2: Business Tools & Indian Traditional Converters.
 

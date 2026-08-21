@@ -228,38 +228,94 @@ fun CashTallyScreen(
             cornerRadius = 20.dp,
             elevation = 5.dp
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(14.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Left Column: Total Cash & In Words
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                // Top Row: TOTAL CASH (Left) + Floating 3D Note Badge (Top-Right Corner)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Text(
-                        text = "TOTAL CASH",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.Monospace,
-                        color = colors.textSecondary,
-                        letterSpacing = 0.5.sp
-                    )
-                    Text(
-                        text = state.totalCashFormatted,
-                        style = TextStyle(
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = "TOTAL CASH",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 25.sp,
-                            color = RupeeEmeraldGreen
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
+                            color = colors.textSecondary,
+                            letterSpacing = 0.5.sp
+                        )
+                        Text(
+                            text = state.totalCashFormatted,
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Black,
+                                fontSize = 26.sp,
+                                color = RupeeEmeraldGreen
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Top-Right Corner: Floating Neumorphic 3D Note Counter Badge
+                    Box(
+                        modifier = Modifier
+                            .neumorphic(
+                                shape = NeumorphicShape.CONVEX,
+                                cornerRadius = 14.dp,
+                                elevation = 3.5.dp,
+                                lightShadowColor = colors.lightHighlight,
+                                darkShadowColor = colors.darkShadow,
+                                backgroundColor = colors.background
+                            )
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Payments,
+                                contentDescription = "Notes Icon",
+                                tint = RupeeEmeraldGreen,
+                                modifier = Modifier.size(19.dp)
+                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = "${state.totalNotesCount}",
+                                    fontSize = 13.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = RupeeEmeraldGreen
+                                )
+                                Text(
+                                    text = "Notes",
+                                    fontSize = 10.5.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = colors.textSecondary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Bottom Section: Full-Width In Words
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(
                         text = "In Words",
                         fontSize = 10.sp,
@@ -269,68 +325,18 @@ fun CashTallyScreen(
                     )
                     Text(
                         text = state.wordsText,
-                        fontSize = 11.5.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.Monospace,
                         color = colors.textPrimary,
-                        maxLines = 4,
-                        lineHeight = 15.sp,
+                        maxLines = 3,
+                        lineHeight = 15.5.sp,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.clickable {
                             click()
                             viewModel.toggleLanguage()
                         }
                     )
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                // Right Column: Floating Neumorphic 3D Note & Packet Counter Badge
-                Box(
-                    modifier = Modifier
-                        .size(width = 92.dp, height = 86.dp)
-                        .neumorphic(
-                            shape = NeumorphicShape.CONVEX,
-                            cornerRadius = 18.dp,
-                            elevation = 3.5.dp,
-                            lightShadowColor = colors.lightHighlight,
-                            darkShadowColor = colors.darkShadow,
-                            backgroundColor = colors.background
-                        )
-                        .padding(6.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Payments,
-                            contentDescription = "Notes Icon",
-                            tint = RupeeEmeraldGreen,
-                            modifier = Modifier.size(26.dp)
-                        )
-                        Spacer(modifier = Modifier.height(3.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
-                        ) {
-                            Text(
-                                text = "${state.totalNotesCount}",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace,
-                                color = RupeeEmeraldGreen
-                            )
-                            Text(
-                                text = "Notes",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = FontFamily.Monospace,
-                                color = colors.textSecondary
-                            )
-                        }
-                    }
                 }
             }
         }
