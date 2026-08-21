@@ -5,12 +5,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathOperation
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
@@ -77,61 +81,112 @@ fun Modifier.neumorphic(
             }
         }
         NeumorphicShape.CONCAVE -> {
-            // Background surface with subtle cavity depression shading
+            val width = size.width
+            val height = size.height
+
+            // 1. Cavity Floor with Directional Light Falloff Gradient
             if (backgroundColor != null) {
                 drawRoundRect(
-                    color = backgroundColor,
-                    cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
-                )
-                // Subtle cavity ambient darkening (sunken well depth)
-                drawRoundRect(
-                    color = Color.Black.copy(alpha = 0.04f),
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            darkShadowColor.copy(alpha = 0.20f),
+                            backgroundColor,
+                            backgroundColor,
+                            lightShadowColor.copy(alpha = 0.12f)
+                        ),
+                        start = Offset(0f, 0f),
+                        end = Offset(width, height)
+                    ),
                     cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
                 )
             }
-            // Inner Inset Shadows
+
+            // 2. Precision Directional Inner Inset Shadows via Skia Path Difference
             drawIntoCanvas { canvas ->
                 canvas.save()
-                val clipPath = Path().apply {
-                    addRoundRect(RoundRect(0f, 0f, size.width, size.height, CornerRadius(cornerRadiusPx)))
-                }
+
+                val innerRect = RoundRect(0f, 0f, width, height, CornerRadius(cornerRadiusPx))
+                val clipPath = Path().apply { addRoundRect(innerRect) }
                 canvas.clipPath(clipPath)
 
-                // Top-Left Deep Inset Shadow
+                val margin = elevationPx * 3f
+
+                // --- PASS 1: Top-Left Dark Inset Shadow (Directional Cutout) ---
+                val darkShadowOffset = elevationPx * 0.75f
+                val outerPathDark = Path().apply {
+                    addRect(Rect(-margin, -margin, width + margin, height + margin))
+                }
+                val innerHoleDark = Path().apply {
+                    addRoundRect(
+                        RoundRect(
+                            left = darkShadowOffset,
+                            top = darkShadowOffset,
+                            right = width + darkShadowOffset,
+                            bottom = height + darkShadowOffset,
+                            cornerRadius = CornerRadius(cornerRadiusPx)
+                        )
+                    )
+                }
+                val darkDifference = Path().apply {
+                    op(outerPathDark, innerHoleDark, PathOperation.Difference)
+                }
+
                 val innerDarkPaint = Paint().apply {
                     color = darkShadowColor.copy(alpha = 0.95f)
-                    style = PaintingStyle.Stroke
-                    strokeWidth = elevationPx * 2.5f
-                    asFrameworkPaint().maskFilter = BlurMaskFilter(elevationPx * 1.4f, BlurMaskFilter.Blur.NORMAL)
+                    asFrameworkPaint().maskFilter = BlurMaskFilter(
+                        elevationPx * 0.85f,
+                        BlurMaskFilter.Blur.NORMAL
+                    )
                 }
-                canvas.drawRoundRect(
-                    left = -elevationPx * 0.8f,
-                    top = -elevationPx * 0.8f,
-                    right = size.width + elevationPx * 0.8f,
-                    bottom = size.height + elevationPx * 0.8f,
-                    radiusX = cornerRadiusPx,
-                    radiusY = cornerRadiusPx,
-                    paint = innerDarkPaint
-                )
+                canvas.drawPath(darkDifference, innerDarkPaint)
 
-                // Bottom-Right Crisp Inset Light Rim
-                val innerLightPaint = Paint().apply {
-                    color = lightShadowColor.copy(alpha = 0.9f)
-                    style = PaintingStyle.Stroke
-                    strokeWidth = elevationPx * 2.5f
-                    asFrameworkPaint().maskFilter = BlurMaskFilter(elevationPx * 1.4f, BlurMaskFilter.Blur.NORMAL)
+                // --- PASS 2: Bottom-Right Light Highlight Inset Rim ---
+                val lightHighlightOffset = elevationPx * 0.75f
+                val outerPathLight = Path().apply {
+                    addRect(Rect(-margin, -margin, width + margin, height + margin))
                 }
-                canvas.drawRoundRect(
-                    left = elevationPx * 0.8f,
-                    top = elevationPx * 0.8f,
-                    right = size.width + elevationPx * 1.8f,
-                    bottom = size.height + elevationPx * 1.8f,
-                    radiusX = cornerRadiusPx,
-                    radiusY = cornerRadiusPx,
-                    paint = innerLightPaint
-                )
+                val innerHoleLight = Path().apply {
+                    addRoundRect(
+                        RoundRect(
+                            left = -lightHighlightOffset,
+                            top = -lightHighlightOffset,
+                            right = width - lightHighlightOffset,
+                            bottom = height - lightHighlightOffset,
+                            cornerRadius = CornerRadius(cornerRadiusPx)
+                        )
+                    )
+                }
+                val lightDifference = Path().apply {
+                    op(outerPathLight, innerHoleLight, PathOperation.Difference)
+                }
+
+                val innerLightPaint = Paint().apply {
+                    color = lightShadowColor.copy(alpha = 0.95f)
+                    asFrameworkPaint().maskFilter = BlurMaskFilter(
+                        elevationPx * 0.75f,
+                        BlurMaskFilter.Blur.NORMAL
+                    )
+                }
+                canvas.drawPath(lightDifference, innerLightPaint)
+
                 canvas.restore()
             }
+
+            // 3. Micro Edge Crease (1.2dp Crisp Inner Lip Bevel)
+            drawRoundRect(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        darkShadowColor.copy(alpha = 0.65f),
+                        darkShadowColor.copy(alpha = 0.25f),
+                        lightShadowColor.copy(alpha = 0.40f),
+                        lightShadowColor.copy(alpha = 0.90f)
+                    ),
+                    start = Offset(0f, 0f),
+                    end = Offset(width, height)
+                ),
+                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                style = Stroke(width = 1.2.dp.toPx())
+            )
         }
         NeumorphicShape.FLAT -> {
             if (backgroundColor != null) {

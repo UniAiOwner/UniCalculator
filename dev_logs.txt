@@ -1339,10 +1339,34 @@
 - Version: v1.0.0-gst-pro-master-lcd-canvas (Seamless, expansive single LCD well canvas for GST Pro).
 
 ### 📝 Next Steps:
+- Neumorphic UI Refinement: Directional Lighting Model & Skia Path Difference.
+
+## 📅 Date: 2026-08-21 — Neumorphic Lighting Physics & Skia Path Difference Engine
+
+### 🚀 Major Achievements:
+- **Skia Path Difference Inversion (`NeumorphicModifier.kt`)**:
+  - Replaced symmetrical stroke-based inner shadows with mathematically precise `PathOperation.Difference` inverted cutouts.
+  - Eliminated shadow bleed onto opposing edges (0% dark shadow bleed onto bottom-right, 0% light leak into top-left).
+- **Crisp Edge Sharpness & Micro-Bevel**:
+  - Implemented 1.2dp linear gradient micro-bevel crease (`Brush.linearGradient`) defining physical cutout rims.
+  - Added directional ambient light falloff gradient across the well cavity floor from top-left (20% occlusion) to bottom-right (specular).
+- **Physical Device Verification (`Realme RMX3998`)**:
+  - Verified live on hardware across Standard Calculator and GST Pro ➔ `219_gst_pro_precise_neumorphic_lighting_live.png`, `220_gst_pro_precise_lighting_verified_live.png`.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL (100% tests passed)**.
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment: Stream install succeeded and verified live on Realme RMX3998.
+
+### 📌 Current State:
+- Version: v1.0.0-precise-neumorphic-lighting (High-precision directional lighting model with Skia Path Difference and micro-bevel inner rims).
+
+### 📝 Next Steps:
 - Ready for Step 3: Unified History Tape & Khata Statement Export (`:feature:history-tape`).
 
 ---
 *Signed by: Shoeb Ahmad*
+
 
 
 
