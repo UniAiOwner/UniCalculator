@@ -1,6 +1,7 @@
 package com.unicalculator.feature.tools
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -371,6 +372,7 @@ fun ToolDetailHost(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalNeumorphicColors.current
+    BackHandler(onBack = onBack)
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -428,13 +430,41 @@ fun ToolDetailHost(
                 convertFn = { v, f, t -> UnitConversionEngine.convertLength(v, f, t) }
             )
             "mass" -> GenericUnitConverterScreen(
-                toolName = "Mass Converter",
-                units = listOf("Kilogram (kg)", "Gram (g)", "Milligram (mg)", "Pound (lb)", "Ounce (oz)", "Tonne (t)", "Tola (Gold)", "Ratti"),
+                toolName = "Mass & Weight Converter",
+                units = listOf(
+                    "Kilogram (kg)",
+                    "Gram (g)",
+                    "Milligram (mg)",
+                    "Quintal (q)",
+                    "Maund / Mann",
+                    "Tonne (t)",
+                    "Tola (Vedic 11.66g)",
+                    "Metric Tola (10g)",
+                    "Sovereign / Pavan",
+                    "Masha",
+                    "Ratti",
+                    "Carat (ct)",
+                    "Pound (lb)",
+                    "Ounce (oz)"
+                ),
                 convertFn = { v, f, t -> UnitConversionEngine.convertMass(v, f, t) }
             )
             "area" -> GenericUnitConverterScreen(
                 toolName = "Area Converter",
-                units = listOf("Square Foot (sq ft)", "Square Meter (sq m)", "Square Yard (sq yd)", "Acre", "Hectare", "Bigha (Standard)", "Guntha"),
+                units = listOf(
+                    "Square Foot (sq ft)",
+                    "Square Meter (sq m)",
+                    "Square Yard (sq yd)",
+                    "Acre",
+                    "Hectare",
+                    "Bigha (Standard)",
+                    "Guntha",
+                    "Cent",
+                    "Ground",
+                    "Marla",
+                    "Kanal",
+                    "Biswa / Katha"
+                ),
                 convertFn = { v, f, t -> UnitConversionEngine.convertArea(v, f, t) }
             )
             "volume" -> GenericUnitConverterScreen(
@@ -1064,6 +1094,10 @@ fun CurrencyConverterScreen() {
     val eur = inr.divide(BigDecimal("95.20"), 4, RoundingMode.HALF_UP)
     val aed = inr.divide(BigDecimal("23.82"), 4, RoundingMode.HALF_UP)
     val gbp = inr.divide(BigDecimal("111.40"), 4, RoundingMode.HALF_UP)
+    val sar = inr.divide(BigDecimal("23.30"), 4, RoundingMode.HALF_UP)
+    val cad = inr.divide(BigDecimal("63.50"), 4, RoundingMode.HALF_UP)
+    val aud = inr.divide(BigDecimal("56.80"), 4, RoundingMode.HALF_UP)
+    val sgd = inr.divide(BigDecimal("66.20"), 4, RoundingMode.HALF_UP)
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -1080,7 +1114,11 @@ fun CurrencyConverterScreen() {
                 ResultRow(label = "US Dollar (USD)", value = "$ ${usd.stripTrailingZeros().toPlainString()}", isHighlight = true)
                 ResultRow(label = "Euro (EUR)", value = "€ ${eur.stripTrailingZeros().toPlainString()}")
                 ResultRow(label = "UAE Dirham (AED)", value = "AED ${aed.stripTrailingZeros().toPlainString()}")
+                ResultRow(label = "Saudi Riyal (SAR)", value = "SAR ${sar.stripTrailingZeros().toPlainString()}")
                 ResultRow(label = "British Pound (GBP)", value = "£ ${gbp.stripTrailingZeros().toPlainString()}")
+                ResultRow(label = "Canadian Dollar (CAD)", value = "C$ ${cad.stripTrailingZeros().toPlainString()}")
+                ResultRow(label = "Australian Dollar (AUD)", value = "A$ ${aud.stripTrailingZeros().toPlainString()}")
+                ResultRow(label = "Singapore Dollar (SGD)", value = "S$ ${sgd.stripTrailingZeros().toPlainString()}")
             }
         }
 
