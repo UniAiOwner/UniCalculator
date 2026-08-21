@@ -498,7 +498,27 @@ fun ToolDetailHost(
             "margin" -> MarginMarkupScreen()
             "loan_emi" -> LoanEmiScreen()
             "date_age" -> DateAgeScreen()
-            "currency" -> CurrencyConverterScreen()
+            "currency" -> GenericUnitConverterScreen(
+                toolName = "Currency Converter",
+                units = listOf(
+                    "Indian Rupee (INR ₹)",
+                    "US Dollar (USD $)",
+                    "Euro (EUR €)",
+                    "British Pound (GBP £)",
+                    "UAE Dirham (AED)",
+                    "Saudi Riyal (SAR)",
+                    "Kuwaiti Dinar (KWD)",
+                    "Qatari Riyal (QAR)",
+                    "Omani Rial (OMR)",
+                    "Canadian Dollar (CAD C$)",
+                    "Australian Dollar (AUD A$)",
+                    "Singapore Dollar (SGD S$)",
+                    "Japanese Yen (JPY ¥)",
+                    "Swiss Franc (CHF)",
+                    "Chinese Yuan (CNY ¥)"
+                ),
+                convertFn = { v, f, t -> UnitConversionEngine.convertCurrency(v, f, t) }
+            )
             else -> {
                 Text(
                     text = "Tool Coming Soon!",
@@ -1073,66 +1093,6 @@ fun DateAgeScreen() {
                     )
                 )
                 Toast.makeText(context, "Age Saved to History", Toast.LENGTH_SHORT).show()
-            },
-            modifier = Modifier.fillMaxWidth().height(46.dp),
-            textColor = RupeeEmeraldGreen,
-            fontSize = 13
-        )
-    }
-}
-
-// --- 8. CURRENCY CONVERTER SCREEN ---
-@Composable
-fun CurrencyConverterScreen() {
-    val colors = LocalNeumorphicColors.current
-    val context = LocalContext.current
-    val historyRepo = remember { LocalCalculationHistoryRepository(context) }
-    var inrAmountText by remember { mutableStateOf("1000") }
-
-    val inr = inrAmountText.toBigDecimalOrNull() ?: BigDecimal.ZERO
-    val usd = inr.divide(BigDecimal("87.50"), 4, RoundingMode.HALF_UP)
-    val eur = inr.divide(BigDecimal("95.20"), 4, RoundingMode.HALF_UP)
-    val aed = inr.divide(BigDecimal("23.82"), 4, RoundingMode.HALF_UP)
-    val gbp = inr.divide(BigDecimal("111.40"), 4, RoundingMode.HALF_UP)
-    val sar = inr.divide(BigDecimal("23.30"), 4, RoundingMode.HALF_UP)
-    val cad = inr.divide(BigDecimal("63.50"), 4, RoundingMode.HALF_UP)
-    val aud = inr.divide(BigDecimal("56.80"), 4, RoundingMode.HALF_UP)
-    val sgd = inr.divide(BigDecimal("66.20"), 4, RoundingMode.HALF_UP)
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-        NeumorphicInput(label = "Amount in Indian Rupees (INR ₹)", value = inrAmountText, onValueChange = { inrAmountText = it }, prefix = "₹")
-
-        NeumorphicPlate(
-            modifier = Modifier.fillMaxWidth(),
-            shape = NeumorphicShape.CONVEX,
-            cornerRadius = 20.dp
-        ) {
-            Column(modifier = Modifier.padding(18.dp)) {
-                ResultRow(label = "US Dollar (USD)", value = "$ ${usd.stripTrailingZeros().toPlainString()}", isHighlight = true)
-                ResultRow(label = "Euro (EUR)", value = "€ ${eur.stripTrailingZeros().toPlainString()}")
-                ResultRow(label = "UAE Dirham (AED)", value = "AED ${aed.stripTrailingZeros().toPlainString()}")
-                ResultRow(label = "Saudi Riyal (SAR)", value = "SAR ${sar.stripTrailingZeros().toPlainString()}")
-                ResultRow(label = "British Pound (GBP)", value = "£ ${gbp.stripTrailingZeros().toPlainString()}")
-                ResultRow(label = "Canadian Dollar (CAD)", value = "C$ ${cad.stripTrailingZeros().toPlainString()}")
-                ResultRow(label = "Australian Dollar (AUD)", value = "A$ ${aud.stripTrailingZeros().toPlainString()}")
-                ResultRow(label = "Singapore Dollar (SGD)", value = "S$ ${sgd.stripTrailingZeros().toPlainString()}")
-            }
-        }
-
-        NeumorphicButton(
-            text = "💾 Save Currency to History",
-            onClick = {
-                historyRepo.insert(
-                    CalculationHistoryItem(
-                        type = CalculationType.TOOLS_CONVERTER,
-                        formulaExpression = "₹$inrAmountText INR to Forex",
-                        primaryResult = "$${usd.stripTrailingZeros().toPlainString()} USD | €${eur.stripTrailingZeros().toPlainString()} EUR"
-                    )
-                )
-                Toast.makeText(context, "Currency Conversion Saved to History", Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier.fillMaxWidth().height(46.dp),
             textColor = RupeeEmeraldGreen,

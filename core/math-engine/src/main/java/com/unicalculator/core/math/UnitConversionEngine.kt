@@ -158,7 +158,33 @@ object UnitConversionEngine {
         return inSec.divide(toFactor, 6, RoundingMode.HALF_EVEN).stripTrailingZeros()
     }
 
-    // --- 9. NUMERAL SYSTEM CONVERSIONS ---
+    // --- 9. CURRENCY CONVERSIONS (Base: Indian Rupee INR) ---
+    val CURRENCY_TO_INR = mapOf(
+        "Indian Rupee (INR ₹)" to BigDecimal("1.0"),
+        "US Dollar (USD $)" to BigDecimal("87.50"),
+        "Euro (EUR €)" to BigDecimal("95.20"),
+        "British Pound (GBP £)" to BigDecimal("111.40"),
+        "UAE Dirham (AED)" to BigDecimal("23.82"),
+        "Saudi Riyal (SAR)" to BigDecimal("23.30"),
+        "Kuwaiti Dinar (KWD)" to BigDecimal("284.50"),
+        "Qatari Riyal (QAR)" to BigDecimal("24.00"),
+        "Omani Rial (OMR)" to BigDecimal("227.30"),
+        "Canadian Dollar (CAD C$)" to BigDecimal("63.50"),
+        "Australian Dollar (AUD A$)" to BigDecimal("56.80"),
+        "Singapore Dollar (SGD S$)" to BigDecimal("66.20"),
+        "Japanese Yen (JPY ¥)" to BigDecimal("0.58"),
+        "Swiss Franc (CHF)" to BigDecimal("98.60"),
+        "Chinese Yuan (CNY ¥)" to BigDecimal("12.10")
+    )
+
+    fun convertCurrency(value: BigDecimal, fromCurrency: String, toCurrency: String): BigDecimal {
+        val fromFactor = CURRENCY_TO_INR[fromCurrency] ?: BigDecimal.ONE
+        val toFactor = CURRENCY_TO_INR[toCurrency] ?: BigDecimal.ONE
+        val inInr = value.multiply(fromFactor)
+        return inInr.divide(toFactor, 4, RoundingMode.HALF_EVEN).stripTrailingZeros()
+    }
+
+    // --- 10. NUMERAL SYSTEM CONVERSIONS ---
     fun convertNumeral(valueStr: String, fromBase: Int, toBase: Int): String {
         return try {
             val decimal = valueStr.trim().toLong(fromBase)
