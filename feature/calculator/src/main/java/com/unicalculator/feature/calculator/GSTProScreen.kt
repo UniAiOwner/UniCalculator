@@ -188,146 +188,72 @@ fun GSTProScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                    .padding(horizontal = 10.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Top Row inside Card: Context Label (Left) + Quick Actions (Right)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = if (state.isReverseGst) "Gross Amount: ${state.displayAmount}" else "Base Amount: ${state.displayAmount}",
-                        style = TextStyle(
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 11.5.sp,
-                            color = colors.textSecondary,
-                            letterSpacing = 0.3.sp
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
-
-                    // Quick Action Icon Chips
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Copy Slip
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .clip(CircleShape)
-                                .background(colors.background.copy(alpha = 0.6f))
-                                .clickable {
-                                    click()
-                                    clipboardManager.setText(AnnotatedString(viewModel.generateShareableSummary()))
-                                    Toast.makeText(context, "Slip Copied", Toast.LENGTH_SHORT).show()
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Outlined.ContentCopy, "Copy", tint = colors.textSecondary, modifier = Modifier.size(14.dp))
-                        }
-
-                        // Share Slip
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .clip(CircleShape)
-                                .background(colors.background.copy(alpha = 0.6f))
-                                .clickable {
-                                    click()
-                                    val summary = viewModel.generateShareableSummary()
-                                    val sendIntent = Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        putExtra(Intent.EXTRA_TEXT, summary)
-                                        type = "text/plain"
-                                    }
-                                    context.startActivity(Intent.createChooser(sendIntent, "Share GST Calculation"))
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Outlined.Share, "Share", tint = RupeeEmeraldGreen, modifier = Modifier.size(14.dp))
-                        }
-
-                        // Save History
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .clip(CircleShape)
-                                .background(colors.background.copy(alpha = 0.6f))
-                                .clickable {
-                                    click()
-                                    val resultVal = if (state.isReverseGst) netBaseStr else grossFinalStr
-                                    val expr = "${state.amountInput} ${if (state.isReverseGst) "−" else "+"} ${state.selectedGstRate}% GST"
-                                    historyRepo.insert(
-                                        CalculationHistoryItem(
-                                            type = if (state.isReverseGst) CalculationType.GST_REVERSE else CalculationType.GST_FORWARD,
-                                            formulaExpression = expr,
-                                            primaryResult = resultVal,
-                                            netBaseAmount = netBaseStr,
-                                            totalTaxAmount = totalTaxStr,
-                                            cgstAmount = cgstStr,
-                                            sgstAmount = sgstStr,
-                                            igstAmount = igstStr
-                                        )
-                                    )
-                                    Toast.makeText(context, "Saved to History", Toast.LENGTH_SHORT).show()
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Outlined.Save, "Save", tint = SapphireBlue, modifier = Modifier.size(14.dp))
-                        }
-                    }
-                }
-
-                // Sunken LCD Touch Well for Live Formula & Final Answer
+                // Sunken LCD Touch Well for Base Amount, Live Formula & Final Answer
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
                         .neumorphic(
                             shape = NeumorphicShape.CONCAVE,
-                            cornerRadius = 10.dp,
-                            elevation = 2.5.dp,
+                            cornerRadius = 12.dp,
+                            elevation = 3.dp,
                             lightShadowColor = colors.lightHighlight,
                             darkShadowColor = colors.darkShadow,
                             backgroundColor = colors.lcdWellBackground
                         )
-                        .padding(horizontal = 12.dp),
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalArrangement = Arrangement.spacedBy(3.dp)
                     ) {
-                        val formulaExpr = "${state.amountInput.ifEmpty { "0" }} ${if (state.isReverseGst) "−" else "+"} ${state.selectedGstRate}% GST"
-                        Text(
-                            text = formulaExpr,
-                            style = TextStyle(
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 13.sp,
-                                color = colors.textSecondary
-                            ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f, fill = false)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        // Top Context Line: Base/Gross Amount + GST Slab
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val baseLabel = if (state.isReverseGst) "Gross Amount: ${state.displayAmount}" else "Base Amount: ${state.displayAmount}"
+                            Text(
+                                text = baseLabel,
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 12.sp,
+                                    color = colors.textSecondary,
+                                    letterSpacing = 0.3.sp
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            val formulaExpr = "${if (state.isReverseGst) "−" else "+"}${state.selectedGstRate}% GST"
+                            Text(
+                                text = formulaExpr,
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen
+                                ),
+                                maxLines = 1
+                            )
+                        }
+
+                        // Bottom Prominent Line: Big Bold Calculated Result
                         val finalAnswerStr = if (state.isReverseGst) netBaseStr else grossFinalStr
                         Text(
                             text = finalAnswerStr,
                             style = TextStyle(
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Black,
-                                fontSize = 24.sp,
-                                color = colors.textPrimary
+                                fontSize = 28.sp,
+                                color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen,
+                                textAlign = TextAlign.End
                             ),
+                            modifier = Modifier.fillMaxWidth(),
                             maxLines = 1,
                             softWrap = false
                         )
@@ -458,6 +384,66 @@ fun GSTProScreen(
                     horizontalPadding = 2.dp
                 )
             }
+        }
+
+        // 4. ERGONOMIC ACTION BUTTONS ROW (Copy | Share | Save)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            NeumorphicButton(
+                text = "📋 Copy",
+                onClick = {
+                    click()
+                    clipboardManager.setText(AnnotatedString(viewModel.generateShareableSummary()))
+                    Toast.makeText(context, "Slip Copied", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.weight(1f).height(36.dp),
+                fontSize = 12,
+                textColor = colors.textSecondary
+            )
+
+            NeumorphicButton(
+                text = "📤 Share",
+                onClick = {
+                    click()
+                    val summary = viewModel.generateShareableSummary()
+                    val sendIntent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, summary)
+                        type = "text/plain"
+                    }
+                    context.startActivity(Intent.createChooser(sendIntent, "Share GST Calculation"))
+                },
+                modifier = Modifier.weight(1f).height(36.dp),
+                fontSize = 12,
+                textColor = RupeeEmeraldGreen
+            )
+
+            NeumorphicButton(
+                text = "💾 Save",
+                onClick = {
+                    click()
+                    val resultVal = if (state.isReverseGst) netBaseStr else grossFinalStr
+                    val expr = "${state.amountInput} ${if (state.isReverseGst) "−" else "+"} ${state.selectedGstRate}% GST"
+                    historyRepo.insert(
+                        CalculationHistoryItem(
+                            type = if (state.isReverseGst) CalculationType.GST_REVERSE else CalculationType.GST_FORWARD,
+                            formulaExpression = expr,
+                            primaryResult = resultVal,
+                            netBaseAmount = netBaseStr,
+                            totalTaxAmount = totalTaxStr,
+                            cgstAmount = cgstStr,
+                            sgstAmount = sgstStr,
+                            igstAmount = igstStr
+                        )
+                    )
+                    Toast.makeText(context, "Saved to History", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.weight(1f).height(36.dp),
+                fontSize = 12,
+                textColor = SapphireBlue
+            )
         }
 
         // 4. FULL 5-ROW COMPLETE 100% ZERO-SCROLL KEYPAD

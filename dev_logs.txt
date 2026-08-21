@@ -1220,8 +1220,27 @@
 ### 📌 Current State:
 - Version: v1.0.0-cashtally-extreme-corner (Extreme corner pinned badge, maximum space distribution).
 
+## 📅 Date: 2026-08-21 — GST Pro Spacious Master Display & Ergonomic Bottom Actions Shift
+
+### 🚀 Major Achievements:
+- **Master Calculation Display Expansion (`GSTProScreen.kt`)**:
+  - Removed top row clutter from the Hero Canvas to maximize display area.
+  - Integrated `Base Amount` and `GST Slab` directly into the top row of the sunken LCD Well.
+  - Enlarged final calculation numerals to a bold `28sp` for effortless statutory legibility.
+- **Ergonomic Bottom Action Buttons**:
+  - Moved `[ 📋 Copy ]`, `[ 📤 Share ]`, and `[ 💾 Save ]` to a tactile Neumorphic row directly above the numeric keypad.
+- **Physical Device Verification (`Realme RMX3998`)**:
+  - Verified live on hardware ➔ `190_gst_pro_spacious_action_bottom_live_verified.png`.
+
+### 🧪 Verification:
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment: Stream install succeeded and verified live on Realme RMX3998.
+
+### 📌 Current State:
+- Version: v1.0.0-gstpro-spacious-actions-bottom (Enlarged display well, ergonomic bottom action bar).
+
 ### 📝 Next Steps:
-- Ready for Step 2: Business Tools & Indian Traditional Converters.
+- Ready for Step 2: Business Tools & Indian Traditional Converters (`:feature:business-tools`).
 
 ---
 *Signed by: Shoeb Ahmad*
