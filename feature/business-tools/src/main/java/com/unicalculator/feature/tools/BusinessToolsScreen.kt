@@ -45,11 +45,15 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -538,22 +542,94 @@ fun GenericUnitConverterScreen(
 ) {
     val colors = LocalNeumorphicColors.current
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val historyRepo = remember { LocalCalculationHistoryRepository(context) }
     var fromUnit by remember { mutableStateOf(units[0]) }
     var toUnit by remember { mutableStateOf(units.getOrElse(1) { units[0] }) }
     var inputValueText by remember { mutableStateOf("1") }
+    var isSyncingForex by remember { mutableStateOf(false) }
+    var syncVersion by remember { mutableStateOf(0) }
+
+    val isCurrency = toolName == "Currency Converter"
+
+    LaunchedEffect(isCurrency) {
+        if (isCurrency && !UnitConversionEngine.isLiveForexFeed) {
+            isSyncingForex = true
+            val res = ForexRateService.fetchAndSyncLiveRates()
+            isSyncingForex = false
+            if (res.isSuccess) {
+                syncVersion++
+            }
+        }
+    }
 
     val inputVal = inputValueText.toBigDecimalOrNull() ?: BigDecimal.ZERO
-    val convertedVal = try {
-        convertFn(inputVal, fromUnit, toUnit)
-    } catch (_: Exception) {
-        BigDecimal.ZERO
+    val convertedVal = remember(inputVal, fromUnit, toUnit, syncVersion) {
+        try {
+            convertFn(inputVal, fromUnit, toUnit)
+        } catch (_: Exception) {
+            BigDecimal.ZERO
+        }
     }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
+        if (isCurrency) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(
+                                if (UnitConversionEngine.isLiveForexFeed) RupeeEmeraldGreen else colors.textSecondary,
+                                shape = CircleShape
+                            )
+                    )
+                    Text(
+                        text = if (isSyncingForex) "Syncing live rates..."
+                        else if (UnitConversionEngine.isLiveForexFeed) "Live Forex Rates (Synced)"
+                        else "Standard Baseline Rates",
+                        style = TextStyle(
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = if (UnitConversionEngine.isLiveForexFeed) RupeeEmeraldGreen else colors.textSecondary
+                        )
+                    )
+                }
+
+                NeumorphicButton(
+                    text = if (isSyncingForex) "⏳ Syncing" else "🔄 Refresh",
+                    onClick = {
+                        if (!isSyncingForex) {
+                            scope.launch {
+                                isSyncingForex = true
+                                val res = ForexRateService.fetchAndSyncLiveRates()
+                                isSyncingForex = false
+                                if (res.isSuccess) {
+                                    syncVersion++
+                                    Toast.makeText(context, "Forex rates updated live!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Offline: Using saved rates", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    },
+                    modifier = Modifier.width(110.dp).height(34.dp),
+                    fontSize = 11,
+                    textColor = colors.textPrimary
+                )
+            }
+        }
         // Top Unit Selector & Input Well
         UnitCard(
             title = "FROM",

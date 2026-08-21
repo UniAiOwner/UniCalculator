@@ -159,7 +159,7 @@ object UnitConversionEngine {
     }
 
     // --- 9. CURRENCY CONVERSIONS (Base: Indian Rupee INR) ---
-    val CURRENCY_TO_INR = mapOf(
+    val DEFAULT_CURRENCY_TO_INR = mapOf(
         "Indian Rupee (INR ₹)" to BigDecimal("1.0"),
         "US Dollar (USD $)" to BigDecimal("87.50"),
         "Euro (EUR €)" to BigDecimal("95.20"),
@@ -177,9 +177,27 @@ object UnitConversionEngine {
         "Chinese Yuan (CNY ¥)" to BigDecimal("12.10")
     )
 
+    private val dynamicCurrencyRates = java.util.concurrent.ConcurrentHashMap<String, BigDecimal>(DEFAULT_CURRENCY_TO_INR)
+
+    @Volatile
+    var lastForexSyncTime: Long = 0L
+
+    @Volatile
+    var isLiveForexFeed: Boolean = false
+
+    fun updateLiveRates(rates: Map<String, BigDecimal>) {
+        dynamicCurrencyRates.putAll(rates)
+        lastForexSyncTime = System.currentTimeMillis()
+        isLiveForexFeed = true
+    }
+
+    fun getCurrencyRate(currency: String): BigDecimal {
+        return dynamicCurrencyRates[currency] ?: DEFAULT_CURRENCY_TO_INR[currency] ?: BigDecimal.ONE
+    }
+
     fun convertCurrency(value: BigDecimal, fromCurrency: String, toCurrency: String): BigDecimal {
-        val fromFactor = CURRENCY_TO_INR[fromCurrency] ?: BigDecimal.ONE
-        val toFactor = CURRENCY_TO_INR[toCurrency] ?: BigDecimal.ONE
+        val fromFactor = getCurrencyRate(fromCurrency)
+        val toFactor = getCurrencyRate(toCurrency)
         val inInr = value.multiply(fromFactor)
         return inInr.divide(toFactor, 4, RoundingMode.HALF_EVEN).stripTrailingZeros()
     }

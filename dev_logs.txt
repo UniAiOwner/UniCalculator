@@ -1289,9 +1289,35 @@
 - Version: v1.0.0-pairwise-currency-converter (Pairwise 2-way currency converter with instant swap).
 
 ### 📝 Next Steps:
+- Step 2 Refinement: Live Forex Auto-Sync & Manual Refresh.
+
+## 📅 Date: 2026-08-21 — Live Forex Auto-Sync & Offline-First Self-Update Engine
+
+### 🚀 Major Achievements:
+- **Live Forex Auto-Sync (`ForexRateService.kt`)**:
+  - Implemented asynchronous live exchange rate fetching via Central Bank / Open Exchange API (`open.er-api.com`).
+  - Converts all 15 global & Middle East/NRI currencies dynamically relative to Indian Rupee (INR ₹).
+- **Offline-First Resilience (`UnitConversionEngine.kt`)**:
+  - Seamless 3-tier fallback architecture: Preloaded baseline rates ensure 100% offline availability on flights/no-network, automatically upgraded to live market rates upon network connectivity.
+- **Interactive UI Badge & Refresh (`GenericUnitConverterScreen`)**:
+  - Added live status pill (`🟢 Live Forex Rates (Synced)` vs `⚪ Standard Baseline Rates`).
+  - Added tactile Neumorphic `[ 🔄 Refresh ]` button allowing 1-tap manual sync anytime.
+- **Physical Device Verification (`Realme RMX3998`)**:
+  - Verified live on hardware ➔ `214_currency_live_sync_bar_verified.png`.
+
+### 🧪 Verification:
+- `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL (100% tests passed)**.
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment: Stream install succeeded and verified live on Realme RMX3998.
+
+### 📌 Current State:
+- Version: v1.0.0-live-forex-autosync (Offline-first self-updating currency converter with live sync badge and 1-tap refresh).
+
+### 📝 Next Steps:
 - Ready for Step 3: Unified History Tape & Khata Statement Export (`:feature:history-tape`).
 
 ---
 *Signed by: Shoeb Ahmad*
+
 
 
