@@ -2,6 +2,7 @@ package com.unicalculator.core.designsystem.component
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.ui.res.painterResource
+import com.unicalculator.core.designsystem.R
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ReceiptLong
@@ -100,7 +103,7 @@ fun AboutUniCalculatorSheet(
             // 1. Master Brand Hero Lockup (UniCalculator Bharat)
             Box(
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(90.dp)
                     .neumorphic(
                         shape = NeumorphicShape.CONVEX,
                         cornerRadius = 24.dp,
@@ -111,24 +114,11 @@ fun AboutUniCalculatorSheet(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Calculate,
-                        contentDescription = null,
-                        tint = RupeeEmeraldGreen,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Text(
-                        text = "₹",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Black,
-                        color = if (colors.isDark) Color(0xFF00FF9D) else RupeeEmeraldGreen
-                    )
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.app_logo_master),
+                    contentDescription = "UniCalculator Master Logo",
+                    modifier = Modifier.size(68.dp)
+                )
             }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
