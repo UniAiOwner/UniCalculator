@@ -330,15 +330,6 @@ fun CashTallyScreen(
                                 color = colors.textSecondary
                             )
                         }
-                        if (state.totalPacketsCount > 0) {
-                            Text(
-                                text = "${state.totalPacketsCount} Pkt",
-                                fontSize = 9.5.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace,
-                                color = Color(0xFFB45309)
-                            )
-                        }
                     }
                 }
             }
@@ -744,17 +735,9 @@ private fun DenominationRow(
                 maxLines = 1,
                 softWrap = false
             )
-            val packetBadge = when {
-                item.count >= 100 -> {
-                    val pkts = item.count / 100
-                    val rem = item.count % 100
-                    if (rem > 0) "$pkts Pkt + $rem Pcs" else "$pkts Pkt (${item.count})"
-                }
-                else -> "${item.count} Pcs"
-            }
             Text(
-                text = packetBadge,
-                fontSize = 10.sp,
+                text = "${item.count} Pcs",
+                fontSize = 10.5.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = FontFamily.Monospace,
                 color = colors.textSecondary,

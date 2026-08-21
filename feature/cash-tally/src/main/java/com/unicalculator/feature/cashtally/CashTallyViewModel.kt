@@ -129,8 +129,7 @@ class CashTallyViewModel : ViewModel() {
         sb.append("DENOMINATION BREAKDOWN:\n")
         sb.append("----------------------------------------\n")
         state.denominations.filter { it.count > 0 }.forEach { item ->
-            val pktInfo = if (item.count >= 100) " (${item.count / 100} Pkts + ${item.count % 100} Pcs)" else ""
-            sb.append("₹ %-4d x %4d%-14s = ₹ %,.2f\n".format(item.faceValue, item.count, pktInfo, item.subtotal.toDouble()))
+            sb.append("₹ %-4d x %4d = ₹ %,.2f\n".format(item.faceValue, item.count, item.subtotal.toDouble()))
         }
         if (state.customCoinsAmount.compareTo(BigDecimal.ZERO) > 0) {
             sb.append("Coins                   = ₹ %,.2f\n".format(state.customCoinsAmount.toDouble()))
