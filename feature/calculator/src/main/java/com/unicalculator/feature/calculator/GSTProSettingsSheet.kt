@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unicalculator.core.common.prefs.UniCalculatorPreferences
 import com.unicalculator.core.database.LocalCalculationHistoryRepository
+import com.unicalculator.core.designsystem.component.AboutUniCalculatorSheet
 import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicGstPill
 import com.unicalculator.core.designsystem.component.NeumorphicIconButton
@@ -43,6 +44,9 @@ import com.unicalculator.core.designsystem.component.NeumorphicPlate
 import com.unicalculator.core.designsystem.component.NeumorphicSlideSwitch
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
+import com.unicalculator.core.designsystem.theme.DeleteRed
+import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
+import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 import com.unicalculator.core.designsystem.theme.DeleteRed
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.model.CalculationType
@@ -233,7 +237,21 @@ fun GSTProSettingsSheet(
                 }
             }
 
-            // 4. Clear GST History Only
+            // 4. About UniCalculator Bharat
+            var showAboutSheet by remember { androidx.compose.runtime.mutableStateOf(false) }
+            NeumorphicButton(
+                text = "ℹ️ About UniCalculator Bharat",
+                onClick = { showAboutSheet = true },
+                accentColor = RupeeEmeraldGreen,
+                fontSize = 13,
+                modifier = Modifier.fillMaxWidth().height(48.dp)
+            )
+
+            if (showAboutSheet) {
+                AboutUniCalculatorSheet(onDismiss = { showAboutSheet = false })
+            }
+
+            // 5. Clear GST History Only
             NeumorphicButton(
                 text = "🗑️ Clear GST History Only",
                 onClick = {

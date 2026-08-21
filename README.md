@@ -1,14 +1,12 @@
-# 📱 UniCalculator — Bharat's Pro 100% Neumorphic Financial & GST Calculator
-### *The Ultimate Tactile, 100% Offline-First Calculator Engineered for Indian Commerce*
+# 📱 UniCalculator Bharat — The Tactile Neumorphic Financial Workstation
+### *Calculate • Simplify • Grow — 100% Offline-First Commercial Math & GST Engine for Bharat*
 
 <p align="center">
-  <img src="UI_MOCKUPS/01_main_calculator_gst_pro_screen.jpg" alt="UniCalculator Main Screen" width="300"/>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="UI_MOCKUPS/02_cash_denomination_tally_screen.jpg" alt="UniCalculator Cash Tally" width="300"/>
+  <img src="app_logo_tile.png" alt="UniCalculator Bharat Master Logo" width="140"/>
 </p>
 
 <p align="center">
-  <a href="#-key-features"><img src="https://img.shields.io/badge/UI_Style-100%25_Neumorphism_3D-00875A?style=for-the-badge" alt="Neumorphic UI"/></a>
+  <a href="#-the-5-core-workstations"><img src="https://img.shields.io/badge/UI_Style-100%25_Skia_Neumorphism_3D-00875A?style=for-the-badge" alt="Neumorphic UI"/></a>
   <a href="#-architecture"><img src="https://img.shields.io/badge/Architecture-Clean_Hexagonal_DDD-blue?style=for-the-badge" alt="Clean DDD"/></a>
   <a href="#-precision"><img src="https://img.shields.io/badge/Math_Engine-Exact_BigDecimal-FF9933?style=for-the-badge" alt="BigDecimal"/></a>
   <a href="#-privacy"><img src="https://img.shields.io/badge/Offline_First-100%25_Private-success?style=for-the-badge" alt="Offline-First"/></a>
@@ -17,159 +15,158 @@
 
 ---
 
-## 🌟 Executive Overview
+## 🌟 Executive Overview & The Bharat Vision
 
-**UniCalculator** is a flagship Android calculator engineered specifically for the Indian economic landscape — Kirana store owners, wholesale traders, Chartered Accountants (CAs), tax practitioners, small business merchants, and daily shoppers.
+**UniCalculator Bharat** is a flagship, professional Android financial calculator engineered specifically for Indian Kirana store owners, wholesale traders, Chartered Accountants (CAs), tax practitioners, small business merchants, and daily shoppers.
 
-Combining the satisfying physical keystroke feel of classic Japanese & Citizen desktop calculators with a **Pure Advanced Neumorphism UI (Soft 3D Tactile Design)**, UniCalculator delivers:
-1. **Instant Indian GST Slabs & Reverse GST Engine** (Extract base price from MRP in 1 tap).
-2. **Intra-State (CGST + SGST) vs. Inter-State (IGST) Live Breakdown Plates**.
-3. **Cash Denomination Ledger (रोकड़ खाता)** from **₹2000 down to ₹1 notes + coins** with instant English & Hindi **Number-to-Words translation in Lakhs & Crores**.
-4. **100% Offline-First Privacy**: Zero tracking, zero server costs, zero ads, sub-60ms instant cold launch.
+Combining the satisfying physical keystroke feel of classic Japanese & Citizen desktop commercial calculators with a **Pure Advanced Neumorphism UI (Soft 3D Tactile Design)** and **Skia 360° Neon Glow Typography**, UniCalculator delivers:
+1. **Instant Indian GST Slabs & Reverse GST Engine** (Extract base price from MRP in 1 tap with 50/50 CGST+SGST or IGST tax splits).
+2. **Cash Denomination Ledger (रोकड़ खाता)** from **₹2000 down to ₹1 notes + coins** with instant English & Hindi **Number-to-Words translation in Lakhs & Crores** and 1-tap WhatsApp closing slips.
+3. **16 Traditional & Business Tools** (Tola/Ratti gold jewelry units, Bigha/Guntha land units, Loan EMI, Margin/Markup, and Live 2-way currency exchange rate sync).
+4. **Physical Sliding Active Pill Navigation**: A unified bottom navigation rail with fluid liquid spring physics and zero screen jitter.
+5. **100% Offline-First Privacy**: Zero tracking, zero ads, zero telemetry, local SQLite WAL database, and sub-60ms instant cold launch.
 
 ---
 
-## 📸 High-Definition Visual Mockups
+## 📸 Live Hardware Showcase (Realme RMX3998)
 
-| 📱 Screen 1: Main & GST Pro Dual Engine | 💵 Screen 2: Cash Denomination Ledger (Rokad) |
+| 🧮 Standard Calculator (Emerald Glow) | 🧾 GST Pro Master Screen (+GST & −GST) |
 | :---: | :---: |
-| <img src="UI_MOCKUPS/01_main_calculator_gst_pro_screen.jpg" width="360" alt="Main Screen"/> | <img src="UI_MOCKUPS/02_cash_denomination_tally_screen.jpg" width="360" alt="Cash Tally Screen"/> |
-| *Recessed LCD Well + Glowing GST Slabs + 3D Squircle Keys* | *Master Summary + ₹2000 to ₹1 Steppers + WhatsApp Slip* |
+| <img src="UI_MOCKUPS/01_main_calculator_gst_pro_screen.jpg" width="340" alt="Standard Calculator"/> | <img src="UI_MOCKUPS/01_main_calculator_gst_pro_screen.jpg" width="340" alt="GST Pro Screen"/> |
+| *Recessed LCD Well + Skia Neon Matrix Digits* | *Unified Master LCD + Live CGST/SGST Breakdown* |
+
+| 💵 Cash Denomination Tally (रोकड़ खाता) | 🌙 Cyber Dark Obsidian OLED Theme |
+| :---: | :---: |
+| <img src="UI_MOCKUPS/02_cash_denomination_tally_screen.jpg" width="340" alt="Cash Tally Screen"/> | <img src="UI_MOCKUPS/02_cash_denomination_tally_screen.jpg" width="340" alt="Dark Mode Neon"/> |
+| *3-Well Master HUD + RBI Notes (₹500 to ₹1)* | *Obsidian Slate + Multi-Color Neon LED Glow* |
 
 ---
 
-## ✨ Key Features & Bharat Superpowers
+## ⚡ The 5 Core Workstations
 
-### 1. ⚡ Instant Indian GST Calculation Super-Engine
+### 1. 🧮 Standard Commercial Calculator
+- **Casio / Citizen Class Precision**: Strict `java.math.BigDecimal` pipeline preventing floating-point precision loss (`0.1 + 0.2` never equals `0.30000000000000004`).
+- **Commercial Percentage Logic**: Citizen desktop standard `100 - 10% = 90` and `100 + 10% = 110`.
+- **Repeated Equals (`=`)**: Repeated execution of last operator and operand (e.g. `10 + 2 = 12`, `= 14`, `= 16`).
+- **Operator Override & Chaining**: Seamlessly replace operators in real-time without clearing expression history.
+- **Universal In-Place Cursor Editing**: Full touch selection and cursor repositioning with zero Android IME software keyboard interference.
+
+### 2. 🧾 GST Pro Invoicing Engine
 - **1-Tap Slabs**: Dedicated tactile buttons for `+5%`, `+12%`, `+18%`, `+28%` and `-5%`, `-12%`, `-18%`, `-28%` (Reverse GST).
-- **Reverse GST Extraction**: Eliminates the complex `Base = Total / (1 + Rate/100)` manual formula. Instantly splits any MRP bill into **Net Base Price + Tax**.
+- **Reverse GST Base Extraction**: Eliminates the complex manual `Base = Total / (1 + Rate/100)` formula.
 - **Jurisdiction Live Split**:
-  - **Intra-State (Default)**: 50% CGST + 50% SGST.
+  - **Intra-State (Default)**: 50% CGST + 50% SGST (with odd-paise exact integer split).
   - **Inter-State**: 100% IGST.
 - **Special Bharat Slabs**: Preset chips for **3% (Gold & Jewellery)** and **0.25% (Cut & Polished Diamonds)**.
-- **Cess Engine**: Percentage-based or flat amount-based compensation cess.
+- **Cheque In-Words Engine**: Live English & Devanagari Hindi text conversion in Lakhs & Crores.
 
-### 2. 💰 Cash Denomination Ledger (रोकड़ खाता / Cash Tally)
+### 3. 💵 Cash Denomination Ledger (रोकड़ खाता / Cash Tally)
 - **Full RBI Currency Spectrum**:
-  - High Value: **₹2000, ₹500**
-  - Medium / Standard: **₹200, ₹100, ₹50**
-  - Small Denominations: **₹20, ₹10, ₹5, ₹2, ₹1**
-  - **Granular Coin Counter**: ₹20, ₹10, ₹5, ₹2, ₹1 Coins.
-- **Indian Vedic Number-to-Words Engine**:
-  - English: *"Rupees One Lakh Eighty-Four Thousand Six Hundred Fifty Rupees Only"*
-  - Hindi: *"एक लाख चौरासी हज़ार छह सौ पचास रुपये मात्र"*
-- **1-Tap WhatsApp Closing Slip**: Instantly format and share daily cash closing summaries with business partners.
+  - High/Standard Notes: **₹500, ₹200, ₹100, ₹50, ₹20, ₹10, ₹5, ₹2, ₹1**
+  - Granular Coins Counter: ₹20, ₹10, ₹5, ₹2, ₹1 Coins.
+- **3-Well Master HUD**: Live Total Cash, Total Notes count, and Total Coins count.
+- **Packet & Bundle Math**: 100 notes = 1 Packet, 10 Packets = 1 Bundle/Brick (1000 notes).
+- **1-Tap WhatsApp Closing Slip**: Formats and shares daily cash closing summaries instantly.
 
-### 3. 🎨 100% Pure Advanced Neumorphism UI
-- **Light Physics Model**: $-45^\circ$ top-left light source simulating soft white highlights (`#FFFFFF` 75%) and deep slate shadows (`#000000` 20%).
-- **Convex-to-Concave Press Transitions**: Buttons physically depress into the surface with smooth spring bounce (`spring(dampingRatio = 0.75f, stiffness = 500f)`).
-- **Recessed LCD Screen Well**: Inset titanium texture container with dynamic font auto-scaling.
-- **Crisp Mechanical Switch Haptics**: 4ms micro-click feedback powered by `VibrationEffect.Composition`.
+### 4. 🎛️ 16 Business & Traditional Indian Tools
+- **Traditional Indian Unit Converters**:
+  - **Gold & Jewellery**: Tola, Ratti, Masha, Grams, Sovereigns.
+  - **Land & Agriculture**: Bigha, Guntha, Ground, Cent, Acre, Square Yards.
+  - **Mandi & Weight**: Quintal, Metric Ton, Kilogram, Maund.
+- **Financial Tools**:
+  - **Loan & EMI Calculator**: Reducing Balance vs. Flat Rate EMI comparisons.
+  - **Margin & Markup Engine**: Profit margin calculation for wholesale and retail pricing.
+  - **Multi-Tier Discount Calculator**: Successive discounts (`50% + 20%`) vs flat discounts.
+- **Live 2-Way Currency Exchange Converter**: Real-time multi-currency conversion with automatic fallback.
 
-### 4. 🧮 Zero-Loss Financial Math Integrity
-- Zero floating-point drift (`0.1 + 0.2` never equals `0.30000000000000004`).
-- Strict `java.math.BigDecimal` pipeline with Banker's Rounding (`RoundingMode.HALF_EVEN`).
-- Precision tested against official **CBIC (Central Board of Indirect Taxes and Customs)** sample invoices.
-
----
-
-## 🗂️ Complete 23-Stage Lifecycle Documentation
-
-Every architectural, design, and engineering decision is comprehensively documented:
-
-| # | Document | Key Focus |
-| :- | :--- | :--- |
-| **01** | [01_APP_IDEA.md](DOCS/01_APP_IDEA.md) | Vision, Bharat Problem Statement, Value Proposition |
-| **02** | [02_PRODUCT_STRATEGY.md](DOCS/02_PRODUCT_STRATEGY.md) | Market Positioning, Competitor Matrix (Citizen vs Google Calc), KPIs |
-| **03** | [03_REQUIREMENTS.md](DOCS/03_REQUIREMENTS.md) | Functional (GST, Cash Tally, Citizen Math) & NFRs (BigDecimal) |
-| **04** | [04_USER_RESEARCH.md](DOCS/04_USER_RESEARCH.md) | Kirana & Trader Behavioral Insights, Reverse GST pain points |
-| **05** | [05_USER_PERSONAS.md](DOCS/05_USER_PERSONAS.md) | Ramesh (Kirana), Priya (CA Intern), Vikram (Gadget Trader) |
-| **06** | [06_USER_JOURNEYS.md](DOCS/06_USER_JOURNEYS.md) | Evening Cash Closing, Reverse GST Verification, WhatsApp Quotes |
-| **07** | [07_INFORMATION_ARCHITECTURE.md](DOCS/07_INFORMATION_ARCHITECTURE.md) | Component Taxonomy, Screen Hierarchy, History Tape System |
-| **08** | [08_USER_FLOWS.md](DOCS/08_USER_FLOWS.md) | GST Slabs State Machine, Cash Tally Step Engine, Slip Exporter |
-| **09** | [09_NAVIGATION_STRUCTURE.md](DOCS/09_NAVIGATION_STRUCTURE.md) | Type-Safe Navigation Suite, Phone Bottom Bar & Tablet Nav Rail |
-| **10** | [10_CONTENT_STRATEGY.md](DOCS/10_CONTENT_STRATEGY.md) | Vedic Indian Numbering (Lakhs/Crores), Hindi/English Words Engine |
-| **11** | [11_WIREFRAMES.md](DOCS/11_WIREFRAMES.md) | ASCII Layouts of Neumorphic LCD Well, Keypads & Cash Ledger |
-| **12** | [12_DESIGN_SYSTEM.md](DOCS/12_DESIGN_SYSTEM.md) | **Advanced Neumorphism UI Architecture**, Dual Shadows, Convex/Concave States |
-| **13** | [13_UI_DESIGN.md](DOCS/13_UI_DESIGN.md) | Keypad Dimensions, Squircle Radius, LCD Inset Well Typography |
-| **14** | [14_INTERACTION_MOTION.md](DOCS/14_INTERACTION_MOTION.md) | Physics Spring Press Animations, Custom Android Mechanical Haptics |
-| **15** | [15_RESPONSIVE_ACCESSIBILITY.md](DOCS/15_RESPONSIVE_ACCESSIBILITY.md) | Tablet Dual-Pane, TalkBack Semantics in Indian Languages |
-| **16** | [16_TECHNICAL_DATA_DESIGN.md](DOCS/16_TECHNICAL_DATA_DESIGN.md) | Hexagonal Architecture, `BigDecimal` GST Engine, Room Database |
-| **17** | [17_SECURITY_EDGE_CASES.md](DOCS/17_SECURITY_EDGE_CASES.md) | Banker's Rounding, Odd Half-Paisa Tax Splits, Offline-First Security |
-| **18** | [18_PROTOTYPE.md](DOCS/18_PROTOTYPE.md) | Multi-Module Gradle Directory Skeleton & Version Catalog |
-| **19** | [19_USER_VALIDATION.md](DOCS/19_USER_VALIDATION.md) | Official CBIC GST Benchmark Invoices & JUnit 5 Testing Suite |
-| **20** | [20_DEVELOPMENT.md](DOCS/20_DEVELOPMENT.md) | 4-Phase Multi-Sprint Delivery Schedule |
-| **21** | [21_QA.md](DOCS/21_QA.md) | Strict Zero-Suppress Detekt, Spotless & Perfetto 120 FPS Profiling |
-| **22** | [22_ITERATION.md](DOCS/22_ITERATION.md) | OCR Barcode & Invoice Scanner, Offline Indian Voice Calculator |
-| **23** | [23_BRANDING_LOGO_SPLASH.md](DOCS/23_BRANDING_LOGO_SPLASH.md) | Adaptive App Icon Vector, Wordmark Logo, Android 12+ Splash System |
+### 5. 🕒 Smart History Audit Tape
+- **Isolated Module Filters**: Dedicated tabs for Standard Math, GST Pro Invoices, Cash Tally Sessions, and Business Tools.
+- **Persistence**: Local SQLite WAL database with instant search and statement export.
 
 ---
 
-## 🏗️ Multi-Module Architecture
+## 🎨 Advanced Neumorphism & Physics Architecture
+
+### 1. 🌓 Skia Path Difference Inverted Lighting Model
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Light Source (-45° Top-Left) ──► Casts Deep Inner Shadow   │
+│  [ Sunken LCD Well ] ──► PathOperation.Difference (0% Bleed)│
+│  Bottom-Right Inner Rim ──► Catches Light Highlight Bevel   │
+└─────────────────────────────────────────────────────────────┘
+```
+Unlike standard blur filters that wash out recessed wells, UniCalculator uses Skia `PathOperation.Difference` to invert shadow clipping paths. This guarantees 100% razor-sharp inner depth on recessed LCD wells without outer shadow bleed.
+
+### 2. 💡 Skia 360° Neon Glow Typography Engine
+Utilizing Skia GPU text-blur with zero spatial displacement (`Offset.Zero`) and high-radius photon bloom (`blurRadius = 12f - 20f`), calculated digits radiate a vibrant VFD/LED matrix glow:
+- 🟢 **Emerald Green Neon Glow (`#00C781`)**: Standard calculation & Total Cash.
+- 🟠 **Saffron Amber Neon Glow (`#E67E22`)**: Reverse GST extraction & discount savings.
+- 🔵 **Cyan Sapphire Neon Glow (`#0284C7`)**: Statutory CGST/SGST tax metrics.
+
+### 3. 🌊 Liquid Spring Continuous Sliding Bottom Navigation
+A dedicated physical active capsule glides smoothly across the bottom rail using `FastOutSlowInEasing` (420ms duration) with subtle liquid stretch physics and arrival micro-scale pops, keeping screen contents perfectly stable.
+
+---
+
+## 🏛️ Clean Architecture & Multi-Module Structure
 
 ```
 UniCalculator/
+├── app/                  # Application entry point, theme wiring, main scaffold
 ├── core/
-│   ├── common/           # Coroutines, Vedic Formatters, Number-to-Words Engine
-│   ├── model/            # Domain Value Objects (TaxBreakdown, Denomination, History)
-│   ├── math-engine/      # BigDecimal GST & Continuous Shunting-Yard Evaluator
-│   ├── database/         # Room SQLite Database & DAOs (Encrypted Local Storage)
-│   └── designsystem/     # 100% Neumorphic Modifiers, Tactile Keypads, Themes, Haptics
-│
-├── feature/
-│   ├── calculator/       # Standard Dual-Line Neumorphic Calculator
-│   ├── gst/              # GST Pro Engine, Forward/Reverse Slabs & Split Cards
-│   ├── cash-tally/       # RBI Cash Denomination Ledger & WhatsApp Slip Exporter
-│   ├── business-tools/   # Margin/Markup, Discount Stacking & Loan EMI Solvers
-│   └── history-tape/     # Infinite Audit Tape & PDF/CSV Exporter
-│
-└── app/                  # Application Host, MainActivity, Adaptive Navigation Suite
+│   ├── common/           # SharedPreferences, Vedic formatters, Indian currency
+│   ├── database/         # Room SQLite WAL entities, DAOs, repository
+│   ├── designsystem/     # Neumorphic modifiers, buttons, LCD wells, Neon glow, sliding nav
+│   ├── math-engine/      # Shunting-yard evaluator, GST engine, commercial engines
+│   └── model/            # Immutable domain models and calculation enums
+└── feature/
+    ├── business-tools/   # 16 Converters, Loan EMI, Margin, Discount
+    ├── calculator/       # Standard Calculator & GST Pro screens + About sheet
+    ├── cash-tally/       # Cash denomination tally & closing slip exporter
+    └── history-tape/     # Unified audit tape & statement search
 ```
 
 ---
 
-## 🛠️ Technology Stack
+## 🛠️ Build & Installation
 
-- **Language**: Kotlin 2.1.0 (Strict null safety, value classes, Coroutines 1.10.1, Flow)
-- **UI Toolkit**: Jetpack Compose (100% Declarative, Compose BOM 2025.02.00, Custom Neumorphic Canvas Shaders)
-- **Architecture**: Hexagonal Architecture + Clean DDD + MVI StateFlow
-- **Dependency Injection**: Dagger Hilt 2.55
-- **Local Persistence**: Jetpack Room 2.6.1 (SQLite with Flow Observables)
-- **Build System**: Gradle 8.8 KTS with Modern Version Catalog (`libs.versions.toml`)
-- **Code Quality**: Detekt (Zero-Suppress Policy) + Spotless Formatting
+### Prerequisites:
+- Android Studio Ladybug (2024.2.1+) or newer
+- JDK 21
+- Android SDK 35 (Min SDK 26)
 
----
+### Compile & Test:
+```bash
+# Run complete unit test suite
+./gradlew testDebugUnitTest
 
-## 🚀 WhatsApp Cash Tally Slip Output Preview
+# Assemble debug APK
+./gradlew :app:assembleDebug
 
-```text
-========================================
-   🧾 GUPTA GENERAL STORES — CASH TALLY
-========================================
-📅 Date: 14-Aug-2026 | ⏰ Time: 09:35 PM
-
-DENOMINATION BREAKDOWN:
-----------------------------------------
-₹ 500  x  18  =  ₹ 9,000.00
-₹ 200  x  45  =  ₹ 9,000.00
-₹ 100  x 120  =  ₹ 12,000.00
-₹  50  x  80  =  ₹ 4,000.00
-₹  20  x  45  =  ₹ 900.00
-₹  10  x  50  =  ₹ 500.00
-Coins         =  ₹ 25.00
-----------------------------------------
-🔢 Total Notes : 358 Pcs
-💰 GRAND TOTAL : ₹ 35,425.00
-----------------------------------------
-📝 IN WORDS:
-Thirty-Five Thousand Four Hundred Twenty-Five Rupees Only
-(पैंतीस हज़ार चार सौ पच्चीस रुपये मात्र)
-========================================
-✨ Generated via UniCalculator Bharat
+# Install directly to connected device
+adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ---
 
-## 📜 License & Integrity
-Built with ❤️ for Indian MSMEs, Retailers, and Commerce.  
-*All calculations validated against Government of India CBIC GST invoicing norms.*
+## 👥 Creator & Architect
+
+**Shoeb Ahmad**  
+*Principal Architect & Founder*  
+**UniAi Innovations**  
+
+*Designed with mathematical rigor and passion for the merchants and people of Bharat.* 🇮🇳
+
+---
+
+## 📜 License
+
+```
+Copyright 2026 UniAi Innovations (Shoeb Ahmad)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+```

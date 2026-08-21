@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +40,7 @@ import com.unicalculator.core.designsystem.component.NeumorphicSlideSwitch
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.theme.DeleteRed
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
+import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 import com.unicalculator.core.model.CalculationType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -153,7 +155,23 @@ fun ToolsSettingsSheet(
                 }
             }
 
-            // 3. Clear Tools History Only
+            // 3. About UniCalculator Bharat
+            var showAboutSheet by remember { androidx.compose.runtime.mutableStateOf(false) }
+            NeumorphicButton(
+                text = "ℹ️ About UniCalculator Bharat",
+                onClick = { showAboutSheet = true },
+                accentColor = RupeeEmeraldGreen,
+                fontSize = 13,
+                modifier = Modifier.fillMaxWidth().height(48.dp)
+            )
+
+            if (showAboutSheet) {
+                com.unicalculator.core.designsystem.component.AboutUniCalculatorSheet(
+                    onDismiss = { showAboutSheet = false }
+                )
+            }
+
+            // 4. Clear Tools History Only
             NeumorphicButton(
                 text = "🗑️ Clear Tools & Converter History Only",
                 onClick = {

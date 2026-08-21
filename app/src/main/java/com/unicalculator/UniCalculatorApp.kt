@@ -65,7 +65,7 @@ fun UniCalculatorApp(
 
     Scaffold(
         bottomBar = {
-            // Sculpted Neumorphic Bottom Navigation Bar with Edge-to-Edge Safe Padding
+            // Sculpted Neumorphic Sliding Bottom Navigation Bar with Edge-to-Edge Safe Padding
             Surface(
                 color = colors.background,
                 modifier = Modifier.fillMaxWidth()
@@ -76,73 +76,25 @@ fun UniCalculatorApp(
                         .navigationBarsPadding()
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(64.dp)
-                            .neumorphic(
-                                shape = NeumorphicShape.CONVEX,
-                                cornerRadius = 22.dp,
-                                elevation = 6.dp,
-                                lightShadowColor = colors.lightHighlight,
-                                darkShadowColor = colors.darkShadow,
-                                backgroundColor = colors.background
+                    val tabs = remember {
+                        MainTab.entries.map {
+                            com.unicalculator.core.designsystem.component.NeumorphicTabItem(
+                                title = it.title,
+                                icon = it.icon
                             )
-                            .padding(horizontal = 6.dp, vertical = 4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            MainTab.entries.forEachIndexed { index, tab ->
-                                val isSelected = selectedTab == index
-                                val activeColor = if (isSelected) RupeeEmeraldGreen else colors.textSecondary
-
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(52.dp)
-                                        .neumorphic(
-                                            shape = if (isSelected) NeumorphicShape.CONCAVE else NeumorphicShape.FLAT,
-                                            cornerRadius = 14.dp,
-                                            elevation = if (isSelected) 3.dp else 0.dp,
-                                            lightShadowColor = colors.lightHighlight,
-                                            darkShadowColor = colors.darkShadow,
-                                            backgroundColor = colors.background
-                                        )
-                                        .clickable {
-                                            if (index == 4 && selectedTab != 4) {
-                                                historyFilter = HistoryFilter.ALL
-                                            }
-                                            selectedTab = index
-                                        }
-                                        .padding(2.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = tab.icon,
-                                            contentDescription = tab.title,
-                                            tint = activeColor,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Text(
-                                            text = tab.title,
-                                            fontSize = 9.5.sp,
-                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                            color = activeColor,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-                                }
-                            }
                         }
                     }
+
+                    com.unicalculator.core.designsystem.component.NeumorphicSlidingBottomBar(
+                        tabs = tabs,
+                        selectedTab = selectedTab,
+                        onTabSelected = { index ->
+                            if (index == 4 && selectedTab != 4) {
+                                historyFilter = HistoryFilter.ALL
+                            }
+                            selectedTab = index
+                        }
+                    )
                 }
             }
         }

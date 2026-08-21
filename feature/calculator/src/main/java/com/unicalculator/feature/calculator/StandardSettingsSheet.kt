@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,6 +38,7 @@ import com.unicalculator.core.common.prefs.HapticIntensity
 import com.unicalculator.core.common.prefs.NumberFormatStyle
 import com.unicalculator.core.common.prefs.UniCalculatorPreferences
 import com.unicalculator.core.database.LocalCalculationHistoryRepository
+import com.unicalculator.core.designsystem.component.AboutUniCalculatorSheet
 import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicGstPill
 import com.unicalculator.core.designsystem.component.NeumorphicIconButton
@@ -45,6 +47,7 @@ import com.unicalculator.core.designsystem.component.NeumorphicSlideSwitch
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.theme.DeleteRed
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
+import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 import com.unicalculator.core.model.CalculationType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -245,7 +248,21 @@ fun StandardSettingsSheet(
                 }
             }
 
-            // 5. Clear Standard History Only
+            // 5. About UniCalculator Bharat
+            var showAboutSheet by remember { androidx.compose.runtime.mutableStateOf(false) }
+            NeumorphicButton(
+                text = "ℹ️ About UniCalculator Bharat",
+                onClick = { showAboutSheet = true },
+                accentColor = RupeeEmeraldGreen,
+                fontSize = 13,
+                modifier = Modifier.fillMaxWidth().height(48.dp)
+            )
+
+            if (showAboutSheet) {
+                AboutUniCalculatorSheet(onDismiss = { showAboutSheet = false })
+            }
+
+            // 6. Clear Standard History Only
             NeumorphicButton(
                 text = "🗑️ Clear Standard History Only",
                 onClick = {

@@ -44,6 +44,7 @@ import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.DeleteRed
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
+import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
 import com.unicalculator.core.model.CalculationType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -231,7 +232,23 @@ fun CashTallySettingsSheet(
                 }
             }
 
-            // 4. Clear Cash Tally History Only
+            // 4. About UniCalculator Bharat
+            var showAboutSheet by remember { androidx.compose.runtime.mutableStateOf(false) }
+            NeumorphicButton(
+                text = "ℹ️ About UniCalculator Bharat",
+                onClick = { showAboutSheet = true },
+                accentColor = RupeeEmeraldGreen,
+                fontSize = 13,
+                modifier = Modifier.fillMaxWidth().height(48.dp)
+            )
+
+            if (showAboutSheet) {
+                com.unicalculator.core.designsystem.component.AboutUniCalculatorSheet(
+                    onDismiss = { showAboutSheet = false }
+                )
+            }
+
+            // 5. Clear Cash Tally History Only
             NeumorphicButton(
                 text = "🗑️ Clear Cash Tally Sessions Only",
                 onClick = {
