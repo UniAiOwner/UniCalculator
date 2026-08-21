@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -228,20 +229,67 @@ fun CashTallyScreen(
             cornerRadius = 20.dp,
             elevation = 5.dp
         ) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(14.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
-                // Top Row: TOTAL CASH (Left) + Floating 3D Note Badge (Top-Right Corner)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
+                // Top-Right Corner: Floating Neumorphic 3D Note Counter Badge
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 4.dp, y = (-2).dp)
+                        .neumorphic(
+                            shape = NeumorphicShape.CONVEX,
+                            cornerRadius = 14.dp,
+                            elevation = 3.dp,
+                            lightShadowColor = colors.lightHighlight,
+                            darkShadowColor = colors.darkShadow,
+                            backgroundColor = colors.background
+                        )
+                        .padding(horizontal = 8.dp, vertical = 5.dp),
+                    contentAlignment = Alignment.Center
                 ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Payments,
+                            contentDescription = "Notes Icon",
+                            tint = RupeeEmeraldGreen,
+                            modifier = Modifier.size(17.dp)
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                text = "${state.totalNotesCount}",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace,
+                                color = RupeeEmeraldGreen
+                            )
+                            Text(
+                                text = "Notes",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                fontFamily = FontFamily.Monospace,
+                                color = colors.textSecondary
+                            )
+                        }
+                    }
+                }
+
+                // Main Content (TOTAL CASH + In Words)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Total Cash
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.padding(end = 95.dp),
                         verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
                         Text(
@@ -265,78 +313,30 @@ fun CashTallyScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    // Top-Right Corner: Floating Neumorphic 3D Note Counter Badge
-                    Box(
-                        modifier = Modifier
-                            .neumorphic(
-                                shape = NeumorphicShape.CONVEX,
-                                cornerRadius = 14.dp,
-                                elevation = 3.5.dp,
-                                lightShadowColor = colors.lightHighlight,
-                                darkShadowColor = colors.darkShadow,
-                                backgroundColor = colors.background
-                            )
-                            .padding(horizontal = 10.dp, vertical = 6.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Payments,
-                                contentDescription = "Notes Icon",
-                                tint = RupeeEmeraldGreen,
-                                modifier = Modifier.size(19.dp)
-                            )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(2.dp)
-                            ) {
-                                Text(
-                                    text = "${state.totalNotesCount}",
-                                    fontSize = 13.5.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = FontFamily.Monospace,
-                                    color = RupeeEmeraldGreen
-                                )
-                                Text(
-                                    text = "Notes",
-                                    fontSize = 10.5.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = FontFamily.Monospace,
-                                    color = colors.textSecondary
-                                )
+                    // Bottom Section: Full-Width In Words
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            text = "In Words",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = FontFamily.Monospace,
+                            color = colors.textSecondary
+                        )
+                        Text(
+                            text = state.wordsText,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = FontFamily.Monospace,
+                            color = colors.textPrimary,
+                            maxLines = 3,
+                            lineHeight = 15.5.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.clickable {
+                                click()
+                                viewModel.toggleLanguage()
                             }
-                        }
+                        )
                     }
-                }
-
-                // Bottom Section: Full-Width In Words
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(
-                        text = "In Words",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = FontFamily.Monospace,
-                        color = colors.textSecondary
-                    )
-                    Text(
-                        text = state.wordsText,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = FontFamily.Monospace,
-                        color = colors.textPrimary,
-                        maxLines = 3,
-                        lineHeight = 15.5.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clickable {
-                            click()
-                            viewModel.toggleLanguage()
-                        }
-                    )
                 }
             }
         }
