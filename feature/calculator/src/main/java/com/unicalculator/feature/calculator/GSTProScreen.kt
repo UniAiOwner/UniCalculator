@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -178,89 +179,86 @@ fun GSTProScreen(
             }
         }
 
-        // 1. BEZEL-LESS MASTER HERO DISPLAY CANVAS
-        NeumorphicPlate(
-            modifier = Modifier.fillMaxWidth(),
-            shape = NeumorphicShape.CONCAVE,
-            cornerRadius = 18.dp,
-            elevation = 4.dp
+        // 1. UNIFIED MASTER EXPANSIVE LCD SCREEN CANVAS
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .neumorphic(
+                    shape = NeumorphicShape.CONCAVE,
+                    cornerRadius = 20.dp,
+                    elevation = 4.dp,
+                    lightShadowColor = colors.lightHighlight,
+                    darkShadowColor = colors.darkShadow,
+                    backgroundColor = colors.lcdWellBackground
+                )
+                .padding(horizontal = 14.dp, vertical = 10.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                // Sunken LCD Touch Well for Base Amount, Live Formula & Final Answer
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .neumorphic(
-                            shape = NeumorphicShape.CONCAVE,
-                            cornerRadius = 12.dp,
-                            elevation = 3.dp,
-                            lightShadowColor = colors.lightHighlight,
-                            darkShadowColor = colors.darkShadow,
-                            backgroundColor = colors.lcdWellBackground
-                        )
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    contentAlignment = Alignment.Center
+                // Row 1: Top Context & Live Formula Tape
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(3.dp)
-                    ) {
-                        // Top Context Line: Base/Gross Amount + GST Slab
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            val baseLabel = if (state.isReverseGst) "Gross Amount: ${state.displayAmount}" else "Base Amount: ${state.displayAmount}"
-                            Text(
-                                text = baseLabel,
-                                style = TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 12.sp,
-                                    color = colors.textSecondary,
-                                    letterSpacing = 0.3.sp
-                                ),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            val formulaExpr = "${if (state.isReverseGst) "−" else "+"}${state.selectedGstRate}% GST"
-                            Text(
-                                text = formulaExpr,
-                                style = TextStyle(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen
-                                ),
-                                maxLines = 1
-                            )
-                        }
-
-                        // Bottom Prominent Line: Big Bold Calculated Result
-                        val finalAnswerStr = if (state.isReverseGst) netBaseStr else grossFinalStr
-                        Text(
-                            text = finalAnswerStr,
-                            style = TextStyle(
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Black,
-                                fontSize = 28.sp,
-                                color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen,
-                                textAlign = TextAlign.End
-                            ),
-                            modifier = Modifier.fillMaxWidth(),
-                            maxLines = 1,
-                            softWrap = false
+                    val formulaTag = "${if (state.isReverseGst) "−" else "+"}${state.selectedGstRate}% GST"
+                    val jurisdictionTag = if (state.isInterState) " (Inter-State)" else " (Intra-State)"
+                    Text(
+                        text = formulaTag + jurisdictionTag,
+                        style = TextStyle(
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen
                         )
-                    }
+                    )
+
+                    val baseLabel = if (state.isReverseGst) "Gross: ${state.displayAmount}" else "Base: ${state.displayAmount}"
+                    Text(
+                        text = baseLabel,
+                        style = TextStyle(
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp,
+                            color = colors.textSecondary,
+                            letterSpacing = 0.3.sp
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
 
-                // 3-Column Statutory Tax Breakdown Grid with Vertical Dividers
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 0.8.dp,
+                    color = colors.textSecondary.copy(alpha = 0.15f)
+                )
+
+                // Row 2: Massive Headline Calculated Result (34sp / 36sp)
+                val finalAnswerStr = if (state.isReverseGst) netBaseStr else grossFinalStr
+                Text(
+                    text = finalAnswerStr,
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Black,
+                        fontSize = if (finalAnswerStr.length > 14) 28.sp else if (finalAnswerStr.length > 10) 32.sp else 36.sp,
+                        color = if (state.isReverseGst) GstSaffronAmber else RupeeEmeraldGreen,
+                        textAlign = TextAlign.End
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1,
+                    softWrap = false
+                )
+
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 0.8.dp,
+                    color = colors.textSecondary.copy(alpha = 0.15f)
+                )
+
+                // Row 3: Statutory Tax Breakdown Grid (Integrated with hairline dividers)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -268,60 +266,58 @@ fun GSTProScreen(
                 ) {
                     if (state.isInterState) {
                         TaxMetricCell(label = "IGST (${state.selectedGstRate}%):", value = igstStr, valueColor = SapphireBlue, modifier = Modifier.weight(1f))
-                        Box(modifier = Modifier.width(1.dp).height(24.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
+                        Box(modifier = Modifier.width(1.dp).height(20.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
                         TaxMetricCell(label = "Jurisdiction:", value = "Inter-State", valueColor = colors.textSecondary, modifier = Modifier.weight(1f))
-                        Box(modifier = Modifier.width(1.dp).height(24.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
+                        Box(modifier = Modifier.width(1.dp).height(20.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
                         TaxMetricCell(label = "Total Tax (${state.selectedGstRate}%):", value = totalTaxStr, valueColor = GstSaffronAmber, modifier = Modifier.weight(1f))
                     } else {
                         val halfRate = state.selectedGstRate / 2.0
                         TaxMetricCell(label = "CGST (${halfRate}%):", value = cgstStr, valueColor = SapphireBlue, modifier = Modifier.weight(1f))
-                        Box(modifier = Modifier.width(1.dp).height(24.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
+                        Box(modifier = Modifier.width(1.dp).height(20.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
                         TaxMetricCell(label = "SGST (${halfRate}%):", value = sgstStr, valueColor = SapphireBlue, modifier = Modifier.weight(1f))
-                        Box(modifier = Modifier.width(1.dp).height(24.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
+                        Box(modifier = Modifier.width(1.dp).height(20.dp).background(colors.textSecondary.copy(alpha = 0.2f)))
                         TaxMetricCell(label = "Total Tax (${state.selectedGstRate}%):", value = totalTaxStr, valueColor = GstSaffronAmber, modifier = Modifier.weight(1f))
                     }
                 }
 
-                // Bottom In-Words / Cheque Words Banner (100% Dedicated to Words)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(9.dp))
-                        .background(
-                            if (state.isReverseGst) GstSaffronAmber
-                            else RupeeEmeraldGreen
-                        )
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
-                ) {
+                // Row 4: Seamless Cheque In-Words Readout (English & Hindi)
+                if (state.inWordsText.isNotBlank()) {
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = 0.8.dp,
+                        color = colors.textSecondary.copy(alpha = 0.15f)
+                    )
                     Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(1.dp)
                     ) {
                         Text(
                             text = state.inWordsText,
                             style = TextStyle(
-                                fontFamily = FontFamily.SansSerif,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp,
-                                color = Color.White,
-                                textAlign = TextAlign.Center
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 11.sp,
+                                color = colors.textPrimary,
+                                textAlign = TextAlign.End
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        Text(
-                            text = state.inWordsHindiText,
-                            style = TextStyle(
-                                fontFamily = FontFamily.SansSerif,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 10.5.sp,
-                                color = Color.White.copy(alpha = 0.92f),
-                                textAlign = TextAlign.Center
-                            ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        if (state.inWordsHindiText.isNotBlank()) {
+                            Text(
+                                text = state.inWordsHindiText,
+                                style = TextStyle(
+                                    fontFamily = FontFamily.SansSerif,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 10.5.sp,
+                                    color = colors.textSecondary,
+                                    textAlign = TextAlign.End
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
             }
