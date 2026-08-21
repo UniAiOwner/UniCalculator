@@ -138,42 +138,41 @@ fun CashTallyScreen(
         modifier = modifier
             .fillMaxSize()
             .background(colors.background)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 6.dp, vertical = 2.dp)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Spacer(modifier = Modifier.height(4.dp))
-
-        // 1. Top Header Bar: Title + Live Date + Actions (History, Theme, Settings)
+        // 1. Top Header Bar: Title + Live Date + Top Action Icons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 2.dp),
+                .padding(start = 4.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
                 Text(
                     text = "Cash Tally",
-                    fontSize = 22.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
-                    color = colors.textPrimary
+                    color = colors.textPrimary,
+                    letterSpacing = 0.5.sp
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier.padding(top = 2.dp)
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    modifier = Modifier.padding(top = 1.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(7.dp)
+                            .size(6.dp)
                             .clip(CircleShape)
                             .background(RupeeEmeraldGreen)
                     )
                     Text(
                         text = liveDateFormatted,
-                        fontSize = 11.sp,
+                        fontSize = 10.5.sp,
                         fontWeight = FontWeight.Medium,
                         fontFamily = FontFamily.Monospace,
                         color = colors.textSecondary
@@ -189,8 +188,9 @@ fun CashTallyScreen(
                         tick()
                         onNavigateToHistory?.invoke()
                     },
-                    size = 40.dp,
-                    cornerRadius = 12.dp,
+                    size = 36.dp,
+                    cornerRadius = 10.dp,
+                    iconSize = 18.dp,
                     iconTint = RupeeEmeraldGreen
                 )
 
@@ -201,8 +201,9 @@ fun CashTallyScreen(
                         tick()
                         onToggleTheme?.invoke()
                     },
-                    size = 40.dp,
-                    cornerRadius = 12.dp,
+                    size = 36.dp,
+                    cornerRadius = 10.dp,
+                    iconSize = 18.dp,
                     iconTint = colors.textSecondary
                 )
 
@@ -213,201 +214,278 @@ fun CashTallyScreen(
                         tick()
                         if (onOpenSettings != null) onOpenSettings.invoke() else showSettingsSheet = true
                     },
-                    size = 40.dp,
-                    cornerRadius = 12.dp,
+                    size = 36.dp,
+                    cornerRadius = 10.dp,
+                    iconSize = 18.dp,
                     iconTint = colors.textSecondary
                 )
             }
         }
 
-        // 2. Master Hero Summary Card (Concave Surface with Split Right Badge)
+        // 2. BEZEL-LESS MASTER 3-WELL HUD CANVAS
         NeumorphicPlate(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 24.dp,
-            elevation = 6.dp
+            shape = NeumorphicShape.CONCAVE,
+            cornerRadius = 18.dp,
+            elevation = 4.dp
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(14.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                // Left Column: Total Cash & In Words
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                // Top Row: Shop/Cashier Label (Left) + Quick Action Chips (Right)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "TOTAL CASH",
-                        fontSize = 10.5.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.Monospace,
-                        color = colors.textSecondary,
-                        letterSpacing = 0.5.sp
-                    )
-                    Text(
-                        text = state.totalCashFormatted,
+                        text = "Cash Drawer: ${state.state.shopName}",
                         style = TextStyle(
                             fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 24.sp,
-                            color = RupeeEmeraldGreen
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.5.sp,
+                            color = colors.textSecondary,
+                            letterSpacing = 0.3.sp
                         ),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "In Words",
-                        fontSize = 9.5.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = FontFamily.Monospace,
-                        color = colors.textSecondary
-                    )
-                    Text(
-                        text = state.wordsText,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = FontFamily.Monospace,
-                        color = colors.textPrimary,
-                        maxLines = 3,
-                        lineHeight = 14.sp,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clickable {
-                            click()
-                            viewModel.toggleLanguage()
-                        }
+                        modifier = Modifier.weight(1f, fill = false)
                     )
+
+                    // Compact Action Chips (Copy | Share | Save | Clear)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Copy Slip
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(colors.background.copy(alpha = 0.6f))
+                                .clickable {
+                                    click()
+                                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                    val clip = ClipData.newPlainText("Cash Tally Breakdown", viewModel.generateWhatsAppSlipText())
+                                    clipboard.setPrimaryClip(clip)
+                                    Toast.makeText(context, "Slip Copied", Toast.LENGTH_SHORT).show()
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Outlined.ContentCopy, "Copy", tint = colors.textSecondary, modifier = Modifier.size(14.dp))
+                        }
+
+                        // Share WhatsApp Slip
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(colors.background.copy(alpha = 0.6f))
+                                .clickable {
+                                    click()
+                                    val slip = viewModel.generateWhatsAppSlipText()
+                                    val sendIntent = Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_TEXT, slip)
+                                        type = "text/plain"
+                                    }
+                                    context.startActivity(Intent.createChooser(sendIntent, "Share Cash Closing Slip"))
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Outlined.Share, "Share", tint = RupeeEmeraldGreen, modifier = Modifier.size(14.dp))
+                        }
+
+                        // Save History
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(colors.background.copy(alpha = 0.6f))
+                                .clickable {
+                                    click()
+                                    val slip = viewModel.generateWhatsAppSlipText()
+                                    val activeSummary = state.state.denominations.filter { it.count > 0 }
+                                        .joinToString(", ") { "₹${it.faceValue}×${it.count}" }
+                                    historyRepo.insert(
+                                        CalculationHistoryItem(
+                                            type = CalculationType.CASH_TALLY,
+                                            formulaExpression = "Total Notes: ${state.totalNotesCount} ($activeSummary)",
+                                            primaryResult = IndianVedicFormatter.formatCurrency(state.state.grandTotal),
+                                            memoNote = slip
+                                        )
+                                    )
+                                    if (autoCopySlip) {
+                                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                        val clip = ClipData.newPlainText("Cash Tally Breakdown", slip)
+                                        clipboard.setPrimaryClip(clip)
+                                        Toast.makeText(context, "Saved & Slip Copied", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(context, "Saved to History", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Outlined.Save, "Save", tint = Color(0xFF2563EB), modifier = Modifier.size(14.dp))
+                        }
+
+                        // Clear All (C/CE)
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(colors.background.copy(alpha = 0.6f))
+                                .clickable {
+                                    tick()
+                                    viewModel.resetAll()
+                                    Toast.makeText(context, "Counter Reset", Toast.LENGTH_SHORT).show()
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Outlined.CleaningServices, "Reset", tint = DeleteRed, modifier = Modifier.size(14.dp))
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(12.dp))
-
-                // Right Column: Floating Neumorphic Note Counter Badge
+                // Inset LCD Well: 3-Well Live Metrics (Total Cash + Notes Count + Packets Count)
                 Box(
                     modifier = Modifier
-                        .size(width = 86.dp, height = 82.dp)
+                        .fillMaxWidth()
+                        .height(48.dp)
                         .neumorphic(
-                            shape = NeumorphicShape.CONVEX,
-                            cornerRadius = 18.dp,
-                            elevation = 3.5.dp,
+                            shape = NeumorphicShape.CONCAVE,
+                            cornerRadius = 10.dp,
+                            elevation = 2.5.dp,
                             lightShadowColor = colors.lightHighlight,
                             darkShadowColor = colors.darkShadow,
-                            backgroundColor = colors.background
+                            backgroundColor = colors.lcdWellBackground
                         )
-                        .padding(6.dp),
+                        .padding(horizontal = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Payments,
-                            contentDescription = "Notes Icon",
-                            tint = RupeeEmeraldGreen,
-                            modifier = Modifier.size(28.dp)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
-                        ) {
+                        // Left: Total Cash
+                        Column {
                             Text(
-                                text = "${state.totalNotesCount}",
-                                fontSize = 12.5.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace,
-                                color = RupeeEmeraldGreen
+                                text = "TOTAL CASH",
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 9.sp,
+                                    color = colors.textSecondary
+                                )
                             )
                             Text(
-                                text = "Notes",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = FontFamily.Monospace,
-                                color = colors.textSecondary
+                                text = state.totalCashFormatted,
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 18.sp,
+                                    color = RupeeEmeraldGreen
+                                ),
+                                maxLines = 1,
+                                softWrap = false
                             )
                         }
+
+                        // Center: Notes / Coins Count
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "PIECES",
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 9.sp,
+                                    color = colors.textSecondary
+                                )
+                            )
+                            Text(
+                                text = "${state.totalNotesCount} Pcs",
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp,
+                                    color = colors.textPrimary
+                                )
+                            )
+                        }
+
+                        // Right: Packets / Bundles Count
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                text = "PACKETS",
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 9.sp,
+                                    color = colors.textSecondary
+                                )
+                            )
+                            val pktText = if (state.totalPacketsCount > 0) {
+                                "${state.totalPacketsCount} Pkt (${state.looseNotesCount})"
+                            } else {
+                                "${state.looseNotesCount} Loose"
+                            }
+                            Text(
+                                text = pktText,
+                                style = TextStyle(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color(0xFFB45309)
+                                )
+                            )
+                        }
+                    }
+                }
+
+                // Dedicated Dual-Language (English + Hindi) In-Words Cheque Banner
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(9.dp))
+                        .background(RupeeEmeraldGreen)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = state.wordsEnglishText,
+                            style = TextStyle(
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = state.wordsHindiText,
+                            style = TextStyle(
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 10.5.sp,
+                                color = Color.White.copy(alpha = 0.92f),
+                                textAlign = TextAlign.Center
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
             }
-        }
-
-        // 3. 4-Action Utility Buttons (Share | Save | Copy | C/CE)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            ActionTile(
-                icon = Icons.Outlined.Share,
-                label = "Share",
-                iconTint = RupeeEmeraldGreen,
-                onClick = {
-                    click()
-                    val slip = viewModel.generateWhatsAppSlipText()
-                    val sendIntent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, slip)
-                        type = "text/plain"
-                    }
-                    context.startActivity(Intent.createChooser(sendIntent, "Share Cash Closing Slip"))
-                },
-                modifier = Modifier.weight(1f)
-            )
-
-            ActionTile(
-                icon = Icons.Outlined.Save,
-                label = "Save",
-                iconTint = Color(0xFF2563EB),
-                onClick = {
-                    click()
-                    val slip = viewModel.generateWhatsAppSlipText()
-                    val activeSummary = state.state.denominations.filter { it.count > 0 }
-                        .joinToString(", ") { "₹${it.faceValue}×${it.count}" }
-                    historyRepo.insert(
-                        CalculationHistoryItem(
-                            type = CalculationType.CASH_TALLY,
-                            formulaExpression = "Total Notes: ${state.totalNotesCount} ($activeSummary)",
-                            primaryResult = IndianVedicFormatter.formatCurrency(state.state.grandTotal),
-                            memoNote = slip
-                        )
-                    )
-                    if (autoCopySlip) {
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clip = ClipData.newPlainText("Cash Tally Breakdown", slip)
-                        clipboard.setPrimaryClip(clip)
-                        Toast.makeText(context, "Saved & Breakdown Copied to Clipboard", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Cash Tally Session Saved to History", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier.weight(1f)
-            )
-
-            ActionTile(
-                icon = Icons.Outlined.ContentCopy,
-                label = "Copy",
-                iconTint = Color(0xFF7C3AED),
-                onClick = {
-                    click()
-                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("Cash Tally Breakdown", viewModel.generateWhatsAppSlipText())
-                    clipboard.setPrimaryClip(clip)
-                    Toast.makeText(context, "Breakdown Copied to Clipboard", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier.weight(1f)
-            )
-
-            ActionTile(
-                icon = Icons.Outlined.CleaningServices,
-                label = "C/CE",
-                iconTint = DeleteRed,
-                onClick = {
-                    tick()
-                    viewModel.resetAll()
-                },
-                modifier = Modifier.weight(1f)
-            )
         }
 
         // 4. Dual-Tab Segmented Switcher (📊 Cash Breakdown | ⚡ Quick Count)
@@ -530,51 +608,6 @@ fun CashTallyScreen(
     }
 }
 
-@Composable
-private fun ActionTile(
-    icon: ImageVector,
-    label: String,
-    iconTint: Color,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val colors = LocalNeumorphicColors.current
-    Box(
-        modifier = modifier
-            .height(64.dp)
-            .neumorphic(
-                shape = NeumorphicShape.CONVEX,
-                cornerRadius = 16.dp,
-                elevation = 3.5.dp,
-                lightShadowColor = colors.lightHighlight,
-                darkShadowColor = colors.darkShadow,
-                backgroundColor = colors.background
-            )
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = iconTint,
-                modifier = Modifier.size(22.dp)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = label,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Monospace,
-                color = colors.textPrimary
-            )
-        }
-    }
-}
 
 @Composable
 private fun DenominationRow(

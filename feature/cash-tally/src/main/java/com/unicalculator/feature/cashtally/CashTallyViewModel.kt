@@ -33,6 +33,11 @@ data class CashTallyUiState(
     ),
     val totalCashFormatted: String = "₹ 1,60,650.00",
     val totalNotesCount: Int = 640,
+    val totalPacketsCount: Int = 6,
+    val totalBundlesCount: Int = 0,
+    val looseNotesCount: Int = 40,
+    val wordsEnglishText: String = "One Lakh Sixty Thousand Six Hundred Fifty Rupees Only",
+    val wordsHindiText: String = "एक लाख साठ हज़ार छह सौ पचास रुपये मात्र",
     val wordsText: String = "One Lakh Sixty Thousand Six Hundred Fifty Rupees Only",
     val inHindi: Boolean = false,
     val activeTab: CashTallyTab = CashTallyTab.CASH_BREAKDOWN,
@@ -145,15 +150,25 @@ class CashTallyViewModel : ViewModel() {
     private fun recalculateTotals() {
         val state = _uiState.value.state
         val total = state.grandTotal
-        val words = IndianCurrencyWordConverter.convertToWords(total, _uiState.value.inHindi)
+        val wordsEng = IndianCurrencyWordConverter.convertToWords(total, inHindi = false)
+        val wordsHin = IndianCurrencyWordConverter.convertToWords(total, inHindi = true)
+        val words = if (_uiState.value.inHindi) wordsHin else wordsEng
         val activeDenoms = state.denominations.filter { it.count > 0 }
         val highest = activeDenoms.maxOfOrNull { it.faceValue } ?: 0
         val lowest = activeDenoms.minOfOrNull { it.faceValue } ?: 0
+        val totalPackets = state.denominations.sumOf { it.count / 100 }
+        val totalBundles = state.denominations.sumOf { it.count / 1000 }
+        val looseNotes = state.denominations.sumOf { it.count % 100 }
 
         _uiState.update {
             it.copy(
                 totalCashFormatted = IndianVedicFormatter.formatCurrency(total),
                 totalNotesCount = state.totalNotesCount,
+                totalPacketsCount = totalPackets,
+                totalBundlesCount = totalBundles,
+                looseNotesCount = looseNotes,
+                wordsEnglishText = wordsEng,
+                wordsHindiText = wordsHin,
                 wordsText = words,
                 highestDenom = highest,
                 lowestDenom = lowest
