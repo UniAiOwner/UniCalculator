@@ -203,6 +203,46 @@ class NeumorphicHapticEngine(private val context: Context) {
             }
         } catch (_: Exception) {}
     }
+
+    private val audioManager: android.media.AudioManager? = try {
+        context.getSystemService(Context.AUDIO_SERVICE) as? android.media.AudioManager
+    } catch (_: Exception) {
+        null
+    }
+
+    fun playSkateDetent(
+        intensity: com.unicalculator.core.common.prefs.HapticIntensity = com.unicalculator.core.common.prefs.HapticIntensity.MEDIUM,
+        playSound: Boolean = true
+    ) {
+        if (intensity != com.unicalculator.core.common.prefs.HapticIntensity.OFF) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val effect = VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        val attrs = android.os.VibrationAttributes.Builder()
+                            .setUsage(android.os.VibrationAttributes.USAGE_TOUCH)
+                            .build()
+                        vibrator?.vibrate(effect, attrs)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        vibrator?.vibrate(effect)
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val effect = VibrationEffect.createOneShot(14L, 160)
+                    vibrator?.vibrate(effect)
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator?.vibrate(14L)
+                }
+            } catch (_: Exception) {}
+        }
+
+        if (playSound) {
+            try {
+                audioManager?.playSoundEffect(android.media.AudioManager.FX_KEYPRESS_STANDARD, 0.5f)
+            } catch (_: Exception) {}
+        }
+    }
 }
 
 @Composable

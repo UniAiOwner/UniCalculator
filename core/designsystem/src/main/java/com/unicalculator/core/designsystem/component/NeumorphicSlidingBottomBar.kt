@@ -65,6 +65,7 @@ fun NeumorphicSlidingBottomBar(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    fractionalPosition: Float? = null,
     height: Dp = 64.dp
 ) {
     val colors = LocalNeumorphicColors.current
@@ -95,16 +96,22 @@ fun NeumorphicSlidingBottomBar(
             val animatedPillOffset by animateDpAsState(
                 targetValue = (tabWidth * selectedTab) + pillPadding,
                 animationSpec = tween(
-                    durationMillis = 420,
+                    durationMillis = 380,
                     easing = FastOutSlowInEasing
                 ),
                 label = "PillSlideAnimation"
             )
 
+            val realTimePillOffset = if (fractionalPosition != null) {
+                (tabWidth * fractionalPosition.coerceIn(0f, (tabCount - 1).toFloat())) + pillPadding
+            } else {
+                animatedPillOffset
+            }
+
             // 1. Physical Sliding Neumorphic Active Pill
             Box(
                 modifier = Modifier
-                    .offset(x = animatedPillOffset)
+                    .offset(x = realTimePillOffset)
                     .width(actualPillWidth)
                     .fillMaxHeight()
                     .neumorphic(
@@ -154,27 +161,27 @@ fun NeumorphicSlidingBottomBar(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val activeEmerald = if (colors.isDark) Color(0xFF00FF9D) else RupeeEmeraldGreen
+
                 tabs.forEachIndexed { index, tab ->
                     val isSelected = selectedTab == index
                     val interactionSource = remember { MutableInteractionSource() }
 
-                    // Color animation
-                    val activeColor = if (colors.isDark) Color(0xFF00FF9D) else RupeeEmeraldGreen
-                    val animatedColor by animateColorAsState(
-                        targetValue = if (isSelected) activeColor else colors.textSecondary,
-                        animationSpec = tween(durationMillis = 320),
-                        label = "TabColorAnimation"
-                    )
+                    // Continuous or state-based active factor (1.0 = fully active, 0.0 = inactive)
+                    val activeFactor = if (fractionalPosition != null) {
+                        (1f - kotlin.math.abs(fractionalPosition - index)).coerceIn(0f, 1f)
+                    } else {
+                        if (isSelected) 1f else 0f
+                    }
 
-                    // Arrival micro-scale pop
-                    val scale by animateFloatAsState(
-                        targetValue = if (isSelected) 1.08f else 1.0f,
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessMedium
-                        ),
-                        label = "TabScalePop"
-                    )
+                    // Dynamically interpolate color between inactive textSecondary and activeEmerald
+                    val tabColor = if (fractionalPosition != null) {
+                        androidx.compose.ui.graphics.lerp(colors.textSecondary, activeEmerald, activeFactor)
+                    } else {
+                        if (isSelected) activeEmerald else colors.textSecondary
+                    }
+
+                    val tabScale = 1.0f + (0.08f * activeFactor)
 
                     Box(
                         modifier = Modifier
@@ -188,7 +195,6 @@ fun NeumorphicSlidingBottomBar(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     onTabSelected(index)
                                 } else {
-                                    // Re-select micro haptic
                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     onTabSelected(index)
                                 }
@@ -196,21 +202,21 @@ fun NeumorphicSlidingBottomBar(
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
-                            modifier = Modifier.scale(scale),
+                            modifier = Modifier.scale(tabScale),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
                             Icon(
                                 imageVector = tab.icon,
                                 contentDescription = tab.title,
-                                tint = animatedColor,
+                                tint = tabColor,
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
                                 text = tab.title,
                                 fontSize = 9.5.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = animatedColor,
+                                fontWeight = if (activeFactor > 0.5f) FontWeight.Bold else FontWeight.Medium,
+                                color = tabColor,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
