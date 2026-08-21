@@ -1149,8 +1149,29 @@
 ### 📌 Current State:
 - Version: v1.0.0-cashtally-bezelless (Edge-to-edge 3-Well HUD, Packets & Dual In-Words).
 
+## 📅 Date: 2026-08-21 — Cash Tally Spacious Grand Display & Ergonomic Action Tiles Restoration
+
+### 🚀 Major Achievements:
+- **Spacious Grand Calculation Canvas (`CashTallyScreen.kt`)**:
+  - Restored prominent, bold `TOTAL CASH` typography (`25sp` Black Monospace Rupee Emerald Green) for maximum instant visibility.
+  - Re-anchored right-side 3D Convex Neumorphic Badge (`92dp × 86dp`) with payments icon, live piece counter (`640 Notes`), and live packet metrics (`3 Pkt`).
+  - Restored expansive multi-line uncropped `In Words` currency transcription (`maxLines = 4`, `lineHeight = 15sp`).
+- **Tactile 4-Action Tiles Bar**:
+  - Restored spacious 4-button action row (`[📤 Share]`, `[💾 Save]`, `[📋 Copy]`, `[🧹 C/CE]`) with 58dp height and 15dp corner radius.
+- **Full Available Display Utilization**:
+  - Balanced 10dp outer padding preventing element cramming while ensuring optimal width usage.
+- **Physical Device Verification (`Realme RMX3998`)**:
+  - Verified live on hardware ➔ `180_cash_tally_spacious_verified_live.png`.
+
+### 🧪 Verification:
+- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment: Stream install succeeded and verified live on Realme RMX3998.
+
+### 📌 Current State:
+- Version: v1.0.0-cashtally-spacious-grand (Grand hero display, uncropped in-words, ergonomic action tiles).
+
 ### 📝 Next Steps:
-- Proceed to **Step 2: Business Tools & Indian Traditional Converters** under Spec-Kit SDD.
+- Ready for next step (Step 2: Business Tools & Indian Converters).
 
 ---
 *Signed by: Shoeb Ahmad*
