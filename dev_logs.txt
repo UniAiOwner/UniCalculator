@@ -1609,3 +1609,41 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-24 — Bold Icon Re-Calibration (Zero Cream Border in Visible Zone)
+
+### 🚀 Major Achievements:
+- **Root Cause Diagnosed**: `option_sleek_cream_bezel.png` was being placed on 432px adaptive icon canvas but green calculator content only filled 69.2% of canvas → 72-82px cream border was showing inside the visible squircle zone (288px window).
+- **Fix**: Applied 1.15x aggressive scale-up with center-crop approach → green calculator content now fills 119.4% of visible squircle zone. Cream bevel rim is fully pushed outside visible zone — squircle mask boldly clips just the green calculator and Rupee ligature.
+- **Exported** across all 5 mipmap densities: mdpi(108px), hdpi(162px), xhdpi(216px), xxhdpi(324px), xxxhdpi(432px) + drawable fallback.
+
+### 🧪 Verification:
+- `./gradlew :app:assembleDebug` → **BUILD SUCCESSFUL** (24s).
+- Streamed install to Realme RMX3998 → **SUCCESS**.
+- `295_bold_icon_homescreen.png`: Bold green calculator fills squircle, zero cream border.
+
+### 📌 Current State:
+- Icon: Maximum bold 3D master emblem — green calculator dominant, cream bevel invisible in squircle.
+
+---
+*Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-24 — Unzoomed Master App Icon (As-Is with Sleek Cream Bezel)
+
+### 🚀 Major Achievements:
+- **Set Master Emblem As-Is Without Zoom**:
+  - Calibrated Android adaptive icon foreground (`ic_launcher_foreground.png`) to place the unzoomed `option_sleek_cream_bezel.png` inside the 72dp safe zone of the 108dp canvas across all density buckets (`mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`).
+  - Seamlessly unified with `#F3EFE6` cream background (`ic_launcher_background.xml`).
+  - Set all legacy mipmap icons (`ic_launcher.png`, `ic_launcher_round.png`) with clean unzoomed scaling.
+  - Verified on live Realme RMX3998 device: entire sleek cream bezel, 3D green calculator, and golden-rimmed Rupee ligature are 100% visible without any clipping or zoom.
+
+### 🧪 Verification:
+- `./gradlew :app:assembleDebug` → **BUILD SUCCESSFUL** (28s).
+- Streamed install to Realme RMX3998 → **SUCCESS**.
+- `299_live_unzoomed_homescreen.png` & `299z_unzoomed_verified.png`: Verified perfect unzoomed appearance.
+
+### 📌 Current State:
+- App Icon: Complete unzoomed 3D emblem with sleek cream bezel, matching master design.
+
+---
+*Signed by: Shoeb Ahmad*

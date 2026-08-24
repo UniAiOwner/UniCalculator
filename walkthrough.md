@@ -1,37 +1,26 @@
-# Walkthrough — Tab Scrubber Instant Navigation
+# Walkthrough — Unzoomed Master App Icon (As-Is with Sleek Cream Bezel)
 
-## 🎛️ Problem Solved
-
-**Pattern implemented: "Tab Scrubber" / "Drag-to-Select Navigator"**
-
-| Action | Before | After |
-|--------|--------|-------|
-| Drag finger on bottom bar | Screen slid horizontally (app looked like it was minimizing) | Screen stays still — only pill + icon highlight moves ✅ |
-| Lift finger after drag | 350ms animated screen slide | Instant screen switch — zero latency ✅ |
-| Tap any tab | 380ms animated screen slide | Instant screen switch — zero latency ✅ |
+## 🎛️ Objective Achieved
+Set the exact image [`option_sleek_cream_bezel.png`](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/option_sleek_cream_bezel.png) as the Android App Icon **as-is without zooming or cropping**, so that the entire sleek cream bezel, green 3D calculator quadrants, and golden-rimmed Rupee (`₹`) symbol are cleanly visible.
 
 ---
 
-## 🔧 Changes Made
+## 📱 Live Verification on Realme RMX3998
 
-### `UniCalculatorApp.kt`
-- `fractionalPosition = null` → pill manages its own internal drag state
-- `onFractionalDrag = null` → pager content NEVER scrolls during drag
-- All `animateScrollToPage(tween(...))` → `scrollToPage()` (instant)
-- Removed 15 lines of redundant fractional haptic tracking from app level
-
-### `NeumorphicSlidingBottomBar.kt`
-- Pill animation: `tween(380ms)` → `spring(DampingRatioMediumBouncy, StiffnessMedium)` — physical snap-to-slot feel
-
----
-
-## 📱 Live Verification (Realme RMX3998)
-
-![Main Calculator Screen with Tab Scrubber Bottom Bar](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/292_main_calculator_live.png)
+````carousel
+![Live Home Screen with Unzoomed App Icon](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/299_live_unzoomed_homescreen.png)
+<!-- slide -->
+![Zoomed In Inspection of Live Icon](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/299z_unzoomed_verified.png)
+<!-- slide -->
+![Master Reference Design](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/option_sleek_cream_bezel.png)
+````
 
 ---
 
-## 🧪 Build & Install
-- `./gradlew :app:assembleDebug` → **BUILD SUCCESSFUL** (41s)
-- ADB streamed install → **SUCCESS**
-- App verified live on Realme RMX3998
+## 🔧 Changes Summary
+1. **Calibrated Adaptive Icon Foreground (`ic_launcher_foreground.png`)**:
+   - Sized emblem cleanly inside the 72dp center safe zone across all 5 mipmap densities (`mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`).
+2. **Background Unification**:
+   - Combined with solid matching cream `#F3EFE6` (`ic_launcher_background.xml`).
+3. **Legacy PNG Icons**:
+   - Updated `ic_launcher.png` and `ic_launcher_round.png` at canonical densities.
