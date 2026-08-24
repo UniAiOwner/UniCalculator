@@ -9,6 +9,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,8 +28,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +43,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,6 +56,7 @@ import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGlow
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
+import kotlin.math.roundToInt
 
 data class NeumorphicTabItem(
     val title: String,
@@ -57,7 +66,7 @@ data class NeumorphicTabItem(
 /**
  * High-performance, tactile Neumorphic Sliding Bottom Navigation Bar.
  * Features a dedicated physical sliding active pill with liquid spring physics,
- * synchronized color transitions, and scale pop arrivals.
+ * continuous finger drag scrubbing, audio-haptic detents, and scale pop arrivals.
  */
 @Composable
 fun NeumorphicSlidingBottomBar(
@@ -65,11 +74,34 @@ fun NeumorphicSlidingBottomBar(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    onFractionalDrag: ((Float) -> Unit)? = null,
+    onDragEnd: ((Int) -> Unit)? = null,
     fractionalPosition: Float? = null,
     height: Dp = 64.dp
 ) {
     val colors = LocalNeumorphicColors.current
     val haptic = LocalHapticFeedback.current
+    val context = LocalContext.current
+    val hapticEngine = remember { NeumorphicHapticEngine(context) }
+
+    val tabCount = tabs.size.coerceAtLeast(1)
+    var isDragging by remember { mutableStateOf(false) }
+    var dragFraction by remember { mutableFloatStateOf(selectedTab.toFloat()) }
+    var lastDetentIndex by remember { mutableIntStateOf(selectedTab) }
+
+    LaunchedEffect(selectedTab) {
+        if (!isDragging) {
+            dragFraction = selectedTab.toFloat()
+            lastDetentIndex = selectedTab
+        }
+    }
+
+    // Determine current effective visual position (scrubbing drag or external pager or static tab)
+    val effectiveFraction = when {
+        isDragging -> dragFraction
+        fractionalPosition != null -> fractionalPosition.coerceIn(0f, (tabCount - 1).toFloat())
+        else -> selectedTab.toFloat()
+    }
 
     Box(
         modifier = modifier
@@ -83,12 +115,57 @@ fun NeumorphicSlidingBottomBar(
                 darkShadowColor = colors.darkShadow,
                 backgroundColor = colors.background
             )
+            .pointerInput(tabCount) {
+                detectHorizontalDragGestures(
+                    onDragStart = { offset ->
+                        isDragging = true
+                        val tabWidthPx = (size.width / tabCount).toFloat()
+                        val fraction = (offset.x / tabWidthPx).coerceIn(0f, (tabCount - 1).toFloat())
+                        dragFraction = fraction
+                        onFractionalDrag?.invoke(fraction)
+                        val rounded = fraction.roundToInt().coerceIn(0, tabCount - 1)
+                        if (rounded != lastDetentIndex) {
+                            hapticEngine.playSkateDetent()
+                            lastDetentIndex = rounded
+                        }
+                    },
+                    onDragEnd = {
+                        isDragging = false
+                        val targetTab = dragFraction.roundToInt().coerceIn(0, tabCount - 1)
+                        if (onDragEnd != null) {
+                            onDragEnd(targetTab)
+                        } else {
+                            onTabSelected(targetTab)
+                        }
+                    },
+                    onDragCancel = {
+                        isDragging = false
+                        val targetTab = dragFraction.roundToInt().coerceIn(0, tabCount - 1)
+                        if (onDragEnd != null) {
+                            onDragEnd(targetTab)
+                        } else {
+                            onTabSelected(targetTab)
+                        }
+                    },
+                    onHorizontalDrag = { change, dragAmount ->
+                        change.consume()
+                        val tabWidthPx = (size.width / tabCount).toFloat()
+                        val deltaFraction = dragAmount / tabWidthPx
+                        dragFraction = (dragFraction + deltaFraction).coerceIn(0f, (tabCount - 1).toFloat())
+                        onFractionalDrag?.invoke(dragFraction)
+                        val rounded = dragFraction.roundToInt().coerceIn(0, tabCount - 1)
+                        if (rounded != lastDetentIndex) {
+                            hapticEngine.playSkateDetent()
+                            lastDetentIndex = rounded
+                        }
+                    }
+                )
+            }
             .padding(horizontal = 6.dp, vertical = 5.dp)
     ) {
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()
         ) {
-            val tabCount = tabs.size.coerceAtLeast(1)
             val tabWidth = maxWidth / tabCount
             val pillPadding = 2.dp
             val actualPillWidth = tabWidth - (pillPadding * 2)
@@ -102,8 +179,8 @@ fun NeumorphicSlidingBottomBar(
                 label = "PillSlideAnimation"
             )
 
-            val realTimePillOffset = if (fractionalPosition != null) {
-                (tabWidth * fractionalPosition.coerceIn(0f, (tabCount - 1).toFloat())) + pillPadding
+            val realTimePillOffset = if (isDragging || fractionalPosition != null) {
+                (tabWidth * effectiveFraction) + pillPadding
             } else {
                 animatedPillOffset
             }
@@ -167,15 +244,15 @@ fun NeumorphicSlidingBottomBar(
                     val isSelected = selectedTab == index
                     val interactionSource = remember { MutableInteractionSource() }
 
-                    // Continuous or state-based active factor (1.0 = fully active, 0.0 = inactive)
-                    val activeFactor = if (fractionalPosition != null) {
-                        (1f - kotlin.math.abs(fractionalPosition - index)).coerceIn(0f, 1f)
+                    // Continuous active factor (1.0 = fully active, 0.0 = inactive)
+                    val activeFactor = if (isDragging || fractionalPosition != null) {
+                        (1f - kotlin.math.abs(effectiveFraction - index)).coerceIn(0f, 1f)
                     } else {
                         if (isSelected) 1f else 0f
                     }
 
                     // Dynamically interpolate color between inactive textSecondary and activeEmerald
-                    val tabColor = if (fractionalPosition != null) {
+                    val tabColor = if (isDragging || fractionalPosition != null) {
                         androidx.compose.ui.graphics.lerp(colors.textSecondary, activeEmerald, activeFactor)
                     } else {
                         if (isSelected) activeEmerald else colors.textSecondary

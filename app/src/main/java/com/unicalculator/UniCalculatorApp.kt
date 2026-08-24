@@ -100,8 +100,26 @@ fun UniCalculatorApp(
 
                     NeumorphicSlidingBottomBar(
                         tabs = tabs,
-                        selectedTab = currentRounded,
+                        selectedTab = pagerState.currentPage,
                         fractionalPosition = currentFractional,
+                        onFractionalDrag = { fraction ->
+                            val targetPage = fraction.toInt().coerceIn(0, 4)
+                            val offset = (fraction - targetPage).coerceIn(0f, 1f)
+                            coroutineScope.launch {
+                                pagerState.scrollToPage(targetPage, offset)
+                            }
+                        },
+                        onDragEnd = { targetTab ->
+                            if (targetTab == 4 && pagerState.currentPage != 4) {
+                                historyFilter = HistoryFilter.ALL
+                            }
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(
+                                    page = targetTab,
+                                    animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
+                                )
+                            }
+                        },
                         onTabSelected = { index ->
                             if (index == 4 && pagerState.currentPage != 4) {
                                 historyFilter = HistoryFilter.ALL
@@ -126,6 +144,7 @@ fun UniCalculatorApp(
         ) {
             HorizontalPager(
                 state = pagerState,
+                userScrollEnabled = false,
                 modifier = Modifier.fillMaxSize(),
                 beyondViewportPageCount = 1
             ) { page ->
