@@ -1,36 +1,34 @@
-# Walkthrough — Android Adaptive Icon Foreground Calibration
+# Walkthrough — Full-Size 3D Master Emblem Launcher Calibration
 
 ## 🚀 Overview
-Successfully resolved the redundant double background ("tile-in-tile") on the Android launcher by isolating the **3D Green Calculator + Golden Rupee Core Emblem** and setting it as the clean, transparent adaptive foreground across all density mipmaps.
+Calibrated the **3D Master Emblem** launcher icon to fill the adaptive icon viewport with bold presence, eliminating wide empty white margins and restoring the full 3D clay calculator pad with its golden-beveled Rupee (`₹`) ligature.
 
 ---
 
-## 🎨 Key Changes & Visual Results
+## 🎨 Key Improvements
 
-### 1. Isolated 3D Core Emblem (`ic_launcher_foreground.png`)
-- Separated the standalone 3D green calculator pad (with embossed `+`, `×`, `-`) and golden-beveled Rupee ligature (`₹`) from the outer cream squircle tile.
-- Centered on a 432x432 transparent canvas calibrated to the Android **66dp safe-zone keyline**.
-- Exported across `mipmap-mdpi`, `mipmap-hdpi`, `mipmap-xhdpi`, `mipmap-xxhdpi`, `mipmap-xxxhdpi`, and fallback `drawable`.
+1. **Bold Emblem Scale & Aspect Ratio**:
+   - The 3D green calculator quadrants (with embossed `+`, `×`, `-`) and golden Rupee ligature fill ~85% of the squircle canvas.
+   - Preserves all 3D tactile depth, embossed textures, and specular highlights without distortion.
 
-### 2. Clean Warm Background (`ic_launcher_background.xml`)
-- Set clean `#FAF7F0` warm cream base.
-- The phone's native launcher mask (Squircle / Circle / Teardrop) now wraps seamlessly directly around the 3D emblem without any redundant inner borders.
+2. **Sleek 3D Bevel Rim**:
+   - The wide empty cream/white margin is eliminated and replaced by a sleek, tactile clay bevel rim that merges seamlessly with the phone launcher squircle mask.
 
 ---
 
-## 📱 Live Physical Verification (Realme RMX3998)
+## 📱 Live Physical Phone Screenshots (Realme RMX3998)
 
 ````carousel
-![Calibrated Icon on Home Screen Launcher](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/283_launcher_calibrated_live.png)
+![Calibrated Full-Size Icon on Home Screen](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/288_launcher_sleek_zoomed_live.png)
 <!-- slide -->
-![Calibrated Icon in App Drawer List](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/285_app_drawer_unicalculator.png)
+![Calibrated Full-Size Icon in App Drawer](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/289_app_drawer_sleek_zoomed_live.png)
 <!-- slide -->
-![Clean Isolated 3D Adaptive Foreground Asset](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/adaptive_foreground_clean_verified.png)
+![Sleek Bezel 3D Master Emblem Asset](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/option_sleek_cream_bezel.png)
 ````
 
 ---
 
 ## 🧪 Verification
 - `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
-- Streamed install to physical Realme device ➔ **SUCCESS**.
-- Hardware screenshots confirm 0 redundant white borders in both Home Screen and App Drawer.
+- Streamed installation to physical Realme device ➔ **SUCCESS**.
+- Hardware screenshots confirm large, bold 3D emblem with sleek bevel border.
