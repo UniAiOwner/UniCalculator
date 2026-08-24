@@ -1539,3 +1539,26 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-24 — Android Adaptive Icon Calibration & Double Background Elimination
+
+### 🚀 Major Achievements:
+- **Clean Standalone 3D Core Foreground**:
+  - Extracted and transparent-masked the 3D Green Calculator Pad and Golden-Beveled Rupee (`₹`) ligature without the outer squircle tile.
+  - Calibrated safe-zone keyline placement across all density mipmap foregrounds (`ic_launcher_foreground.png`).
+- **Eliminated Double Background Artifact**:
+  - Removed the "tile-in-tile" appearance on phone launcher.
+  - Clean `#FAF7F0` warm background now matches phone launcher mask natively with zero extra white padding.
+- **Physical Hardware Verification (Realme RMX3998)**:
+  - `283_launcher_calibrated_live.png`: Verified on Home Screen launcher.
+  - `285_app_drawer_unicalculator.png`: Verified in App Drawer list under 'U'.
+
+### 🧪 Verification:
+- `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Streamed install to Realme RMX3998 -> **SUCCESS**.
+
+### 📌 Current State:
+- Version: v1.0.0-pro-bharat (Pixel-perfect adaptive launcher icon and flagship splash screen).
+
+---
+*Signed by: Shoeb Ahmad*
