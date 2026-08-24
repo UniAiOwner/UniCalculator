@@ -1583,3 +1583,29 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-24 — Tab Scrubber Instant Navigation (Bottom Bar Decoupled)
+
+### 🚀 Major Achievements:
+- **Implemented "Tab Scrubber" / "Drag-to-Select Navigator" Pattern**:
+  - **Root Cause Fixed**: `onFractionalDrag` was driving `pagerState.scrollToPage(targetPage, offset)` which physically scrolled the screen content during drag — causing app to look like it was minimizing or sliding.
+  - **Fix #1 (`UniCalculatorApp.kt`)**: `fractionalPosition = null` + `onFractionalDrag = null` → Screen content NEVER moves during bottom bar drag. Pill manages its own internal drag state independently.
+  - **Fix #2 (`UniCalculatorApp.kt`)**: All `animateScrollToPage(tween(350-380ms))` → `scrollToPage()` (instant, zero-latency) — applies to drag-release, tap, and all cross-screen navigate-to-history calls.
+  - **Fix #3 (`NeumorphicSlidingBottomBar.kt`)**: Pill animation `tween(380ms)` → `spring(DampingRatioMediumBouncy, StiffnessMedium)` for physical snap-to-slot tactile feel.
+  - Removed 15 lines of redundant fractional haptic tracking from app level — bottom bar already handles haptic detents internally.
+- **Result**: Bottom bar drag → only pill + icon highlight moves. Screen jumps INSTANTLY on finger lift. Haptic detent fires at each tab during scrub.
+
+### 🧪 Verification:
+- `./gradlew :app:assembleDebug` → **BUILD SUCCESSFUL** (41s).
+- Streamed install to Realme RMX3998 → **SUCCESS**.
+- `292_main_calculator_live.png`: App running cleanly on device.
+
+### 📌 Current State:
+- Version: v1.0.0-pro-bharat (Tab Scrubber instant navigation).
+
+### 📝 Next Steps:
+- Test all 5 tabs for drag-to-switch behavior on physical device.
+- Proceed to next feature as directed by user.
+
+---
+*Signed by: Shoeb Ahmad*

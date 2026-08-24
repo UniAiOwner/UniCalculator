@@ -1,7 +1,5 @@
 package com.unicalculator
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,18 +17,14 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.unicalculator.core.designsystem.component.NeumorphicHapticEngine
 import com.unicalculator.core.designsystem.component.NeumorphicSlidingBottomBar
 import com.unicalculator.core.designsystem.component.NeumorphicTabItem
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
@@ -41,7 +35,6 @@ import com.unicalculator.feature.history.HistoryFilter
 import com.unicalculator.feature.history.HistoryTapeScreen
 import com.unicalculator.feature.tools.BusinessToolsScreen
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 enum class MainTab(val title: String, val icon: ImageVector) {
     STANDARD("Standard", Icons.Default.Calculate),
@@ -60,21 +53,6 @@ fun UniCalculatorApp(
     val coroutineScope = rememberCoroutineScope()
     var historyFilter by remember { mutableStateOf(HistoryFilter.ALL) }
     val colors = LocalNeumorphicColors.current
-    val context = LocalContext.current
-    val hapticEngine = remember { NeumorphicHapticEngine(context) }
-
-    // Real-time continuous fractional position for synchronized bottom pill skating
-    val currentFractional = pagerState.currentPage + pagerState.currentPageOffsetFraction
-
-    // Real-time Detent Boundary Haptic + Sound Feedback
-    var lastDetentPage by remember { mutableIntStateOf(0) }
-    val currentRounded = currentFractional.roundToInt().coerceIn(0, 4)
-    LaunchedEffect(currentRounded) {
-        if (currentRounded != lastDetentPage) {
-            hapticEngine.playSkateDetent()
-            lastDetentPage = currentRounded
-        }
-    }
 
     Scaffold(
         bottomBar = {
@@ -98,26 +76,22 @@ fun UniCalculatorApp(
                         }
                     }
 
+                    // Tab Scrubber pattern:
+                    // - fractionalPosition = null → pill manages its own drag state internally
+                    // - onFractionalDrag = null → pager content never moves during drag
+                    // - onDragEnd → instant scrollToPage (zero-latency snap, no slide animation)
+                    // - onTabSelected → instant scrollToPage (zero-latency tap, no slide animation)
                     NeumorphicSlidingBottomBar(
                         tabs = tabs,
                         selectedTab = pagerState.currentPage,
-                        fractionalPosition = currentFractional,
-                        onFractionalDrag = { fraction ->
-                            val targetPage = fraction.toInt().coerceIn(0, 4)
-                            val offset = (fraction - targetPage).coerceIn(0f, 1f)
-                            coroutineScope.launch {
-                                pagerState.scrollToPage(targetPage, offset)
-                            }
-                        },
+                        fractionalPosition = null,
+                        onFractionalDrag = null,
                         onDragEnd = { targetTab ->
                             if (targetTab == 4 && pagerState.currentPage != 4) {
                                 historyFilter = HistoryFilter.ALL
                             }
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(
-                                    page = targetTab,
-                                    animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
-                                )
+                                pagerState.scrollToPage(targetTab)
                             }
                         },
                         onTabSelected = { index ->
@@ -125,10 +99,7 @@ fun UniCalculatorApp(
                                 historyFilter = HistoryFilter.ALL
                             }
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(
-                                    page = index,
-                                    animationSpec = tween(durationMillis = 380, easing = FastOutSlowInEasing)
-                                )
+                                pagerState.scrollToPage(index)
                             }
                         }
                     )
@@ -153,10 +124,7 @@ fun UniCalculatorApp(
                         onNavigateToHistory = {
                             historyFilter = HistoryFilter.STANDARD
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(
-                                    page = 4,
-                                    animationSpec = tween(durationMillis = 380, easing = FastOutSlowInEasing)
-                                )
+                                pagerState.scrollToPage(4)
                             }
                         },
                         onToggleTheme = onToggleTheme
@@ -165,10 +133,7 @@ fun UniCalculatorApp(
                         onNavigateToHistory = {
                             historyFilter = HistoryFilter.GST_PRO
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(
-                                    page = 4,
-                                    animationSpec = tween(durationMillis = 380, easing = FastOutSlowInEasing)
-                                )
+                                pagerState.scrollToPage(4)
                             }
                         },
                         onToggleTheme = onToggleTheme
@@ -177,10 +142,7 @@ fun UniCalculatorApp(
                         onNavigateToHistory = {
                             historyFilter = HistoryFilter.CASH_TALLY
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(
-                                    page = 4,
-                                    animationSpec = tween(durationMillis = 380, easing = FastOutSlowInEasing)
-                                )
+                                pagerState.scrollToPage(4)
                             }
                         },
                         onToggleTheme = onToggleTheme
@@ -189,19 +151,13 @@ fun UniCalculatorApp(
                         onNavigateToHistory = {
                             historyFilter = HistoryFilter.TOOLS
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(
-                                    page = 4,
-                                    animationSpec = tween(durationMillis = 380, easing = FastOutSlowInEasing)
-                                )
+                                pagerState.scrollToPage(4)
                             }
                         },
                         onToggleTheme = onToggleTheme,
                         onNavigateToGstPro = {
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(
-                                    page = 1,
-                                    animationSpec = tween(durationMillis = 380, easing = FastOutSlowInEasing)
-                                )
+                                pagerState.scrollToPage(1)
                             }
                         }
                     )

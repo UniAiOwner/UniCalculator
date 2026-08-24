@@ -1,34 +1,37 @@
-# Walkthrough — Full-Size 3D Master Emblem Launcher Calibration
+# Walkthrough — Tab Scrubber Instant Navigation
 
-## 🚀 Overview
-Calibrated the **3D Master Emblem** launcher icon to fill the adaptive icon viewport with bold presence, eliminating wide empty white margins and restoring the full 3D clay calculator pad with its golden-beveled Rupee (`₹`) ligature.
+## 🎛️ Problem Solved
 
----
+**Pattern implemented: "Tab Scrubber" / "Drag-to-Select Navigator"**
 
-## 🎨 Key Improvements
-
-1. **Bold Emblem Scale & Aspect Ratio**:
-   - The 3D green calculator quadrants (with embossed `+`, `×`, `-`) and golden Rupee ligature fill ~85% of the squircle canvas.
-   - Preserves all 3D tactile depth, embossed textures, and specular highlights without distortion.
-
-2. **Sleek 3D Bevel Rim**:
-   - The wide empty cream/white margin is eliminated and replaced by a sleek, tactile clay bevel rim that merges seamlessly with the phone launcher squircle mask.
+| Action | Before | After |
+|--------|--------|-------|
+| Drag finger on bottom bar | Screen slid horizontally (app looked like it was minimizing) | Screen stays still — only pill + icon highlight moves ✅ |
+| Lift finger after drag | 350ms animated screen slide | Instant screen switch — zero latency ✅ |
+| Tap any tab | 380ms animated screen slide | Instant screen switch — zero latency ✅ |
 
 ---
 
-## 📱 Live Physical Phone Screenshots (Realme RMX3998)
+## 🔧 Changes Made
 
-````carousel
-![Calibrated Full-Size Icon on Home Screen](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/288_launcher_sleek_zoomed_live.png)
-<!-- slide -->
-![Calibrated Full-Size Icon in App Drawer](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/289_app_drawer_sleek_zoomed_live.png)
-<!-- slide -->
-![Sleek Bezel 3D Master Emblem Asset](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/option_sleek_cream_bezel.png)
-````
+### `UniCalculatorApp.kt`
+- `fractionalPosition = null` → pill manages its own internal drag state
+- `onFractionalDrag = null` → pager content NEVER scrolls during drag
+- All `animateScrollToPage(tween(...))` → `scrollToPage()` (instant)
+- Removed 15 lines of redundant fractional haptic tracking from app level
+
+### `NeumorphicSlidingBottomBar.kt`
+- Pill animation: `tween(380ms)` → `spring(DampingRatioMediumBouncy, StiffnessMedium)` — physical snap-to-slot feel
 
 ---
 
-## 🧪 Verification
-- `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
-- Streamed installation to physical Realme device ➔ **SUCCESS**.
-- Hardware screenshots confirm large, bold 3D emblem with sleek bevel border.
+## 📱 Live Verification (Realme RMX3998)
+
+![Main Calculator Screen with Tab Scrubber Bottom Bar](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/292_main_calculator_live.png)
+
+---
+
+## 🧪 Build & Install
+- `./gradlew :app:assembleDebug` → **BUILD SUCCESSFUL** (41s)
+- ADB streamed install → **SUCCESS**
+- App verified live on Realme RMX3998

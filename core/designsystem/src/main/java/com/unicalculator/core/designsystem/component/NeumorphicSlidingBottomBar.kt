@@ -1,12 +1,10 @@
 package com.unicalculator.core.designsystem.component
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -172,9 +170,9 @@ fun NeumorphicSlidingBottomBar(
 
             val animatedPillOffset by animateDpAsState(
                 targetValue = (tabWidth * selectedTab) + pillPadding,
-                animationSpec = tween(
-                    durationMillis = 380,
-                    easing = FastOutSlowInEasing
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMedium
                 ),
                 label = "PillSlideAnimation"
             )
