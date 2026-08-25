@@ -62,9 +62,11 @@ fun CashTallySettingsSheet(
     val show2000Note by prefs.show2000Note.collectAsState()
     val show2Note by prefs.show2Note.collectAsState()
     val show1Note by prefs.show1Note.collectAsState()
+    val firmName by prefs.firmName.collectAsState()
     val cashierName by prefs.cashierName.collectAsState()
     val autoCopySlip by prefs.autoCopySlip.collectAsState()
 
+    var tempFirm by remember { mutableStateOf(firmName) }
     var tempCashier by remember { mutableStateOf(cashierName) }
 
     ModalBottomSheet(
@@ -99,6 +101,7 @@ fun CashTallySettingsSheet(
                     icon = Icons.Default.Close,
                     contentDescription = "Close",
                     onClick = {
+                        prefs.setFirmName(tempFirm)
                         prefs.setCashierName(tempCashier)
                         onDismiss()
                     },
@@ -154,49 +157,96 @@ fun CashTallySettingsSheet(
                 }
             }
 
-            // 2. Cashier / Teller Tag
+            // 2. Business & Cashier Identity Tag
             NeumorphicPlate(
                 modifier = Modifier.fillMaxWidth(),
                 shape = NeumorphicShape.CONVEX,
                 cornerRadius = 16.dp
             ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Text(
-                        text = "CASHIER / SHIFT NAME (FOR CLOSING SLIPS)",
-                        style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = colors.textSecondary)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .neumorphic(
-                                shape = NeumorphicShape.CONCAVE,
-                                cornerRadius = 12.dp,
-                                elevation = 3.dp,
-                                lightShadowColor = colors.lightHighlight,
-                                darkShadowColor = colors.darkShadow,
-                                backgroundColor = colors.lcdWellBackground
-                            )
-                            .padding(horizontal = 12.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        BasicTextField(
-                            value = tempCashier,
-                            onValueChange = {
-                                tempCashier = it
-                                prefs.setCashierName(it)
-                            },
-                            textStyle = TextStyle(
-                                fontFamily = FontFamily.Default,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 15.sp,
-                                color = colors.textPrimary
-                            ),
-                            cursorBrush = SolidColor(colors.accentEmerald),
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Firm / Business Name Field
+                    Column {
+                        Text(
+                            text = "FIRM / BUSINESS / SHOP NAME",
+                            style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = colors.textSecondary)
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .neumorphic(
+                                    shape = NeumorphicShape.CONCAVE,
+                                    cornerRadius = 12.dp,
+                                    elevation = 3.dp,
+                                    lightShadowColor = colors.lightHighlight,
+                                    darkShadowColor = colors.darkShadow,
+                                    backgroundColor = colors.lcdWellBackground
+                                )
+                                .padding(horizontal = 12.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            BasicTextField(
+                                value = tempFirm,
+                                onValueChange = {
+                                    tempFirm = it
+                                    prefs.setFirmName(it)
+                                },
+                                textStyle = TextStyle(
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 15.sp,
+                                    color = colors.textPrimary
+                                ),
+                                cursorBrush = SolidColor(colors.accentEmerald),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+
+                    // Cashier Name Field
+                    Column {
+                        Text(
+                            text = "CASHIER NAME",
+                            style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = colors.textSecondary)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .neumorphic(
+                                    shape = NeumorphicShape.CONCAVE,
+                                    cornerRadius = 12.dp,
+                                    elevation = 3.dp,
+                                    lightShadowColor = colors.lightHighlight,
+                                    darkShadowColor = colors.darkShadow,
+                                    backgroundColor = colors.lcdWellBackground
+                                )
+                                .padding(horizontal = 12.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            BasicTextField(
+                                value = tempCashier,
+                                onValueChange = {
+                                    tempCashier = it
+                                    prefs.setCashierName(it)
+                                },
+                                textStyle = TextStyle(
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 15.sp,
+                                    color = colors.textPrimary
+                                ),
+                                cursorBrush = SolidColor(colors.accentEmerald),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }

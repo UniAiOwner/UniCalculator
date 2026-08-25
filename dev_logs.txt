@@ -1625,16 +1625,6 @@
 ### 📌 Current State:
 - Icon: Maximum bold 3D master emblem — green calculator dominant, cream bevel invisible in squircle.
 
----
-*Signed by: Shoeb Ahmad*
-
-## 📅 Date: 2026-08-24 — Unzoomed Master App Icon (As-Is with Sleek Cream Bezel)
-
-### 🚀 Major Achievements:
-- **Set Master Emblem As-Is Without Zoom**:
-  - Calibrated Android adaptive icon foreground (`ic_launcher_foreground.png`) to place the unzoomed `option_sleek_cream_bezel.png` inside the 72dp safe zone of the 108dp canvas across all density buckets (`mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`).
-  - Seamlessly unified with `#F3EFE6` cream background (`ic_launcher_background.xml`).
-  - Set all legacy mipmap icons (`ic_launcher.png`, `ic_launcher_round.png`) with clean unzoomed scaling.
   - Verified on live Realme RMX3998 device: entire sleek cream bezel, 3D green calculator, and golden-rimmed Rupee ligature are 100% visible without any clipping or zoom.
 
 ### 🧪 Verification:
@@ -1662,6 +1652,33 @@
 
 ### 📌 Current State:
 - Visual Branding: 100% Locked & Immutable.
+
+---
+*Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-25 — Cash Tally Firm Name, Cashier Identity & Quick Count Cleanup
+
+### 🚀 Major Achievements:
+- **Cleaned Cash Tally Navigation**: Removed redundant `Quick Count` tab switcher from `CashTallyScreen.kt` and `CashTallyViewModel.kt`, creating a seamless, unified surface flow directly from the 3-Well Master HUD and action buttons to the denomination ledger rows.
+- **Added Firm / Business Name & Cashier Name in Settings (`CashTallySettingsSheet.kt`)**:
+  - Added persistent `firmName` and `cashierName` StateFlow preferences in `UniCalculatorPreferences.kt` (`KEY_FIRM_NAME`, `KEY_CASHIER_NAME`).
+  - Added dual Neumorphic concave input wells in the settings bottom sheet for **FIRM / BUSINESS / SHOP NAME** and **CASHIER NAME**.
+- **Refined WhatsApp Closing Slip Header (`CashTallyViewModel.kt`)**:
+  - Cleaned slip header formatting to feature `🧾 [FIRM NAME] — CASH TALLY` in the banner, followed by Date/Time and `👤 Cashier: [Cashier Name]`, eliminating redundant duplicate firm tags.
+
+### 🧪 Verification:
+- Automated Tests: `./gradlew testDebugUnitTest` across all modules -> **BUILD SUCCESSFUL** (0 failures).
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Hardware Deployment: Installed APK onto physical device `Realme RMX3998` via ADB.
+- Live Interactive Verification:
+  - `305_cash_tally_tab.png`: Verified clean Cash Tally screen without Quick Count tab.
+  - `314_settings_sheet_success.png`: Verified sleek Neumorphic input fields for both Firm Name and Cashier Name.
+
+### 📌 Current State:
+- Version: v1.0.0-pro-bharat (Cash Tally Firm & Cashier Customization, Clean Surface Flow, 100% hardware verified).
+
+### 📝 Next Steps:
+- Continue polish across feature modules as requested.
 
 ---
 *Signed by: Shoeb Ahmad*

@@ -11,11 +11,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 
-enum class CashTallyTab {
-    CASH_BREAKDOWN,
-    QUICK_COUNT
-}
-
 data class CashTallyUiState(
     val state: CashTallyState = CashTallyState(
         denominations = listOf(
@@ -40,7 +35,6 @@ data class CashTallyUiState(
     val wordsHindiText: String = "एक लाख साठ हज़ार छह सौ पचास रुपये मात्र",
     val wordsText: String = "One Lakh Sixty Thousand Six Hundred Fifty Rupees Only",
     val inHindi: Boolean = false,
-    val activeTab: CashTallyTab = CashTallyTab.CASH_BREAKDOWN,
     val highestDenom: Int = 500,
     val lowestDenom: Int = 20
 )
@@ -100,9 +94,6 @@ class CashTallyViewModel : ViewModel() {
         recalculateTotals()
     }
 
-    fun setActiveTab(tab: CashTallyTab) {
-        _uiState.update { it.copy(activeTab = tab) }
-    }
 
     fun resetAll() {
         _uiState.update { current ->
@@ -119,10 +110,11 @@ class CashTallyViewModel : ViewModel() {
 
     fun generateWhatsAppSlipText(): String {
         val state = _uiState.value.state
+        val firm = preferences?.firmName?.value?.takeIf { it.isNotBlank() } ?: state.shopName.ifBlank { "UniAi Retail Store" }
         val cashier = preferences?.cashierName?.value?.takeIf { it.isNotBlank() } ?: "Counter Master"
         val sb = StringBuilder()
         sb.append("========================================\n")
-        sb.append("   🧾 ${state.shopName.uppercase()} — CASH TALLY\n")
+        sb.append("   🧾 ${firm.uppercase()} — CASH TALLY\n")
         sb.append("========================================\n")
         sb.append("📅 Date: ${java.time.LocalDate.now()} | ⏰ Time: ${java.time.LocalTime.now().toString().take(5)}\n")
         sb.append("👤 Cashier: $cashier\n\n")

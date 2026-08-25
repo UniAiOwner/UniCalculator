@@ -67,6 +67,9 @@ class UniCalculatorPreferences private constructor(context: Context) {
     private val _show1Note = MutableStateFlow(prefs.getBoolean(KEY_SHOW_1_NOTE, true))
     val show1Note: StateFlow<Boolean> = _show1Note.asStateFlow()
 
+    private val _firmName = MutableStateFlow(prefs.getString(KEY_FIRM_NAME, "UniAi Retail Store") ?: "UniAi Retail Store")
+    val firmName: StateFlow<String> = _firmName.asStateFlow()
+
     private val _cashierName = MutableStateFlow(prefs.getString(KEY_CASHIER_NAME, "") ?: "")
     val cashierName: StateFlow<String> = _cashierName.asStateFlow()
 
@@ -146,6 +149,11 @@ class UniCalculatorPreferences private constructor(context: Context) {
         _show1Note.value = show
     }
 
+    fun setFirmName(name: String) {
+        prefs.edit().putString(KEY_FIRM_NAME, name).apply()
+        _firmName.value = name
+    }
+
     fun setCashierName(name: String) {
         prefs.edit().putString(KEY_CASHIER_NAME, name).apply()
         _cashierName.value = name
@@ -181,6 +189,7 @@ class UniCalculatorPreferences private constructor(context: Context) {
         private const val KEY_SHOW_2000_NOTE = "show_2000_note"
         private const val KEY_SHOW_2_NOTE = "show_2_note"
         private const val KEY_SHOW_1_NOTE = "show_1_note"
+        private const val KEY_FIRM_NAME = "firm_name"
         private const val KEY_CASHIER_NAME = "cashier_name"
         private const val KEY_AUTO_COPY_SLIP = "auto_copy_slip"
         private const val KEY_AUTO_SAVE_TOOLS = "auto_save_tools"
