@@ -1,6 +1,22 @@
-# Explicitly ignore PLANNING folder as requested
+# Explicitly ignore internal planning and design folders
 PLANNING/
 planning/
+/UI_MOCKUPS/
+/DOCS/
+/assets/
+/.specify/
+/walkthrough.md
+/BRAND_IDENTITY_LOCK.md
+
+# Root loose visual assets & temporary HTML
+/*.png
+/*.jpg
+/*.jpeg
+/*.html
+
+# Explicitly keep docs/ for README showcase
+!/docs/
+!/docs/**
 
 # Android & Gradle
 *.iml
@@ -19,3 +35,4 @@ build/
 .gemini/
 *.token
 *.log
+
