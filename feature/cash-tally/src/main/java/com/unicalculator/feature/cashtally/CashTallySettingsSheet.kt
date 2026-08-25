@@ -282,10 +282,10 @@ fun CashTallySettingsSheet(
                 }
             }
 
-            // 4. About UniCalculator Bharat
+            // 4. About UniCalculator
             var showAboutSheet by remember { androidx.compose.runtime.mutableStateOf(false) }
             NeumorphicButton(
-                text = "ℹ️ About UniCalculator Bharat",
+                text = "ℹ️ About UniCalculator",
                 onClick = { showAboutSheet = true },
                 accentColor = RupeeEmeraldGreen,
                 fontSize = 13,

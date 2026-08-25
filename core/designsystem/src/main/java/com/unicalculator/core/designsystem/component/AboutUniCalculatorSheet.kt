@@ -124,21 +124,11 @@ fun AboutUniCalculatorSheet(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "UniCalculator",
-                    fontSize = 22.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Black,
                     fontFamily = FontFamily.Default,
                     color = colors.textPrimary
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "— ", color = GstSaffronAmber, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    Text(
-                        text = "Bharat",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = if (colors.isDark) Color(0xFF00FF9D) else RupeeEmeraldGreen
-                    )
-                    Text(text = " —", color = GstSaffronAmber, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Calculate • Simplify • Grow",
@@ -148,7 +138,7 @@ fun AboutUniCalculatorSheet(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "v1.0.0 Pro • Bharat FinTech Edition",
+                    text = "v1.0.0 Pro Edition",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
@@ -156,7 +146,7 @@ fun AboutUniCalculatorSheet(
                 )
             }
 
-            // 2. Co-Founder & Architect Bio Card
+            // 2. Publisher & Engineering Bio Card
             NeumorphicPlate(
                 modifier = Modifier.fillMaxWidth(),
                 shape = NeumorphicShape.CONVEX,
@@ -168,20 +158,20 @@ fun AboutUniCalculatorSheet(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "👤 Architect & Engineering",
+                            text = "🏢 Publisher & Engineering",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.textPrimary
                         )
                     }
                     Text(
-                        text = "Designed & Built by Shoeb Ahmad",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
+                        text = "UniCore Technologies",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
                         color = if (colors.isDark) Color(0xFF00FF9D) else RupeeEmeraldGreen
                     )
                     Text(
-                        text = "UniAi Innovations — Engineered with mathematical rigor for Indian Kirana, Vyapar, CAs & Retail Commerce.",
+                        text = "Architect & Lead Engineer: Shoeb Ahmad\nEngineered with mathematical precision for Financial, GST, Retail & Scientific calculations.",
                         fontSize = 11.5.sp,
                         color = colors.textSecondary,
                         lineHeight = 16.sp
@@ -237,9 +227,8 @@ fun AboutUniCalculatorSheet(
             // 4. Privacy & Offline-First Security
             NeumorphicPlate(
                 modifier = Modifier.fillMaxWidth(),
-                shape = NeumorphicShape.CONCAVE,
-                cornerRadius = 18.dp,
-                elevation = 3.dp
+                shape = NeumorphicShape.CONVEX,
+                cornerRadius = 18.dp
             ) {
                 Row(
                     modifier = Modifier.padding(14.dp).fillMaxWidth(),
@@ -260,7 +249,7 @@ fun AboutUniCalculatorSheet(
                             color = colors.textPrimary
                         )
                         Text(
-                            text = "Zero tracking • Zero ads • Zero telemetry. All ledger data stays strictly on your device.",
+                            text = "Zero tracking • Zero ads • Zero telemetry. All calculation data stays strictly on your device.",
                             fontSize = 11.sp,
                             color = colors.textSecondary,
                             lineHeight = 15.sp
@@ -280,11 +269,11 @@ fun AboutUniCalculatorSheet(
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             )
 
-            // 6. National Heritage Footnote
+            // 6. Copyright & Legal Footnote
             Text(
-                text = "🇮🇳 Made for Bharat • Built for You 🇮🇳",
+                text = "© 2026 UniCore Technologies • All rights reserved.",
                 fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Medium,
                 color = colors.textSecondary,
                 textAlign = TextAlign.Center
             )

@@ -225,41 +225,22 @@ fun UniSplashScreen(
             // B. Flagship Wordmark
             Text(
                 text = "UniCalculator",
-                fontSize = 30.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Black,
+                fontFamily = FontFamily.Default,
                 letterSpacing = 0.5.sp,
                 color = textPrimary
             )
 
-            Spacer(modifier = Modifier.height(3.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // C. Bharat Accent
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(22.dp)
-                        .height(3.dp)
-                        .clip(RoundedCornerShape(1.5.dp))
-                        .background(Color(0xFFE65100))
-                )
-                Text(
-                    text = "  Bharat  ",
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.sp,
-                    color = if (isDarkTheme) Color(0xFF00FF9D) else RupeeEmeraldGreen
-                )
-                Box(
-                    modifier = Modifier
-                        .width(22.dp)
-                        .height(3.dp)
-                        .clip(RoundedCornerShape(1.5.dp))
-                        .background(Color(0xFF00875A))
-                )
-            }
+            Text(
+                text = "Professional Calculator Suite",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 1.sp,
+                color = if (isDarkTheme) Color(0xFF00FF9D) else RupeeEmeraldGreen
+            )
 
             Spacer(modifier = Modifier.height(6.dp))
 
@@ -357,7 +338,7 @@ fun UniSplashScreen(
                 .padding(horizontal = 16.dp, vertical = 6.dp)
         ) {
             Text(
-                text = "🇮🇳 Made for Bharat • Built for You 🇮🇳",
+                text = "⚡ Powered by UniCore Technologies",
                 fontSize = 11.5.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.4.sp,

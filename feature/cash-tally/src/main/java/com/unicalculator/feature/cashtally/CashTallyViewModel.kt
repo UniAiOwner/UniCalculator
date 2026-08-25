@@ -134,7 +134,7 @@ class CashTallyViewModel : ViewModel() {
         sb.append(IndianCurrencyWordConverter.convertToWords(state.grandTotal, false)).append("\n")
         sb.append("(${IndianCurrencyWordConverter.convertToWords(state.grandTotal, true)})\n")
         sb.append("========================================\n")
-        sb.append("✨ Generated via UniCalculator Bharat")
+        sb.append("✨ Generated via UniCalculator • UniCore Technologies")
         return sb.toString()
     }
 
