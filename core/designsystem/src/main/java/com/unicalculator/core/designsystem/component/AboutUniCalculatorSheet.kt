@@ -156,19 +156,24 @@ fun AboutUniCalculatorSheet(
                     modifier = Modifier.padding(16.dp).fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "🏢 Publisher & Engineering",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = colors.textPrimary
-                        )
-                    }
+                    Text(
+                        text = "🏢 Publisher & Engineering",
+                        fontSize = 12.5.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
                     Text(
                         text = "UniCore Technologies",
-                        fontSize = 14.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (colors.isDark) Color(0xFF00FF9D) else RupeeEmeraldGreen
+                    )
+                    Text(
+                        text = "📧 theunicoretech@gmail.com",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = FontFamily.Monospace,
+                        color = colors.textSecondary
                     )
                     Text(
                         text = "Architect & Lead Engineer: Shoeb Ahmad\nEngineered with mathematical precision for Financial, GST, Retail & Scientific calculations.",
@@ -258,16 +263,46 @@ fun AboutUniCalculatorSheet(
                 }
             }
 
-            // 5. GitHub Repository Button
-            NeumorphicButton(
-                text = "🌐 View on GitHub (UniCalculator)",
-                onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/UniAiOwner/UniCalculator"))
-                    context.startActivity(intent)
-                },
-                fontSize = 12,
-                modifier = Modifier.fillMaxWidth().height(48.dp)
-            )
+            // 5. Official Commercial Actions (Contact & Share)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                NeumorphicButton(
+                    text = "✉️ Support",
+                    onClick = {
+                        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                            data = Uri.parse("mailto:theunicoretech@gmail.com")
+                            putExtra(Intent.EXTRA_SUBJECT, "[UniCalculator] Feedback & Support")
+                        }
+                        try {
+                            context.startActivity(emailIntent)
+                        } catch (e: Exception) {
+                            val chooser = Intent.createChooser(emailIntent, "Send Email")
+                            context.startActivity(chooser)
+                        }
+                    },
+                    accentColor = RupeeEmeraldGreen,
+                    fontSize = 12,
+                    modifier = Modifier.weight(1f).height(46.dp)
+                )
+
+                NeumorphicButton(
+                    text = "📤 Share App",
+                    onClick = {
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(
+                                Intent.EXTRA_TEXT,
+                                "Download UniCalculator — Professional 5-in-1 Calculator Suite by UniCore Technologies!"
+                            )
+                        }
+                        context.startActivity(Intent.createChooser(shareIntent, "Share UniCalculator"))
+                    },
+                    fontSize = 12,
+                    modifier = Modifier.weight(1f).height(46.dp)
+                )
+            }
 
             // 6. Copyright & Legal Footnote
             Text(

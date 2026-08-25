@@ -1,36 +1,37 @@
-# 🏢 Walkthrough: App Name Standardization (UniCalculator) & UniCore Technologies Legal Integration
+# 📱 Walkthrough: Official Support Email & Commercial Action Buttons
 
-## 📋 Overview
-In this release, the app's branding and legal publisher entities were standardized:
-1. **Clean App Name**:
-   - The application name is now strictly **"UniCalculator"** (removed "Bharat" suffix badge).
-   - Tagline: *"Calculate • Simplify • Grow"*.
-   - Version: **`v1.0.0 Pro Edition`**.
-2. **Official Publisher & Legal Entity**:
-   - **Entity Name**: **UniCore Technologies**.
-   - **Architect & Lead Engineer**: **Shoeb Ahmad**.
-   - **Copyright**: `© 2026 UniCore Technologies • All rights reserved.`.
-   - **Splash Screen**: `⚡ Powered by UniCore Technologies`.
-   - **WhatsApp Closing Slips**: `✨ Generated via UniCalculator • UniCore Technologies`.
-3. **Settings Buttons Across All Modules**:
-   - Standardized to `"ℹ️ About UniCalculator"`.
+## 🎯 Objective
+Integrate the official publisher & support contact email (**`theunicoretech@gmail.com`**) and commercial action buttons into the **About UniCalculator** dialog in place of the public GitHub repository link.
 
 ---
 
-## 📸 Live Hardware Verification (Realme RMX3998)
+## 🛠️ Changes Implemented
 
-### 1. Splash Screen Branding
-![Splash Screen](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/319_settings_with_unicore.png)
+### 1. Publisher & Contact Support Integration
+In `AboutUniCalculatorSheet.kt` (`core/designsystem/src/main/java/com/unicalculator/core/designsystem/component/AboutUniCalculatorSheet.kt`):
+- **Publisher Card Layout**:
+  - `🏢 Publisher & Engineering`
+  - **`UniCore Technologies`** in emerald green bold
+  - `✉️ theunicoretech@gmail.com` formatted in monospace
+  - Attribution: `Architect & Lead Engineer: Shoeb Ahmad`
+  - Purpose: `Engineered with mathematical precision for Financial, GST, Retail & Scientific calculations.`
 
-### 2. About UniCalculator Sheet (Hero & Publisher Card)
-![About Sheet](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/324_about_sheet_open.png)
-
-### 3. About Sheet Legal Copyright Footnote
-![About Sheet Footer](/home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/325_about_sheet_footer.png)
+### 2. Commercial Action Buttons
+- **`✉️ Support` Button**: Triggers `mailto:theunicoretech@gmail.com` with auto-filled subject `[UniCalculator] Feedback & Support`.
+- **`📤 Share App` Button**: Launches Android standard share sheet (`Intent.ACTION_SEND`) to share UniCalculator with peers.
+- **Copyright & Footnote**: `© 2026 UniCore Technologies • All rights reserved.`.
 
 ---
 
-## 🧪 Verification Summary
-- **Unit Tests**: `./gradlew testDebugUnitTest` ➔ **PASSED** (0 failures).
-- **APK Build**: `./gradlew :app:assembleDebug` ➔ **SUCCESSFUL** (19s).
-- **Physical Device**: Verified live on Realme RMX3998 (`XGQ8JFZXEITGJ7IB`).
+## 🧪 Hardware Verification (Realme RMX3998)
+
+| About Dialog - Publisher & Workstations | About Dialog - Actions & Footnote |
+| :---: | :---: |
+| ![About Top](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/345_about_top_final.png) | ![About Bottom](file:///home/uniai/.gemini/antigravity-cli/brain/7e798e0a-32ad-4aa2-9c14-cbac4a0f4f41/346_about_bottom_final.png) |
+
+---
+
+## 📌 Verification Status
+- ✅ Unit Tests: `./gradlew testDebugUnitTest` ➔ **PASSED** (0 failures).
+- ✅ Build: `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- ✅ Hardware Tested: Verified live on physical Realme phone.

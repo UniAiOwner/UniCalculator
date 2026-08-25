@@ -1736,3 +1736,32 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-25 — Official Contact Support (`theunicoretech@gmail.com`) & Share Actions Integration
+
+### 🚀 Major Achievements:
+- **Official Commercial Support Email**:
+  - Integrated `theunicoretech@gmail.com` as the official publisher & support contact email in `AboutUniCalculatorSheet.kt`.
+  - Added formatted publisher card with clean monospace email display, lead engineer attribution (*Shoeb Ahmad*), and mathematical engineering description.
+- **Commercial Action Buttons**:
+  - Replaced the public GitHub repository button with dedicated user-facing actions:
+    1. ✉️ **Support Button**: Triggers `mailto:theunicoretech@gmail.com` with auto-populated subject `[UniCalculator] Feedback & Support`.
+    2. 📤 **Share App Button**: Triggers Android standard share sheet (`Intent.ACTION_SEND`) to share UniCalculator with peers.
+  - Aligned buttons into a sleek side-by-side Neumorphic layout with Rupee Emerald Green accenting and tactile haptic response.
+
+### 🧪 Verification:
+- Automated Tests: `./gradlew testDebugUnitTest` across all modules -> **BUILD SUCCESSFUL**.
+- Build Test: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL** (21s).
+- Hardware Deployment: Installed APK onto physical device `Realme RMX3998` via ADB.
+- Live Interactive Verification:
+  - `345_about_top_final.png`: Verified Publisher & Engineering card with `UniCore Technologies`, `theunicoretech@gmail.com`, and Lead Engineer attribution.
+  - `346_about_bottom_final.png`: Verified 5 Workstations list, 100% Offline-First Private badge, side-by-side `✉️ Support` and `📤 Share App` buttons, and legal copyright footer `© 2026 UniCore Technologies • All rights reserved.`.
+
+### 📌 Current State:
+- Version: v1.0.0-pro (Official Support Email & Commercial Action Suite active on hardware).
+
+### 📝 Next Steps:
+- Prepare production release bundle for Google Play Console.
+
+---
+*Signed by: Shoeb Ahmad*
