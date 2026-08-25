@@ -2,9 +2,9 @@
 ### *Calculate • Simplify • Grow — 100% Offline-First Commercial Math & GST Engine for Bharat & Global Commerce*
 
 <p align="center">
-  <img src="docs/images/01_app_logo_hero.png" alt="UniCalculator Master App Icon" width="140"/>
+  <img src="docs/images/01_app_logo_hero.png" alt="UniCalculator Master App Icon" width="280"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="docs/images/00_splash_screen.png" alt="UniCalculator Splash Screen" width="140"/>
+  <img src="docs/images/00_splash_screen.png" alt="UniCalculator Splash Screen" width="280"/>
 </p>
 
 <p align="center">
