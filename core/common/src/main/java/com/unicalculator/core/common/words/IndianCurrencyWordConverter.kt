@@ -2,6 +2,13 @@ package com.unicalculator.core.common.words
 
 import java.math.BigDecimal
 
+enum class WordsLanguage {
+    ENGLISH,
+    HINDI,
+    BOTH,
+    OFF
+}
+
 object IndianCurrencyWordConverter {
     private val englishUnits = arrayOf(
         "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
@@ -35,41 +42,112 @@ object IndianCurrencyWordConverter {
         96 to "छियानवे", 97 to "सत्तानवे", 98 to "अट्ठानवे", 99 to "निन्यानवे"
     )
 
+    fun convert(
+        amount: BigDecimal,
+        language: WordsLanguage = WordsLanguage.ENGLISH,
+        includeRupeesSuffix: Boolean = true
+    ): String {
+        return when (language) {
+            WordsLanguage.OFF -> ""
+            WordsLanguage.ENGLISH -> formatEnglish(amount, includeRupeesSuffix)
+            WordsLanguage.HINDI -> formatHindi(amount, includeRupeesSuffix)
+            WordsLanguage.BOTH -> {
+                val en = formatEnglish(amount, includeRupeesSuffix)
+                val hi = formatHindi(amount, includeRupeesSuffix)
+                if (en.isNotBlank() && hi.isNotBlank()) "$en • $hi" else en.ifBlank { hi }
+            }
+        }
+    }
+
     fun convertToWords(
         amount: BigDecimal,
         inHindi: Boolean = false,
         includeRupeesSuffix: Boolean = true
     ): String {
-        val absAmount = amount.abs()
-        val rupees = absAmount.setScale(0, java.math.RoundingMode.DOWN).toLong()
-        val paise = absAmount.remainder(BigDecimal.ONE).multiply(BigDecimal("100")).setScale(0, java.math.RoundingMode.HALF_UP).toInt()
+        return if (inHindi) formatHindi(amount, includeRupeesSuffix) else formatEnglish(amount, includeRupeesSuffix)
+    }
 
-        if (rupees == 0L && paise == 0) {
-            return if (inHindi) {
-                if (includeRupeesSuffix) "शून्य रुपये मात्र" else "शून्य"
-            } else {
-                if (includeRupeesSuffix) "Zero Rupees Only" else "Zero"
-            }
+    private fun formatEnglish(amount: BigDecimal, includeRupeesSuffix: Boolean): String {
+        val isNegative = amount.signum() < 0
+        val absAmount = amount.abs()
+        val wholePart = absAmount.setScale(0, java.math.RoundingMode.DOWN).toLong()
+        val decimalFraction = absAmount.remainder(BigDecimal.ONE)
+        val decimalCents = decimalFraction.multiply(BigDecimal("100")).setScale(0, java.math.RoundingMode.HALF_UP).toInt()
+
+        val prefix = if (isNegative) "Minus " else ""
+
+        if (wholePart == 0L && decimalCents == 0) {
+            return if (includeRupeesSuffix) "Zero Rupees Only" else "Zero"
         }
 
-        return if (inHindi) {
-            val rupeesPart = if (rupees > 0) convertToHindiWords(rupees) else ""
-            val paisePart = if (paise > 0) "${hindiNumbers[paise] ?: paise.toString()} पैसे" else ""
+        return if (includeRupeesSuffix) {
+            val rupeesPart = if (wholePart > 0) convertToEnglishWords(wholePart) else ""
+            val paisePart = if (decimalCents > 0) "${convertEnglishLessThanThousand(decimalCents)} Paise" else ""
             val fullText = when {
-                rupees > 0 && paise > 0 -> "$rupeesPart रुपये $paisePart"
-                rupees > 0 -> "$rupeesPart रुपये"
-                else -> paisePart
+                wholePart > 0 && decimalCents > 0 -> "$prefix$rupeesPart Rupees and $paisePart Only"
+                wholePart > 0 -> "$prefix$rupeesPart Rupees Only"
+                else -> "$prefix$paisePart Only"
             }
-            if (includeRupeesSuffix) "$fullText मात्र".trim() else fullText.trim()
+            fullText.trim()
         } else {
-            val rupeesPart = if (rupees > 0) convertToEnglishWords(rupees) else ""
-            val paisePart = if (paise > 0) "${convertEnglishLessThanThousand(paise)} Paise" else ""
+            val numberPart = if (wholePart > 0) convertToEnglishWords(wholePart) else if (decimalCents > 0) "Zero" else ""
+            val decimalPart = if (decimalCents > 0) {
+                if (decimalCents < 10) {
+                    "Point Zero ${englishUnits[decimalCents]}"
+                } else {
+                    "Point ${convertEnglishLessThanThousand(decimalCents)}"
+                }
+            } else ""
+
             val fullText = when {
-                rupees > 0 && paise > 0 -> "$rupeesPart Rupees and $paisePart"
-                rupees > 0 -> "$rupeesPart Rupees"
-                else -> paisePart
+                wholePart > 0 && decimalCents > 0 -> "$prefix$numberPart $decimalPart"
+                wholePart > 0 -> "$prefix$numberPart"
+                decimalCents > 0 -> "$prefix$numberPart $decimalPart"
+                else -> "Zero"
             }
-            if (includeRupeesSuffix) "$fullText Only".trim() else fullText.trim()
+            fullText.trim().replace("\\s+".toRegex(), " ")
+        }
+    }
+
+    private fun formatHindi(amount: BigDecimal, includeRupeesSuffix: Boolean): String {
+        val isNegative = amount.signum() < 0
+        val absAmount = amount.abs()
+        val wholePart = absAmount.setScale(0, java.math.RoundingMode.DOWN).toLong()
+        val decimalFraction = absAmount.remainder(BigDecimal.ONE)
+        val decimalCents = decimalFraction.multiply(BigDecimal("100")).setScale(0, java.math.RoundingMode.HALF_UP).toInt()
+
+        val prefix = if (isNegative) "ऋण " else ""
+
+        if (wholePart == 0L && decimalCents == 0) {
+            return if (includeRupeesSuffix) "शून्य रुपये मात्र" else "शून्य"
+        }
+
+        return if (includeRupeesSuffix) {
+            val rupeesPart = if (wholePart > 0) convertToHindiWords(wholePart) else ""
+            val paisePart = if (decimalCents > 0) "${hindiNumbers[decimalCents] ?: decimalCents.toString()} पैसे" else ""
+            val fullText = when {
+                wholePart > 0 && decimalCents > 0 -> "$prefix$rupeesPart रुपये $paisePart मात्र"
+                wholePart > 0 -> "$prefix$rupeesPart रुपये मात्र"
+                else -> "$prefix$paisePart मात्र"
+            }
+            fullText.trim()
+        } else {
+            val numberPart = if (wholePart > 0) convertToHindiWords(wholePart) else if (decimalCents > 0) "शून्य" else ""
+            val decimalPart = if (decimalCents > 0) {
+                if (decimalCents < 10) {
+                    "दशमलव शून्य ${hindiNumbers[decimalCents] ?: decimalCents.toString()}"
+                } else {
+                    "दशमलव ${hindiNumbers[decimalCents] ?: decimalCents.toString()}"
+                }
+            } else ""
+
+            val fullText = when {
+                wholePart > 0 && decimalCents > 0 -> "$prefix$numberPart $decimalPart"
+                wholePart > 0 -> "$prefix$numberPart"
+                decimalCents > 0 -> "$prefix$numberPart $decimalPart"
+                else -> "शून्य"
+            }
+            fullText.trim().replace("\\s+".toRegex(), " ")
         }
     }
 

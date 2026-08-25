@@ -1,22 +1,24 @@
 package com.unicalculator.feature.cashtally
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.unicalculator.core.common.format.IndianVedicFormatter
 import com.unicalculator.core.common.words.IndianCurrencyWordConverter
+import com.unicalculator.core.common.words.WordsLanguage
 import com.unicalculator.core.model.CashTallyState
 import com.unicalculator.core.model.DenominationItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 data class CashTallyUiState(
     val state: CashTallyState = CashTallyState(
         denominations = listOf(
-            DenominationItem(2000, 0),
-            DenominationItem(500, 250),
-            DenominationItem(200, 80),
+            DenominationItem(500, 320),
+            DenominationItem(200, 0),
             DenominationItem(100, 150),
             DenominationItem(50, 65),
             DenominationItem(20, 95),
@@ -32,7 +34,7 @@ data class CashTallyUiState(
     val totalBundlesCount: Int = 0,
     val looseNotesCount: Int = 40,
     val wordsEnglishText: String = "One Lakh Sixty Thousand Six Hundred Fifty Rupees Only",
-    val wordsHindiText: String = "एक लाख साठ हज़ार छह सौ पचास रुपये मात्र",
+    val wordsHindiText: String = "",
     val wordsText: String = "One Lakh Sixty Thousand Six Hundred Fifty Rupees Only",
     val inHindi: Boolean = false,
     val highestDenom: Int = 500,
@@ -47,6 +49,12 @@ class CashTallyViewModel : ViewModel() {
 
     fun setPreferences(prefs: com.unicalculator.core.common.prefs.UniCalculatorPreferences) {
         this.preferences = prefs
+        viewModelScope.launch {
+            prefs.wordsLanguage.collect {
+                recalculateTotals()
+            }
+        }
+        recalculateTotals()
     }
 
     init {
@@ -130,9 +138,12 @@ class CashTallyViewModel : ViewModel() {
         sb.append("🔢 Total Notes : ${state.totalNotesCount} Pcs\n")
         sb.append("💰 GRAND TOTAL : ${IndianVedicFormatter.formatCurrency(state.grandTotal)}\n")
         sb.append("----------------------------------------\n")
-        sb.append("📝 IN WORDS:\n")
-        sb.append(IndianCurrencyWordConverter.convertToWords(state.grandTotal, false)).append("\n")
-        sb.append("(${IndianCurrencyWordConverter.convertToWords(state.grandTotal, true)})\n")
+        val wordsLang = preferences?.wordsLanguage?.value ?: WordsLanguage.ENGLISH
+        val inWords = IndianCurrencyWordConverter.convert(state.grandTotal, language = wordsLang, includeRupeesSuffix = true)
+        if (inWords.isNotBlank()) {
+            sb.append("📝 IN WORDS:\n")
+            sb.append(inWords).append("\n")
+        }
         sb.append("========================================\n")
         sb.append("✨ Generated via UniCalculator • UniCore Technologies")
         return sb.toString()
@@ -141,9 +152,8 @@ class CashTallyViewModel : ViewModel() {
     private fun recalculateTotals() {
         val state = _uiState.value.state
         val total = state.grandTotal
-        val wordsEng = IndianCurrencyWordConverter.convertToWords(total, inHindi = false)
-        val wordsHin = IndianCurrencyWordConverter.convertToWords(total, inHindi = true)
-        val words = if (_uiState.value.inHindi) wordsHin else wordsEng
+        val wordsLang = preferences?.wordsLanguage?.value ?: WordsLanguage.ENGLISH
+        val words = IndianCurrencyWordConverter.convert(total, language = wordsLang, includeRupeesSuffix = true)
         val activeDenoms = state.denominations.filter { it.count > 0 }
         val highest = activeDenoms.maxOfOrNull { it.faceValue } ?: 0
         val lowest = activeDenoms.minOfOrNull { it.faceValue } ?: 0
@@ -158,8 +168,8 @@ class CashTallyViewModel : ViewModel() {
                 totalPacketsCount = totalPackets,
                 totalBundlesCount = totalBundles,
                 looseNotesCount = looseNotes,
-                wordsEnglishText = wordsEng,
-                wordsHindiText = wordsHin,
+                wordsEnglishText = words,
+                wordsHindiText = "",
                 wordsText = words,
                 highestDenom = highest,
                 lowestDenom = lowest

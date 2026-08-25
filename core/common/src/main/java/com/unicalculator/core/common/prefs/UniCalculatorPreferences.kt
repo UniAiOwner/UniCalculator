@@ -151,6 +151,13 @@ class UniCalculatorPreferences private constructor(context: Context) {
     private val _showCurrencySymbol = MutableStateFlow(prefs.getBoolean(KEY_SHOW_CURRENCY_SYMBOL, false))
     val showCurrencySymbol: StateFlow<Boolean> = _showCurrencySymbol.asStateFlow()
 
+    private val _wordsLanguage = MutableStateFlow(
+        com.unicalculator.core.common.words.WordsLanguage.valueOf(
+            prefs.getString(KEY_WORDS_LANGUAGE, com.unicalculator.core.common.words.WordsLanguage.ENGLISH.name) ?: com.unicalculator.core.common.words.WordsLanguage.ENGLISH.name
+        )
+    )
+    val wordsLanguage: StateFlow<com.unicalculator.core.common.words.WordsLanguage> = _wordsLanguage.asStateFlow()
+
     private val _isDarkMode = MutableStateFlow(prefs.getBoolean(KEY_IS_DARK_MODE, false))
     val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
 
@@ -281,6 +288,11 @@ class UniCalculatorPreferences private constructor(context: Context) {
         _defaultCurrency.value = currency
     }
 
+    fun setWordsLanguage(language: com.unicalculator.core.common.words.WordsLanguage) {
+        prefs.edit().putString(KEY_WORDS_LANGUAGE, language.name).apply()
+        _wordsLanguage.value = language
+    }
+
     companion object {
         private const val PREFS_NAME = "unicalculator_user_prefs"
         private const val KEY_FIRST_LAUNCH_TIMESTAMP = "first_launch_timestamp"
@@ -297,6 +309,7 @@ class UniCalculatorPreferences private constructor(context: Context) {
         private const val KEY_SOUND_CLICK = "sound_click"
         private const val KEY_KEEP_SCREEN_AWAKE = "keep_screen_awake"
         private const val KEY_SHOW_CURRENCY_SYMBOL = "show_currency_symbol"
+        private const val KEY_WORDS_LANGUAGE = "words_language"
         private const val KEY_DEFAULT_GST_RATE = "default_gst_rate"
         private const val KEY_IS_INTER_STATE = "is_inter_state"
         private const val KEY_BANKERS_ROUNDING = "bankers_rounding"

@@ -1808,3 +1808,51 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-25 — Result In-Words Language Setting (English, Hindi, Both, Off) & Pure Number Words Engine
+
+### 🚀 Major Achievements:
+- **Pure Number Words vs. Currency Mode Architecture (`IndianCurrencyWordConverter.kt`)**:
+  - Eliminated hardcoded "Rupees" / "रुपये" suffix for pure mathematical calculations in Standard Calculator.
+  - Implemented pure mathematical number words in both English and Hindi:
+    - Positive: `100` ➔ `"One Hundred"` (EN) / `"एक सौ"` (HI)
+    - Decimals: `100.50` ➔ `"One Hundred Point Fifty"` (EN) / `"एक सौ दशमलव पचास"` (HI)
+    - Zero: `0` ➔ `"Zero"` (EN) / `"शून्य"` (HI)
+    - Negative: `-500` ➔ `"Minus Five Hundred"` (EN) / `"ऋण पाँच सौ"` (HI)
+  - Preserved currency mode (`includeRupeesSuffix = true`) for GST invoices and Cash Tally slips (`"One Hundred Rupees Only"` / `"एक सौ रुपये मात्र"`).
+- **Result In-Words Multi-Lingual Preference Engine (`UniCalculatorPreferences.kt`)**:
+  - Added `enum class WordsLanguage { ENGLISH, HINDI, BOTH, OFF }`.
+  - Added persistent preference `KEY_WORDS_LANGUAGE` with reactive `StateFlow` and `setWordsLanguage(WordsLanguage)` setter.
+- **Dedicated In-Words Language Selector UI Across All 4 Settings Sheets**:
+  - Added `RESULT IN-WORDS LANGUAGE` Neumorphic plate with 4 tactile pills (`[ English | Hindi | Both | Off ]`) across:
+    - `StandardSettingsSheet.kt`
+    - `GSTProSettingsSheet.kt`
+    - `CashTallySettingsSheet.kt`
+    - `ToolsSettingsSheet.kt`
+- **Reactive Workstation Integration**:
+  - `StandardCalculatorViewModel.kt` & `StandardCalculatorScreen.kt`: Reactively updates in-words transcription across English, Hindi, dual-language (`"One Hundred • एक सौ"`), or completely hidden (`Off`).
+  - `GSTProViewModel.kt` & `GSTProScreen.kt`: Formats tax breakdowns and shareable invoices matching chosen language.
+  - `CashTallyViewModel.kt` & `CashTallyScreen.kt`: Formats master HUD and cashier closing slips matching chosen language.
+- **Comprehensive Unit Test Suite (`IndianCurrencyWordConverterTest.kt`)**:
+  - Created 6 unit tests verifying pure math numbers (English & Hindi), currency mode, `BOTH` mode, and `OFF` mode.
+
+### 🧪 Verification:
+- Automated Unit Tests: `./gradlew testDebugUnitTest` ➔ **BUILD SUCCESSFUL** (100% test pass rate across all modules).
+- Compilation & APK Build: `./gradlew :app:assembleDebug` ➔ **BUILD SUCCESSFUL**.
+- Physical Hardware Deployment: Deployed to `Realme RMX3998` (`XGQ8JFZXEITGJ7IB`), Android 14.
+- Live On-Device Verification:
+  - `361_calc_100_one_hundred.png`: `25 * 4 = 100` displays `"One Hundred"` (Pure Math, NO "Rupees").
+  - `363_settings_clean_pills.png`: Settings sheet shows `RESULT IN-WORDS LANGUAGE` (`[ English | Hindi | Both | Off ]`).
+  - `369_hindi_active.png`: Switching to `Hindi` displays `"एक सौ"`.
+  - `370_both_active.png`: Switching to `Both` displays `"One Hundred • एक सौ"`.
+  - `371_off_active.png`: Switching to `Off` hides in-words transcription for minimal math experience.
+  - `372_english_default.png`: Restoring to `English` default displays `"One Hundred"`.
+
+### 📌 Current State:
+- Version: v1.0.0-words-language-suite (Multi-lingual In-Words engine fully configurable across English, Hindi, Both, and Off; 100% verified on physical hardware).
+
+### 📝 Next Steps:
+- Complete final pre-launch checks and package production release bundle for Google Play Store.
+
+---
+*Signed by: Shoeb Ahmad*

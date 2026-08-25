@@ -1,14 +1,18 @@
 package com.unicalculator.feature.calculator
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.unicalculator.core.common.format.IndianVedicFormatter
 import com.unicalculator.core.common.words.IndianCurrencyWordConverter
+import com.unicalculator.core.common.words.WordsLanguage
 import com.unicalculator.core.math.IndianGSTCalculationEngine
 import com.unicalculator.core.model.TaxBreakdown
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 import com.unicalculator.core.common.prefs.UniCalculatorPreferences
@@ -24,7 +28,7 @@ data class GSTProUiState(
     val isInterState: Boolean = false, // false: CGST+SGST (Intra), true: IGST (Inter)
     val taxBreakdown: TaxBreakdown? = null,
     val inWordsText: String = "Zero Rupees Only",
-    val inWordsHindiText: String = "शून्य रुपये मात्र",
+    val inWordsHindiText: String = "",
     val isResultEnlarged: Boolean = false
 )
 
@@ -41,6 +45,16 @@ class GSTProViewModel(
                 selectedGstRate = prefs.defaultGstRate.value,
                 isInterState = prefs.isInterStateDefault.value
             )
+        }
+        viewModelScope.launch {
+            combine(
+                prefs.wordsLanguage,
+                prefs.defaultGstRate,
+                prefs.isInterStateDefault,
+                prefs.isBankersRounding
+            ) { _, _, _, _ -> }.collect {
+                recalculateGST()
+            }
         }
         recalculateGST()
     }
@@ -205,16 +219,16 @@ class GSTProViewModel(
                 IndianVedicFormatter.formatCurrency(evaluatedAmount, true)
             }
 
-            val inWordsEn = IndianCurrencyWordConverter.convertToWords(targetForWords, inHindi = false)
-            val inWordsHi = IndianCurrencyWordConverter.convertToWords(targetForWords, inHindi = true)
+            val wordsLang = preferences?.wordsLanguage?.value ?: WordsLanguage.ENGLISH
+            val inWords = IndianCurrencyWordConverter.convert(targetForWords, language = wordsLang, includeRupeesSuffix = true)
 
             _uiState.update {
                 it.copy(
                     amountInput = amountStr,
                     displayAmount = headerDisplay,
                     taxBreakdown = breakdown,
-                    inWordsText = inWordsEn,
-                    inWordsHindiText = inWordsHi
+                    inWordsText = inWords,
+                    inWordsHindiText = ""
                 )
             }
         } catch (_: Exception) {}

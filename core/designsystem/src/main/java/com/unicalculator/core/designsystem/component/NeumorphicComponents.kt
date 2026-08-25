@@ -113,7 +113,7 @@ fun NeumorphicGstPill(
             .padding(horizontal = horizontalPadding, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
-        val displayText = if (isSelected) "• $text" else text
+        val displayText = text
         Text(
             text = displayText,
             maxLines = 1,

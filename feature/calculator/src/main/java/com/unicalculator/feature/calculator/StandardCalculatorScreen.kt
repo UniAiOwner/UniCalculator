@@ -73,6 +73,7 @@ fun StandardCalculatorScreen(
     val showCurrencySymbol by prefs.showCurrencySymbol.collectAsState()
     val numberFormat by prefs.numberFormat.collectAsState()
     val decimalPrecision by prefs.decimalPrecision.collectAsState()
+    val wordsLanguage by prefs.wordsLanguage.collectAsState()
     val hapticIntensity by prefs.hapticIntensity.collectAsState()
     var showSettingsSheet by remember { mutableStateOf(false) }
     var isHistoryShadeExpanded by remember { mutableStateOf(false) }
@@ -82,7 +83,7 @@ fun StandardCalculatorScreen(
 
     viewModel.setHistoryRepository(historyRepo)
 
-    LaunchedEffect(showCurrencySymbol, numberFormat, decimalPrecision) {
+    LaunchedEffect(showCurrencySymbol, numberFormat, decimalPrecision, wordsLanguage) {
         viewModel.setPreferences(prefs)
     }
 

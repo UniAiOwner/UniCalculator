@@ -37,8 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unicalculator.core.common.prefs.UniCalculatorPreferences
+import com.unicalculator.core.common.words.WordsLanguage
 import com.unicalculator.core.database.LocalCalculationHistoryRepository
 import com.unicalculator.core.designsystem.component.NeumorphicButton
+import com.unicalculator.core.designsystem.component.NeumorphicGstPill
 import com.unicalculator.core.designsystem.component.NeumorphicIconButton
 import com.unicalculator.core.designsystem.component.NeumorphicPlate
 import com.unicalculator.core.designsystem.component.NeumorphicSlideSwitch
@@ -67,6 +69,7 @@ fun CashTallySettingsSheet(
     val firmName by prefs.firmName.collectAsState()
     val cashierName by prefs.cashierName.collectAsState()
     val autoCopySlip by prefs.autoCopySlip.collectAsState()
+    val wordsLanguage by prefs.wordsLanguage.collectAsState()
 
     var tempFirm by remember { mutableStateOf(firmName) }
     var tempCashier by remember { mutableStateOf(cashierName) }
@@ -302,6 +305,40 @@ fun CashTallySettingsSheet(
                                 cursorBrush = SolidColor(colors.accentEmerald),
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+            }
+
+            // In-Words Language Setting (English, Hindi, Both, Off)
+            NeumorphicPlate(
+                modifier = Modifier.fillMaxWidth(),
+                shape = NeumorphicShape.CONVEX,
+                cornerRadius = 16.dp
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Text(
+                        text = "RESULT IN-WORDS LANGUAGE",
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = colors.textSecondary)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        listOf(
+                            WordsLanguage.ENGLISH to "English",
+                            WordsLanguage.HINDI to "Hindi",
+                            WordsLanguage.BOTH to "Both",
+                            WordsLanguage.OFF to "Off"
+                        ).forEach { (lang, label) ->
+                            NeumorphicGstPill(
+                                text = label,
+                                isSelected = wordsLanguage == lang,
+                                onClick = { prefs.setWordsLanguage(lang) },
+                                modifier = Modifier.weight(1f),
+                                fontSize = 12
                             )
                         }
                     }

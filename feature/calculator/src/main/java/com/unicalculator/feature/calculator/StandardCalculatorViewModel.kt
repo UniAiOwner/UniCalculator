@@ -1,8 +1,10 @@
 package com.unicalculator.feature.calculator
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.unicalculator.core.common.format.IndianVedicFormatter
 import com.unicalculator.core.common.words.IndianCurrencyWordConverter
+import com.unicalculator.core.common.words.WordsLanguage
 import com.unicalculator.core.database.LocalCalculationHistoryRepository
 import com.unicalculator.core.math.ShuntingYardEvaluator
 import com.unicalculator.core.model.CalculationHistoryItem
@@ -10,7 +12,9 @@ import com.unicalculator.core.model.CalculationType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 import com.unicalculator.core.common.prefs.NumberFormatStyle
@@ -46,11 +50,25 @@ class StandardCalculatorViewModel(
 
     fun setPreferences(prefs: UniCalculatorPreferences) {
         this.preferences = prefs
+        viewModelScope.launch {
+            combine(
+                prefs.wordsLanguage,
+                prefs.showCurrencySymbol,
+                prefs.numberFormat,
+                prefs.decimalPrecision
+            ) { _, _, _, _ -> }.collect {
+                recalculateMath()
+            }
+        }
         recalculateMath()
     }
 
     private fun getIncludeCurrency(): Boolean {
         return preferences?.showCurrencySymbol?.value ?: false
+    }
+
+    private fun getWordsLanguage(): WordsLanguage {
+        return preferences?.wordsLanguage?.value ?: WordsLanguage.ENGLISH
     }
 
     private fun getNumberFormat(): NumberFormatStyle {
@@ -66,7 +84,11 @@ class StandardCalculatorViewModel(
     }
 
     private fun getZeroWords(): String {
-        return if (getIncludeCurrency()) "Zero Rupees Only" else "Zero"
+        return IndianCurrencyWordConverter.convert(
+            amount = BigDecimal.ZERO,
+            language = getWordsLanguage(),
+            includeRupeesSuffix = getIncludeCurrency()
+        )
     }
 
     private var currentRawInput = StringBuilder()
@@ -286,7 +308,7 @@ class StandardCalculatorViewModel(
                     formatStyle = formatStyle,
                     decimalPrecision = precision
                 )
-                val inWords = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
+                val inWords = IndianCurrencyWordConverter.convert(eval, language = getWordsLanguage(), includeRupeesSuffix = showCurrency)
 
                 val newTapeItem = CalculationTapeItem(
                     expression = nextExpr,
@@ -340,7 +362,7 @@ class StandardCalculatorViewModel(
                 formatStyle = formatStyle,
                 decimalPrecision = precision
             )
-            val inWords = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
+            val inWords = IndianCurrencyWordConverter.convert(eval, language = getWordsLanguage(), includeRupeesSuffix = showCurrency)
 
             val newTapeItem = CalculationTapeItem(
                 expression = exprToEvaluate,
@@ -393,7 +415,7 @@ class StandardCalculatorViewModel(
                 formatStyle = formatStyle,
                 decimalPrecision = precision
             )
-            val inWords = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
+            val inWords = IndianCurrencyWordConverter.convert(eval, language = getWordsLanguage(), includeRupeesSuffix = showCurrency)
 
             val newTapeItem = CalculationTapeItem(
                 expression = exprWithPercent,
@@ -484,7 +506,7 @@ class StandardCalculatorViewModel(
                     expression = raw,
                     cursorPosition = currentCursorPos,
                     displayResult = formatted,
-                    wordsText = IndianCurrencyWordConverter.convertToWords(eval, includeRupeesSuffix = showCurrency)
+                    wordsText = IndianCurrencyWordConverter.convert(eval, language = getWordsLanguage(), includeRupeesSuffix = showCurrency)
                 )
             }
         } catch (e: ArithmeticException) {

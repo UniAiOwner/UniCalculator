@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unicalculator.core.common.prefs.UniCalculatorPreferences
+import com.unicalculator.core.common.words.WordsLanguage
 import com.unicalculator.core.database.LocalCalculationHistoryRepository
 import com.unicalculator.core.designsystem.component.NeumorphicButton
 import com.unicalculator.core.designsystem.component.NeumorphicGstPill
@@ -59,6 +60,7 @@ fun ToolsSettingsSheet(
 
     val autoSaveTools by prefs.autoSaveToolsHistory.collectAsState()
     val defaultCurrency by prefs.defaultCurrency.collectAsState()
+    val wordsLanguage by prefs.wordsLanguage.collectAsState()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -175,6 +177,40 @@ fun ToolsSettingsSheet(
                                 onClick = { prefs.setDefaultCurrency(curr) },
                                 modifier = Modifier.weight(1f),
                                 fontSize = 11
+                            )
+                        }
+                    }
+                }
+            }
+
+            // In-Words Language Setting (English, Hindi, Both, Off)
+            NeumorphicPlate(
+                modifier = Modifier.fillMaxWidth(),
+                shape = NeumorphicShape.CONVEX,
+                cornerRadius = 16.dp
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Text(
+                        text = "RESULT IN-WORDS LANGUAGE",
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = colors.textSecondary)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        listOf(
+                            WordsLanguage.ENGLISH to "English",
+                            WordsLanguage.HINDI to "Hindi",
+                            WordsLanguage.BOTH to "Both",
+                            WordsLanguage.OFF to "Off"
+                        ).forEach { (lang, label) ->
+                            NeumorphicGstPill(
+                                text = label,
+                                isSelected = wordsLanguage == lang,
+                                onClick = { prefs.setWordsLanguage(lang) },
+                                modifier = Modifier.weight(1f),
+                                fontSize = 12
                             )
                         }
                     }

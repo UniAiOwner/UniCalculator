@@ -89,13 +89,14 @@ fun GSTProScreen(
     val prefs = remember { UniCalculatorPreferences.getInstance(context) }
     val defaultGstRate by prefs.defaultGstRate.collectAsState()
     val isInterStateDefault by prefs.isInterStateDefault.collectAsState()
+    val wordsLanguage by prefs.wordsLanguage.collectAsState()
     val hapticIntensity by prefs.hapticIntensity.collectAsState()
     var showSettingsSheet by remember { mutableStateOf(false) }
 
     fun click() = hapticEngine.playKeyClick(hapticIntensity)
     fun tick() = hapticEngine.playOperatorTick(hapticIntensity)
 
-    LaunchedEffect(defaultGstRate, isInterStateDefault) {
+    LaunchedEffect(defaultGstRate, isInterStateDefault, wordsLanguage) {
         viewModel.setPreferences(prefs)
     }
 
