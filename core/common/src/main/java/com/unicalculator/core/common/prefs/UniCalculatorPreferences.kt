@@ -2,9 +2,14 @@ package com.unicalculator.core.common.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.unicalculator.core.model.ProPlanType
+import com.unicalculator.core.model.SubscriptionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 enum class NumberFormatStyle {
     INDIAN_VEDIC, // 12,34,567.00
@@ -20,6 +25,108 @@ enum class HapticIntensity {
 
 class UniCalculatorPreferences private constructor(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    // --- Trial & Pro Subscription State ---
+    private val _firstLaunchTimestamp: Long
+    private var _lastKnownTimestamp: Long
+    private val _subscriptionStatus = MutableStateFlow<SubscriptionStatus>(SubscriptionStatus.TrialExpired("Calculating..."))
+    val subscriptionStatus: StateFlow<SubscriptionStatus> = _subscriptionStatus.asStateFlow()
+
+    private val _trialDaysRemaining = MutableStateFlow(30)
+    val trialDaysRemaining: StateFlow<Int> = _trialDaysRemaining.asStateFlow()
+
+    private val _isProOrTrialActive = MutableStateFlow(true)
+    val isProOrTrialActive: StateFlow<Boolean> = _isProOrTrialActive.asStateFlow()
+
+    init {
+        val now = System.currentTimeMillis()
+        val storedFirstLaunch = prefs.getLong(KEY_FIRST_LAUNCH_TIMESTAMP, 0L)
+        if (storedFirstLaunch == 0L) {
+            _firstLaunchTimestamp = now
+            prefs.edit().putLong(KEY_FIRST_LAUNCH_TIMESTAMP, now).apply()
+        } else {
+            _firstLaunchTimestamp = storedFirstLaunch
+        }
+
+        _lastKnownTimestamp = maxOf(now, prefs.getLong(KEY_LAST_KNOWN_TIMESTAMP, _firstLaunchTimestamp))
+        prefs.edit().putLong(KEY_LAST_KNOWN_TIMESTAMP, _lastKnownTimestamp).apply()
+
+        evaluateSubscriptionStatus()
+    }
+
+    /**
+     * Monotonically checks and updates device timestamp to prevent clock rollback attacks
+     */
+    fun refreshClockAndEvaluate() {
+        val currentNow = System.currentTimeMillis()
+        _lastKnownTimestamp = maxOf(_lastKnownTimestamp, currentNow)
+        prefs.edit().putLong(KEY_LAST_KNOWN_TIMESTAMP, _lastKnownTimestamp).apply()
+        evaluateSubscriptionStatus()
+    }
+
+    private fun evaluateSubscriptionStatus() {
+        val isProUser = prefs.getBoolean(KEY_IS_PRO_USER, false)
+        val planTypeName = prefs.getString(KEY_PRO_PLAN_TYPE, null)
+        val proExpiryTimestamp = prefs.getLong(KEY_PRO_EXPIRY_TIMESTAMP, 0L)
+        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+        if (isProUser && planTypeName != null) {
+            val plan = try { ProPlanType.valueOf(planTypeName) } catch (e: Exception) { ProPlanType.LIFETIME }
+            if (plan == ProPlanType.LIFETIME) {
+                val activationDate = dateFormat.format(Date(_firstLaunchTimestamp))
+                _subscriptionStatus.value = SubscriptionStatus.LifetimePro(activationDate)
+                _isProOrTrialActive.value = true
+                return
+            } else if (proExpiryTimestamp > _lastKnownTimestamp) {
+                val expiryDate = dateFormat.format(Date(proExpiryTimestamp))
+                _subscriptionStatus.value = SubscriptionStatus.Subscribed(plan, expiryDate)
+                _isProOrTrialActive.value = true
+                return
+            }
+        }
+
+        // Evaluate 30-day Free Trial
+        val trialExpiryTimestamp = _firstLaunchTimestamp + TRIAL_DURATION_MILLIS
+        val effectiveCurrentTime = maxOf(System.currentTimeMillis(), _lastKnownTimestamp)
+        val millisLeft = trialExpiryTimestamp - effectiveCurrentTime
+
+        if (millisLeft > 0) {
+            val days = ((millisLeft / (24 * 60 * 60 * 1000L)) + 1).toInt().coerceIn(1, 30)
+            val expiryDate = dateFormat.format(Date(trialExpiryTimestamp))
+            _trialDaysRemaining.value = days
+            _subscriptionStatus.value = SubscriptionStatus.TrialActive(days, expiryDate)
+            _isProOrTrialActive.value = true
+        } else {
+            val expiredDate = dateFormat.format(Date(trialExpiryTimestamp))
+            _trialDaysRemaining.value = 0
+            _subscriptionStatus.value = SubscriptionStatus.TrialExpired(expiredDate)
+            _isProOrTrialActive.value = false
+        }
+    }
+
+    fun activateProPlan(plan: ProPlanType) {
+        val now = maxOf(System.currentTimeMillis(), _lastKnownTimestamp)
+        val expiry = when (plan) {
+            ProPlanType.MONTHLY -> now + (30L * 24 * 60 * 60 * 1000L)
+            ProPlanType.ANNUAL -> now + (365L * 24 * 60 * 60 * 1000L)
+            ProPlanType.LIFETIME -> Long.MAX_VALUE
+        }
+        prefs.edit()
+            .putBoolean(KEY_IS_PRO_USER, true)
+            .putString(KEY_PRO_PLAN_TYPE, plan.name)
+            .putLong(KEY_PRO_EXPIRY_TIMESTAMP, expiry)
+            .apply()
+        evaluateSubscriptionStatus()
+    }
+
+    fun restorePurchases(onResult: (Boolean, String) -> Unit) {
+        evaluateSubscriptionStatus()
+        if (_isProOrTrialActive.value) {
+            onResult(true, "Pro subscription status restored successfully!")
+        } else {
+            onResult(false, "No active subscription found on this device.")
+        }
+    }
 
     // --- Standard Settings State ---
     private val _decimalPrecision = MutableStateFlow(prefs.getInt(KEY_DECIMAL_PRECISION, -1)) // -1 means auto
@@ -176,6 +283,13 @@ class UniCalculatorPreferences private constructor(context: Context) {
 
     companion object {
         private const val PREFS_NAME = "unicalculator_user_prefs"
+        private const val KEY_FIRST_LAUNCH_TIMESTAMP = "first_launch_timestamp"
+        private const val KEY_LAST_KNOWN_TIMESTAMP = "last_known_timestamp"
+        private const val KEY_IS_PRO_USER = "is_pro_user"
+        private const val KEY_PRO_PLAN_TYPE = "pro_plan_type"
+        private const val KEY_PRO_EXPIRY_TIMESTAMP = "pro_expiry_timestamp"
+        private const val TRIAL_DURATION_MILLIS = 30L * 24L * 60L * 60L * 1000L // 30 Days
+
         private const val KEY_IS_DARK_MODE = "is_dark_mode"
         private const val KEY_DECIMAL_PRECISION = "decimal_precision"
         private const val KEY_NUMBER_FORMAT = "number_format"

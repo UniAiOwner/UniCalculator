@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.unicalculator.core.common.prefs.UniCalculatorPreferences
 import com.unicalculator.core.designsystem.component.NeumorphicSlidingBottomBar
 import com.unicalculator.core.designsystem.component.NeumorphicTabItem
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
@@ -53,6 +55,10 @@ fun UniCalculatorApp(
     val coroutineScope = rememberCoroutineScope()
     var historyFilter by remember { mutableStateOf(HistoryFilter.ALL) }
     val colors = LocalNeumorphicColors.current
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember { UniCalculatorPreferences.getInstance(context) }
+    val isProOrTrialActive by prefs.isProOrTrialActive.collectAsState()
+    var showProSubscriptionSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
@@ -87,19 +93,27 @@ fun UniCalculatorApp(
                         fractionalPosition = null,
                         onFractionalDrag = null,
                         onDragEnd = { targetTab ->
-                            if (targetTab == 4 && pagerState.currentPage != 4) {
-                                historyFilter = HistoryFilter.ALL
-                            }
-                            coroutineScope.launch {
-                                pagerState.scrollToPage(targetTab)
+                            if ((targetTab == 1 || targetTab == 2 || targetTab == 3) && !isProOrTrialActive) {
+                                showProSubscriptionSheet = true
+                            } else {
+                                if (targetTab == 4 && pagerState.currentPage != 4) {
+                                    historyFilter = HistoryFilter.ALL
+                                }
+                                coroutineScope.launch {
+                                    pagerState.scrollToPage(targetTab)
+                                }
                             }
                         },
                         onTabSelected = { index ->
-                            if (index == 4 && pagerState.currentPage != 4) {
-                                historyFilter = HistoryFilter.ALL
-                            }
-                            coroutineScope.launch {
-                                pagerState.scrollToPage(index)
+                            if ((index == 1 || index == 2 || index == 3) && !isProOrTrialActive) {
+                                showProSubscriptionSheet = true
+                            } else {
+                                if (index == 4 && pagerState.currentPage != 4) {
+                                    historyFilter = HistoryFilter.ALL
+                                }
+                                coroutineScope.launch {
+                                    pagerState.scrollToPage(index)
+                                }
                             }
                         }
                     )
@@ -107,6 +121,12 @@ fun UniCalculatorApp(
             }
         }
     ) { innerPadding ->
+        if (showProSubscriptionSheet) {
+            com.unicalculator.core.designsystem.component.NeumorphicSubscriptionSheet(
+                onDismiss = { showProSubscriptionSheet = false }
+            )
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()

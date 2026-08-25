@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -102,6 +104,61 @@ fun GSTProSettingsSheet(
                     size = 36.dp,
                     iconSize = 18.dp
                 )
+            }
+
+            // Pro Plan Status Card
+            var showSubscriptionSheet by remember { androidx.compose.runtime.mutableStateOf(false) }
+            val subscriptionStatus by prefs.subscriptionStatus.collectAsState()
+
+            NeumorphicPlate(
+                modifier = Modifier.fillMaxWidth(),
+                shape = NeumorphicShape.CONVEX,
+                cornerRadius = 16.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            androidx.compose.material3.Icon(
+                                imageVector = androidx.compose.material.icons.Icons.Default.WorkspacePremium,
+                                contentDescription = null,
+                                tint = if (colors.isDark) androidx.compose.ui.graphics.Color(0xFFFFD700) else androidx.compose.ui.graphics.Color(0xFFD4AF37),
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                text = "UniCalculator Pro",
+                                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 13.5.sp, color = colors.textPrimary)
+                            )
+                        }
+                        Text(
+                            text = when (val status = subscriptionStatus) {
+                                is com.unicalculator.core.model.SubscriptionStatus.TrialActive -> "🎁 30-Day Free Trial: ${status.daysRemaining} Days Left"
+                                is com.unicalculator.core.model.SubscriptionStatus.Subscribed -> "👑 Subscribed: ${status.plan.title}"
+                                is com.unicalculator.core.model.SubscriptionStatus.LifetimePro -> "👑 Lifetime VIP Active"
+                                is com.unicalculator.core.model.SubscriptionStatus.TrialExpired -> "⚠️ Trial Ended • Upgrade to Pro"
+                            },
+                            style = TextStyle(fontSize = 11.5.sp, color = colors.textSecondary)
+                        )
+                    }
+
+                    NeumorphicButton(
+                        text = "✨ Upgrade",
+                        onClick = { showSubscriptionSheet = true },
+                        accentColor = RupeeEmeraldGreen,
+                        fontSize = 11,
+                        modifier = Modifier.width(95.dp).height(38.dp)
+                    )
+                }
+            }
+
+            if (showSubscriptionSheet) {
+                com.unicalculator.core.designsystem.component.NeumorphicSubscriptionSheet(onDismiss = { showSubscriptionSheet = false })
             }
 
             // 1. Default / Custom GST Slab

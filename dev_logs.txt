@@ -1765,3 +1765,46 @@
 
 ---
 *Signed by: Shoeb Ahmad*
+
+## 📅 Date: 2026-08-25 — 1-Month Free Full-Access Trial Engine & Commercial Nominal Subscription Suite
+
+### 🚀 Major Achievements:
+- **1-Month (30-Day) 100% Free Full-Access Trial Engine**:
+  - Implemented anti-tamper monotonic trial clock engine in `:core:common` (`UniCalculatorPreferences.kt`).
+  - Recorded first launch timestamp with rollback protection against device clock manipulation.
+  - Provided reactive `StateFlow` streams (`trialDaysRemaining`, `subscriptionStatus`, `isProOrTrialActive`) keeping all 5 workstations 100% free and unlocked during the initial 30-day window.
+- **Commercial Pro Subscription Domain Suite (`SubscriptionModels.kt`)**:
+  - Built `ProPlanType` enum with India-friendly nominal pricing:
+    1. 📅 **Monthly Pro**: **₹29 / month** (Flexible monthly billing for active shopkeepers).
+    2. ⭐ **Annual Pro**: **₹199 / year** (~₹16.50/mo • Save 45% • Best Value).
+    3. 👑 **Lifetime Vyapar Pro**: **₹499 One-Time** (Pay once, own all workstations forever).
+  - Built sealed domain hierarchy `SubscriptionStatus` (`TrialActive`, `Subscribed`, `LifetimePro`, `TrialExpired`).
+- **Tactile Neumorphic Paywall & Subscription Sheet (`NeumorphicSubscriptionSheet.kt`)**:
+  - Designed high-end modal bottom sheet with Golden/Emerald 3D Crown branding.
+  - Built live countdown badge (`🎁 30-Day Free Trial Active • X Days Left`).
+  - Built Pro feature comparison grid covering GST Pro, Cash Tally, 16 Business/Vedic Converters, and Multi-Tab SQLite Audit Tape.
+  - Implemented 3 interactive Neumorphic plan cards with convex elevation, radio selection, and highlight ribbons.
+  - Wired primary action buttons (`🚀 Continue with Free Trial` / `✨ Unlock UniCalculator Pro`), `🔄 Restore Purchases`, and trust footer (`© 2026 UniCore Technologies`).
+- **Settings & About Pro Badges Integration**:
+  - Integrated Pro status cards with `[ ✨ View Pro Plans / Upgrade ]` buttons across `AboutUniCalculatorSheet.kt`, `StandardSettingsSheet.kt`, `GSTProSettingsSheet.kt`, `CashTallySettingsSheet.kt`, and `ToolsSettingsSheet.kt`.
+- **Workstation Gatekeeper (`UniCalculatorApp.kt`)**:
+  - Wired zero-interruption navigation during the 30-day trial and seamless paywall presentation upon trial conclusion.
+
+### 🧪 Verification:
+- Automated Unit Tests: `./gradlew testDebugUnitTest` across all modules -> **BUILD SUCCESSFUL**.
+- Build Verification: `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**.
+- Hardware Installation: Deployed APK to physical device `Realme RMX3998` (`XGQ8JFZXEITGJ7IB`).
+- Live Visual Verification:
+  - `349_settings_sheet_with_pro.png`: Verified Pro trial status card (`30 Days Left`) and `✨ Upgrade` button in Settings.
+  - `354_pro_sheet_fixed_header.png`: Verified top of `NeumorphicSubscriptionSheet` with Pro crown, trial countdown, and feature grid.
+  - `353_pro_sheet_bottom.png`: Verified 3 Pro plan selector cards (Monthly ₹29, Annual ₹199, Lifetime ₹499), primary CTA button, restore button, and UniCore Technologies footnote.
+  - `357_about_sheet_live.png`: Verified About sheet with Pro Status card and `View Pro Plans & Pricing` button.
+
+### 📌 Current State:
+- Version: v1.0.0-pro (1-Month Free Trial Engine & Nominal Commercial Subscription Suite 100% active on physical hardware).
+
+### 📝 Next Steps:
+- Prepare production release build & metadata for Google Play Console launch under UniCore Technologies.
+
+---
+*Signed by: Shoeb Ahmad*

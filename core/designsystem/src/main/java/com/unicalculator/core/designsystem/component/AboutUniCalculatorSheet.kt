@@ -29,12 +29,18 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,11 +53,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.unicalculator.core.common.prefs.UniCalculatorPreferences
 import com.unicalculator.core.designsystem.modifier.NeumorphicShape
 import com.unicalculator.core.designsystem.modifier.neumorphic
 import com.unicalculator.core.designsystem.theme.GstSaffronAmber
 import com.unicalculator.core.designsystem.theme.LocalNeumorphicColors
 import com.unicalculator.core.designsystem.theme.RupeeEmeraldGreen
+import com.unicalculator.core.model.SubscriptionStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +68,7 @@ fun AboutUniCalculatorSheet(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val prefs = remember { UniCalculatorPreferences.getInstance(context) }
     val colors = LocalNeumorphicColors.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -146,7 +155,106 @@ fun AboutUniCalculatorSheet(
                 )
             }
 
-            // 2. Publisher & Engineering Bio Card
+            // 2. Pro Status & 30-Day Free Trial Card
+            var showSubscriptionSheet by remember { mutableStateOf(false) }
+            val subscriptionStatus by prefs.subscriptionStatus.collectAsState()
+
+            NeumorphicPlate(
+                modifier = Modifier.fillMaxWidth(),
+                shape = NeumorphicShape.CONVEX,
+                cornerRadius = 18.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.WorkspacePremium,
+                                contentDescription = null,
+                                tint = if (colors.isDark) Color(0xFFFFD700) else Color(0xFFD4AF37),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = "UniCalculator Pro",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.textPrimary
+                            )
+                        }
+
+                        when (val status = subscriptionStatus) {
+                            is SubscriptionStatus.TrialActive -> {
+                                Text(
+                                    text = "🎁 ${status.daysRemaining} Days Left",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = if (colors.isDark) Color(0xFF00FF9D) else RupeeEmeraldGreen
+                                )
+                            }
+                            is SubscriptionStatus.Subscribed -> {
+                                Text(
+                                    text = "👑 ${status.plan.title}",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (colors.isDark) Color(0xFF00FF9D) else RupeeEmeraldGreen
+                                )
+                            }
+                            is SubscriptionStatus.LifetimePro -> {
+                                Text(
+                                    text = "👑 Lifetime VIP",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (colors.isDark) Color(0xFFFFD700) else Color(0xFFB8860B)
+                                )
+                            }
+                            is SubscriptionStatus.TrialExpired -> {
+                                Text(
+                                    text = "Trial Expired",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFFFF6B6B)
+                                )
+                            }
+                        }
+                    }
+
+                    Text(
+                        text = when (val status = subscriptionStatus) {
+                            is SubscriptionStatus.TrialActive -> "You have 100% Free Full-Access to all 5 Workstations until ${status.expiryDateFormatted}."
+                            is SubscriptionStatus.Subscribed -> "All Pro workstations unlocked until ${status.expiryDateFormatted}."
+                            is SubscriptionStatus.LifetimePro -> "All Pro workstations permanently unlocked."
+                            is SubscriptionStatus.TrialExpired -> "Standard Calculator is Free Forever! Upgrade to Pro for GST, Cash Tally & Tools."
+                        },
+                        fontSize = 11.sp,
+                        color = colors.textSecondary,
+                        lineHeight = 15.sp
+                    )
+
+                    NeumorphicButton(
+                        text = "✨ View Pro Plans & Pricing",
+                        onClick = { showSubscriptionSheet = true },
+                        accentColor = RupeeEmeraldGreen,
+                        fontSize = 11,
+                        modifier = Modifier.fillMaxWidth().height(42.dp)
+                    )
+                }
+            }
+
+            if (showSubscriptionSheet) {
+                NeumorphicSubscriptionSheet(onDismiss = { showSubscriptionSheet = false })
+            }
+
+            // 3. Publisher & Engineering Bio Card
             NeumorphicPlate(
                 modifier = Modifier.fillMaxWidth(),
                 shape = NeumorphicShape.CONVEX,
