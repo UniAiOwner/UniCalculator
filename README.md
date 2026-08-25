@@ -2,7 +2,9 @@
 ### *Calculate • Simplify • Grow — 100% Offline-First Commercial Math & GST Engine for Bharat & Global Commerce*
 
 <p align="center">
-  <img src="docs/images/01_app_logo_hero.png" alt="UniCalculator Master App Icon" width="150"/>
+  <img src="docs/images/01_app_logo_hero.png" alt="UniCalculator Master App Icon" width="140"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="docs/images/00_splash_screen.png" alt="UniCalculator Splash Screen" width="140"/>
 </p>
 
 <p align="center">
@@ -33,10 +35,10 @@ Combining the satisfying physical keystroke feel of classic Japanese desktop com
 ## 📸 Live Hardware Showcase (Realme RMX3998 • Android 14)
 
 ### 🧮 Workstation 1: Standard Commercial Calculator
-| ☀️ Light Neumorphic (Dual In-Words) | 🌙 Obsidian OLED Dark (Neon Glow) |
+| ☀️ Light Neumorphic (Zero State) | 🌙 Obsidian OLED Dark (Zero State • Neon Glow) |
 | :---: | :---: |
 | <img src="docs/images/02_standard_calc_light.png" width="340" alt="Standard Calculator Light"/> | <img src="docs/images/03_standard_calc_dark.png" width="340" alt="Standard Calculator Dark"/> |
-| *Recessed LCD Well • Pure Math Words (`One Hundred • एक सौ`)* | *Obsidian Slate • Skia Neon Emerald Matrix Digits* |
+| *Recessed LCD Well • Clean Resting State (`0` / `Zero`)* | *Obsidian Slate • Skia Neon Emerald Matrix Zero Digits* |
 
 ---
 
@@ -49,10 +51,10 @@ Combining the satisfying physical keystroke feel of classic Japanese desktop com
 ---
 
 ### 💵 Workstation 3: Cash Denomination Ledger (रोकड़ खाता)
-| ☀️ 3-Well Master HUD (Light Mode) | 🌙 High-Contrast Cash Tally (Dark Mode) |
+| ☀️ 3-Well Master HUD (Zero State) | 🌙 High-Contrast Cash Tally (Dark Mode) |
 | :---: | :---: |
 | <img src="docs/images/06_cash_tally_light.png" width="340" alt="Cash Tally Light Mode"/> | <img src="docs/images/07_cash_tally_dark.png" width="340" alt="Cash Tally Dark Mode"/> |
-| *Live Total Cash, Notes & Coins Count • ₹500 to ₹1* | *OLED Dark Theme • Tactile Multi-Color Note Pills* |
+| *Clean Reset State • Total ₹0, 0 Notes • ₹500 to ₹1* | *OLED Dark Theme • Tactile Multi-Color Note Pills* |
 
 ---
 
