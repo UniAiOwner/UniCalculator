@@ -429,24 +429,26 @@ fun CashTallyScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             filteredDenominations.forEach { item ->
-                DenominationRow(
-                    item = item,
-                    onIncrement = {
-                        click()
-                        viewModel.increment(item.faceValue)
-                    },
-                    onDecrement = {
-                        click()
-                        viewModel.decrement(item.faceValue)
-                    },
-                    onCountChanged = { newCount ->
-                        viewModel.updateCount(item.faceValue, newCount)
-                    },
-                    onClear = {
-                        tick()
-                        viewModel.clearDenomination(item.faceValue)
-                    }
-                )
+                androidx.compose.runtime.key(item.faceValue) {
+                    DenominationRow(
+                        item = item,
+                        onIncrement = {
+                            click()
+                            viewModel.increment(item.faceValue)
+                        },
+                        onDecrement = {
+                            click()
+                            viewModel.decrement(item.faceValue)
+                        },
+                        onCountChanged = { newCount ->
+                            viewModel.updateCount(item.faceValue, newCount)
+                        },
+                        onClear = {
+                            tick()
+                            viewModel.clearDenomination(item.faceValue)
+                        }
+                    )
+                }
             }
         }
 

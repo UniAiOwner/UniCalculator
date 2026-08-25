@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -164,31 +165,36 @@ fun NeumorphicSlidingBottomBar(
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()
         ) {
+            val density = androidx.compose.ui.platform.LocalDensity.current
             val tabWidth = maxWidth / tabCount
+            val tabWidthPx = with(density) { tabWidth.toPx() }
             val pillPadding = 2.dp
+            val pillPaddingPx = with(density) { pillPadding.toPx() }
             val actualPillWidth = tabWidth - (pillPadding * 2)
 
-            val animatedPillOffset by animateDpAsState(
-                targetValue = (tabWidth * selectedTab) + pillPadding,
+            val animatedFraction by animateFloatAsState(
+                targetValue = selectedTab.toFloat(),
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
                     stiffness = Spring.StiffnessMedium
                 ),
-                label = "PillSlideAnimation"
+                label = "PillFractionAnimation"
             )
 
-            val realTimePillOffset = if (isDragging || fractionalPosition != null) {
-                (tabWidth * effectiveFraction) + pillPadding
+            val currentFraction = if (isDragging || fractionalPosition != null) {
+                effectiveFraction
             } else {
-                animatedPillOffset
+                animatedFraction
             }
 
-            // 1. Physical Sliding Neumorphic Active Pill
+            // 1. Physical Sliding Neumorphic Active Pill (GPU Draw-Phase translated)
             Box(
                 modifier = Modifier
-                    .offset(x = realTimePillOffset)
                     .width(actualPillWidth)
                     .fillMaxHeight()
+                    .graphicsLayer {
+                        translationX = (currentFraction * tabWidthPx) + pillPaddingPx
+                    }
                     .neumorphic(
                         shape = NeumorphicShape.CONCAVE,
                         cornerRadius = 16.dp,
@@ -277,7 +283,10 @@ fun NeumorphicSlidingBottomBar(
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
-                            modifier = Modifier.scale(tabScale),
+                            modifier = Modifier.graphicsLayer {
+                                scaleX = tabScale
+                                scaleY = tabScale
+                            },
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {

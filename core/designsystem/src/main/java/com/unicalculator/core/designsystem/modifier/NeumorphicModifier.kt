@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,25 @@ enum class NeumorphicShape {
     CONVEX,     // Raised / 3D extruded button
     CONCAVE,    // Inset / Recessed well (pressed button, LCD display well)
     FLAT        // Subtle plate
+}
+
+private object NeumorphicShaderPool {
+    private val filterCache = androidx.collection.LruCache<Int, BlurMaskFilter>(64)
+
+    fun getBlurFilter(radiusPx: Float): BlurMaskFilter {
+        val key = (radiusPx * 10f).toInt().coerceAtLeast(1)
+        return filterCache.get(key) ?: BlurMaskFilter(radiusPx.coerceAtLeast(0.1f), BlurMaskFilter.Blur.NORMAL).also {
+            filterCache.put(key, it)
+        }
+    }
+
+    val paintA = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+    val paintB = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+    val clipPath = android.graphics.Path()
+    val outerPath = android.graphics.Path()
+    val innerHole = android.graphics.Path()
+    val diffPath = android.graphics.Path()
+    val rectF = android.graphics.RectF()
 }
 
 fun Modifier.neumorphic(
@@ -40,37 +60,39 @@ fun Modifier.neumorphic(
 
     when (shape) {
         NeumorphicShape.CONVEX -> {
-            // Top-Left Light Highlight Shadow
             drawIntoCanvas { canvas ->
-                val paint = Paint().apply {
-                    color = lightShadowColor
-                    asFrameworkPaint().maskFilter = BlurMaskFilter(elevationPx, BlurMaskFilter.Blur.NORMAL)
+                val nativeCanvas = canvas.nativeCanvas
+                val filter = NeumorphicShaderPool.getBlurFilter(elevationPx)
+
+                // Top-Left Light Highlight Shadow
+                val lightPaint = NeumorphicShaderPool.paintA.apply {
+                    reset()
+                    isAntiAlias = true
+                    color = lightShadowColor.toArgb()
+                    maskFilter = filter
                 }
-                canvas.drawRoundRect(
-                    left = -elevationPx * 0.8f,
-                    top = -elevationPx * 0.8f,
-                    right = size.width - elevationPx * 0.8f,
-                    bottom = size.height - elevationPx * 0.8f,
-                    radiusX = cornerRadiusPx,
-                    radiusY = cornerRadiusPx,
-                    paint = paint
+                NeumorphicShaderPool.rectF.set(
+                    -elevationPx * 0.8f,
+                    -elevationPx * 0.8f,
+                    size.width - elevationPx * 0.8f,
+                    size.height - elevationPx * 0.8f
                 )
-            }
-            // Bottom-Right Dark Cast Shadow
-            drawIntoCanvas { canvas ->
-                val paint = Paint().apply {
-                    color = darkShadowColor
-                    asFrameworkPaint().maskFilter = BlurMaskFilter(elevationPx, BlurMaskFilter.Blur.NORMAL)
+                nativeCanvas.drawRoundRect(NeumorphicShaderPool.rectF, cornerRadiusPx, cornerRadiusPx, lightPaint)
+
+                // Bottom-Right Dark Cast Shadow
+                val darkPaint = NeumorphicShaderPool.paintB.apply {
+                    reset()
+                    isAntiAlias = true
+                    color = darkShadowColor.toArgb()
+                    maskFilter = filter
                 }
-                canvas.drawRoundRect(
-                    left = elevationPx * 0.8f,
-                    top = elevationPx * 0.8f,
-                    right = size.width + elevationPx * 0.8f,
-                    bottom = size.height + elevationPx * 0.8f,
-                    radiusX = cornerRadiusPx,
-                    radiusY = cornerRadiusPx,
-                    paint = paint
+                NeumorphicShaderPool.rectF.set(
+                    elevationPx * 0.8f,
+                    elevationPx * 0.8f,
+                    size.width + elevationPx * 0.8f,
+                    size.height + elevationPx * 0.8f
                 )
+                nativeCanvas.drawRoundRect(NeumorphicShaderPool.rectF, cornerRadiusPx, cornerRadiusPx, darkPaint)
             }
             // Base surface
             if (backgroundColor != null) {
@@ -101,75 +123,81 @@ fun Modifier.neumorphic(
                 )
             }
 
-            // 2. Precision Directional Inner Inset Shadows via Skia Path Difference
+            // 2. Precision Directional Inner Inset Shadows via Zero-Allocation Skia Native Pipeline
             drawIntoCanvas { canvas ->
-                canvas.save()
+                val nativeCanvas = canvas.nativeCanvas
+                val count = nativeCanvas.save()
 
-                val innerRect = RoundRect(0f, 0f, width, height, CornerRadius(cornerRadiusPx))
-                val clipPath = Path().apply { addRoundRect(innerRect) }
-                canvas.clipPath(clipPath)
+                val clipP = NeumorphicShaderPool.clipPath.apply {
+                    reset()
+                    NeumorphicShaderPool.rectF.set(0f, 0f, width, height)
+                    addRoundRect(NeumorphicShaderPool.rectF, cornerRadiusPx, cornerRadiusPx, android.graphics.Path.Direction.CW)
+                }
+                nativeCanvas.clipPath(clipP)
 
                 val margin = elevationPx * 3f
-
-                // --- PASS 1: Top-Left Dark Inset Shadow (Directional Cutout) ---
                 val darkShadowOffset = elevationPx * 0.75f
-                val outerPathDark = Path().apply {
-                    addRect(Rect(-margin, -margin, width + margin, height + margin))
+
+                // --- PASS 1: Top-Left Dark Inset Shadow ---
+                val outerP = NeumorphicShaderPool.outerPath.apply {
+                    reset()
+                    addRect(-margin, -margin, width + margin, height + margin, android.graphics.Path.Direction.CW)
                 }
-                val innerHoleDark = Path().apply {
-                    addRoundRect(
-                        RoundRect(
-                            left = darkShadowOffset,
-                            top = darkShadowOffset,
-                            right = width + darkShadowOffset,
-                            bottom = height + darkShadowOffset,
-                            cornerRadius = CornerRadius(cornerRadiusPx)
-                        )
+                val innerH = NeumorphicShaderPool.innerHole.apply {
+                    reset()
+                    NeumorphicShaderPool.rectF.set(
+                        darkShadowOffset,
+                        darkShadowOffset,
+                        width + darkShadowOffset,
+                        height + darkShadowOffset
                     )
+                    addRoundRect(NeumorphicShaderPool.rectF, cornerRadiusPx, cornerRadiusPx, android.graphics.Path.Direction.CW)
                 }
-                val darkDifference = Path().apply {
-                    op(outerPathDark, innerHoleDark, PathOperation.Difference)
+                val darkDiff = NeumorphicShaderPool.diffPath.apply {
+                    reset()
+                    op(outerP, innerH, android.graphics.Path.Op.DIFFERENCE)
                 }
 
-                val innerDarkPaint = Paint().apply {
-                    color = darkShadowColor.copy(alpha = 0.95f)
-                    asFrameworkPaint().maskFilter = BlurMaskFilter(
-                        elevationPx * 0.85f,
-                        BlurMaskFilter.Blur.NORMAL
-                    )
+                val darkFilter = NeumorphicShaderPool.getBlurFilter(elevationPx * 0.85f)
+                val innerDarkPaint = NeumorphicShaderPool.paintA.apply {
+                    reset()
+                    isAntiAlias = true
+                    color = darkShadowColor.copy(alpha = 0.95f).toArgb()
+                    maskFilter = darkFilter
                 }
-                canvas.drawPath(darkDifference, innerDarkPaint)
+                nativeCanvas.drawPath(darkDiff, innerDarkPaint)
 
                 // --- PASS 2: Bottom-Right Light Highlight Inset Rim ---
                 val lightHighlightOffset = elevationPx * 0.75f
-                val outerPathLight = Path().apply {
-                    addRect(Rect(-margin, -margin, width + margin, height + margin))
+                outerP.apply {
+                    reset()
+                    addRect(-margin, -margin, width + margin, height + margin, android.graphics.Path.Direction.CW)
                 }
-                val innerHoleLight = Path().apply {
-                    addRoundRect(
-                        RoundRect(
-                            left = -lightHighlightOffset,
-                            top = -lightHighlightOffset,
-                            right = width - lightHighlightOffset,
-                            bottom = height - lightHighlightOffset,
-                            cornerRadius = CornerRadius(cornerRadiusPx)
-                        )
+                innerH.apply {
+                    reset()
+                    NeumorphicShaderPool.rectF.set(
+                        -lightHighlightOffset,
+                        -lightHighlightOffset,
+                        width - lightHighlightOffset,
+                        height - lightHighlightOffset
                     )
+                    addRoundRect(NeumorphicShaderPool.rectF, cornerRadiusPx, cornerRadiusPx, android.graphics.Path.Direction.CW)
                 }
-                val lightDifference = Path().apply {
-                    op(outerPathLight, innerHoleLight, PathOperation.Difference)
+                val lightDiff = NeumorphicShaderPool.diffPath.apply {
+                    reset()
+                    op(outerP, innerH, android.graphics.Path.Op.DIFFERENCE)
                 }
 
-                val innerLightPaint = Paint().apply {
-                    color = lightShadowColor.copy(alpha = 0.95f)
-                    asFrameworkPaint().maskFilter = BlurMaskFilter(
-                        elevationPx * 0.75f,
-                        BlurMaskFilter.Blur.NORMAL
-                    )
+                val lightFilter = NeumorphicShaderPool.getBlurFilter(elevationPx * 0.75f)
+                val innerLightPaint = NeumorphicShaderPool.paintB.apply {
+                    reset()
+                    isAntiAlias = true
+                    color = lightShadowColor.copy(alpha = 0.95f).toArgb()
+                    maskFilter = lightFilter
                 }
-                canvas.drawPath(lightDifference, innerLightPaint)
+                nativeCanvas.drawPath(lightDiff, innerLightPaint)
 
-                canvas.restore()
+                nativeCanvas.restoreToCount(count)
             }
 
             // 3. Micro Edge Crease (1.2dp Crisp Inner Lip Bevel)
@@ -198,41 +226,34 @@ fun Modifier.neumorphic(
         }
     }
 
-    // Option 2: Glowing Perimeter Neon Ring on Active/Pressed State
+    // Glowing Perimeter Neon Ring on Active/Pressed State
     if (neonGlowColor != null) {
         drawIntoCanvas { canvas ->
+            val nativeCanvas = canvas.nativeCanvas
+
             // Pass 1: Soft Outer Halo Glow
-            val glowPaint = Paint().apply {
-                color = neonGlowColor.copy(alpha = 0.35f)
-                style = PaintingStyle.Stroke
+            val glowFilter = NeumorphicShaderPool.getBlurFilter(2.5.dp.toPx())
+            val glowPaint = NeumorphicShaderPool.paintA.apply {
+                reset()
+                isAntiAlias = true
+                color = neonGlowColor.copy(alpha = 0.35f).toArgb()
+                style = android.graphics.Paint.Style.STROKE
                 strokeWidth = 3.5.dp.toPx()
-                asFrameworkPaint().maskFilter = BlurMaskFilter(2.5.dp.toPx(), BlurMaskFilter.Blur.NORMAL)
+                maskFilter = glowFilter
             }
-            canvas.drawRoundRect(
-                left = 1f,
-                top = 1f,
-                right = size.width - 1f,
-                bottom = size.height - 1f,
-                radiusX = cornerRadiusPx,
-                radiusY = cornerRadiusPx,
-                paint = glowPaint
-            )
+            NeumorphicShaderPool.rectF.set(1f, 1f, size.width - 1f, size.height - 1f)
+            nativeCanvas.drawRoundRect(NeumorphicShaderPool.rectF, cornerRadiusPx, cornerRadiusPx, glowPaint)
 
             // Pass 2: Crisp Core Laser Rim
-            val corePaint = Paint().apply {
-                color = neonGlowColor.copy(alpha = 0.95f)
-                style = PaintingStyle.Stroke
+            val corePaint = NeumorphicShaderPool.paintB.apply {
+                reset()
+                isAntiAlias = true
+                color = neonGlowColor.copy(alpha = 0.95f).toArgb()
+                style = android.graphics.Paint.Style.STROKE
                 strokeWidth = 1.6.dp.toPx()
             }
-            canvas.drawRoundRect(
-                left = 0.8f,
-                top = 0.8f,
-                right = size.width - 0.8f,
-                bottom = size.height - 0.8f,
-                radiusX = cornerRadiusPx,
-                radiusY = cornerRadiusPx,
-                paint = corePaint
-            )
+            NeumorphicShaderPool.rectF.set(0.8f, 0.8f, size.width - 0.8f, size.height - 0.8f)
+            nativeCanvas.drawRoundRect(NeumorphicShaderPool.rectF, cornerRadiusPx, cornerRadiusPx, corePaint)
         }
     }
 }
