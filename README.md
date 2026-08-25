@@ -1,10 +1,8 @@
-# 📱 UniCalculator — The Tactile Neumorphic Financial Workstation
-### *Calculate • Simplify • Grow — 100% Offline-First Commercial Math & GST Engine for Bharat & Global Commerce*
+# 📱 UniCalculator — Modern Commercial Calculator & Financial Suite
+### *High-Precision Math • 1-Tap GST Engine • Cash Denomination Ledger • 16 Business Tools*
 
 <p align="center">
-  <img src="docs/images/01_app_logo_hero.png" alt="UniCalculator Master App Icon" width="280"/>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="docs/images/00_splash_screen.png" alt="UniCalculator Splash Screen" width="280"/>
+  <img src="docs/images/01_app_logo_hero.png" alt="UniCalculator Master App Icon" width="340"/>
 </p>
 
 <p align="center">
@@ -18,12 +16,12 @@
 
 ---
 
-## 🌟 Executive Overview & The Bharat Vision
+## 🌟 Executive Overview & Architectural Highlights
 
-**UniCalculator** is a flagship, professional Android financial calculator engineered specifically for Indian Kirana store owners, wholesale traders, Chartered Accountants (CAs), tax practitioners, small business merchants, and daily shoppers.
+**UniCalculator** is a flagship, professional Android financial calculator engineered specifically for Kirana store owners, wholesale traders, Chartered Accountants (CAs), tax practitioners, small business merchants, and daily shoppers.
 
-Combining the satisfying physical keystroke feel of classic Japanese desktop commercial calculators (Casio & Citizen) with a **Pure Advanced Neumorphism UI (Soft 3D Tactile Design)** and **Skia 360° Neon Glow Typography**, UniCalculator delivers:
-1. **Instant Indian GST Slabs & Reverse GST Engine**: Extract base price from MRP in 1 tap with exact 50/50 CGST+SGST or IGST tax splits.
+Combining the satisfying physical keystroke feel of classic Japanese desktop commercial calculators (Casio & Citizen) with a **Pure Advanced Neumorphism 3D UI** and **Skia 360° Neon Glow Typography**, UniCalculator delivers:
+1. **Instant GST Slabs & Reverse GST Engine**: Extract base price from MRP in 1 tap with exact 50/50 CGST+SGST or IGST tax splits.
 2. **Cash Denomination Ledger (रोकड़ खाता)**: From **₹2000 down to ₹1 notes + coins** with instant English & Hindi **Number-to-Words transcription in Lakhs & Crores** and 1-tap WhatsApp closing slips.
 3. **Multi-Lingual In-Words Engine**: Configurable across **English, Hindi (Devanagari), Dual (Both), and Off** with pure mathematical wording for standard calculations.
 4. **16 Traditional & Business Tools**: Tola/Ratti gold jewelry units, Bigha/Guntha land units, Loan EMI, Margin/Markup, and Live 2-way currency exchange rate sync.
@@ -34,6 +32,15 @@ Combining the satisfying physical keystroke feel of classic Japanese desktop com
 
 ## 📸 Live Hardware Showcase (Realme RMX3998 • Android 14)
 
+### 🌅 Cold Launch & Native Splash Experience
+<p align="center">
+  <img src="docs/images/00_splash_screen.png" width="360" alt="UniCalculator Native Splash Screen"/>
+  <br/>
+  <em>Sub-60ms Cold Launch • Skyline Silhouette & 3D Floating Mathematical Symbols</em>
+</p>
+
+---
+
 ### 🧮 Workstation 1: Standard Commercial Calculator
 | ☀️ Light Neumorphic (Zero State) | 🌙 Obsidian OLED Dark (Zero State • Neon Glow) |
 | :---: | :---: |
@@ -42,7 +49,7 @@ Combining the satisfying physical keystroke feel of classic Japanese desktop com
 
 ---
 
-### 🧾 Workstation 2: GST Pro Invoicing Engine
+### 🧾 Workstation 2: GST Pro Calculation Engine
 | 🟢 Forward GST (+18% Intra-State) | 🟠 Reverse GST Base Extraction (-28% Inter-State) |
 | :---: | :---: |
 | <img src="docs/images/04_gst_pro_light.png" width="340" alt="GST Pro Forward Tax"/> | <img src="docs/images/05_gst_pro_reverse.png" width="340" alt="GST Pro Reverse Tax"/> |
@@ -54,7 +61,7 @@ Combining the satisfying physical keystroke feel of classic Japanese desktop com
 | ☀️ 3-Well Master HUD (Zero State) | 🌙 High-Contrast Cash Tally (Dark Mode) |
 | :---: | :---: |
 | <img src="docs/images/06_cash_tally_light.png" width="340" alt="Cash Tally Light Mode"/> | <img src="docs/images/07_cash_tally_dark.png" width="340" alt="Cash Tally Dark Mode"/> |
-| *Clean Reset State • Total ₹0, 0 Notes • ₹500 to ₹1* | *OLED Dark Theme • Tactile Multi-Color Note Pills* |
+| *Clean Reset State • Total ₹0, 0 Notes • ₹500 to ₹1* | *OLED Dark Theme • Multi-Color Note Pills* |
 
 ---
 
@@ -62,15 +69,15 @@ Combining the satisfying physical keystroke feel of classic Japanese desktop com
 | 📊 16-Tool Categorized Super Hub | 🏦 Interactive Loan & EMI Solver | 📜 Segregated Multi-Tab Audit Tape |
 | :---: | :---: | :---: |
 | <img src="docs/images/08_business_tools_grid.png" width="230" alt="16 Business Tools"/> | <img src="docs/images/09_loan_emi_interactive.png" width="230" alt="Loan EMI Solver"/> | <img src="docs/images/10_history_tape_multitab.png" width="230" alt="Multi-Tab History Tape"/> |
-| *Daily Utilities, Indian Converters & Finance* | *Interactive Concave Sliders & Amortization* | *Per-Screen Isolated SQLite WAL Ledger* |
+| *Daily Utilities, Traditional Converters & Finance* | *Interactive Concave Sliders & Amortization* | *Per-Screen Isolated SQLite WAL Ledger* |
 
 ---
 
-### 👑 Tactile Pro Subscription Suite & Settings
+### 👑 Pro Subscription Suite & Settings
 | 🎁 30-Day Free Trial & Pro Plans | ⚙️ Result In-Words Language Setting |
 | :---: | :---: |
 | <img src="docs/images/11_pro_subscription_sheet.png" width="340" alt="UniCalculator Pro Subscription"/> | <img src="docs/images/12_settings_words_language.png" width="340" alt="Settings In-Words Language"/> |
-| *Anti-Clock-Tampering • Monthly, Annual & Lifetime Pro* | *[ English \| Hindi \| Both \| Off ] Tactile Pills* |
+| *Anti-Clock-Tampering • Monthly, Annual & Lifetime Pro* | *[ English \| Hindi \| Both \| Off ] Selection Pills* |
 
 ---
 
@@ -87,13 +94,13 @@ Combining the satisfying physical keystroke feel of classic Japanese desktop com
   - `100.50` ➔ `"One Hundred Point Fifty"` (EN) / `"एक सौ दशमलव पचास"` (HI)
   - Zero / Negative numbers handled cleanly with zero hardcoded "Rupees" in pure math mode.
 
-### 2. 🧾 GST Pro Invoicing Engine
-- **1-Tap Slabs**: Dedicated tactile buttons for `+3%`, `+5%`, `+12%`, `+18%`, `+28%` and `-3%`, `-5%`, `-12%`, `-18%`, `-28%` (Reverse GST).
+### 2. 🧾 GST Pro Calculation Engine
+- **1-Tap Slabs**: Dedicated quick-access buttons for `+3%`, `+5%`, `+12%`, `+18%`, `+28%` and `-3%`, `-5%`, `-12%`, `-18%`, `-28%` (Reverse GST).
 - **Reverse GST Base Extraction**: Eliminates the manual `Base = Total / (1 + Rate/100)` calculation in 1 tap.
 - **Jurisdiction Live Split**:
   - **Intra-State (Default)**: 50% CGST + 50% SGST (with odd-paise exact integer split).
   - **Inter-State**: 100% IGST.
-- **Special Bharat Slabs**: Preset chips for **3% (Gold & Jewellery)** and **0.25% (Cut & Polished Diamonds)**.
+- **Special Precious Metals Slabs**: Preset chips for **3% (Gold & Jewellery)** and **0.25% (Cut & Polished Diamonds)**.
 - **Cheque In-Words Engine**: Live English & Devanagari Hindi text conversion in Lakhs & Crores.
 
 ### 3. 💵 Cash Denomination Ledger (रोकड़ खाता / Cash Tally)
@@ -204,7 +211,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 **Support & Contact**: `theunicoretech@gmail.com`  
 **Principal Architect & Lead Engineer**: **Shoeb Ahmad**  
 
-*Designed with mathematical rigor and passion for the merchants and people of Bharat.* 🇮🇳
+*Designed with mathematical rigor and passion for modern merchants, accountants, and daily users.* 💼
 
 ---
 
